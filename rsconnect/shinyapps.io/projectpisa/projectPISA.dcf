@@ -1,0 +1,12 @@
+name: projectPISA
+title: projectPISA
+username: projectpisa
+account: projectpisa
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11489410
+bundleId: 8372740
+url: https://projectpisa.shinyapps.io/projectPISA/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

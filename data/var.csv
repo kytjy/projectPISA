@@ -1,0 +1,26 @@
+﻿Variables,Description
+Gender,Student (Standardized) Gender
+SchoolType,Public or Private
+Loneliness,"I feel lonely at school.	"
+ClassroomSafety,Agree/disagree: I feel safe in my classrooms at school.
+TeacherSupport,How often: The teacher helps students with their learning.
+Homework_Math,How much time spent on homework in Math homework
+Homework_Reading,How much time spent on homework in Reading homework
+Homework_Science,How much time spent on homework in Science homework
+ParentsEducation,Highest level of education of parents (ISCED)
+Immigration,Index on immigrant background (OECD definition)
+HomeLanguage,What language do you speak at home most of the time?
+Sibling,"How many siblings (including brothers, sisters, step-brothers, and step-sisters) do you have?"
+Aircon,Which of the following are in your home? <Air-conditioner>
+Helper,Which of the following are in your home? <Domestic helper (e.g. full/part-time maid)>
+Vehicle,"How many of these items are there at your home? Cars, vans, or trucks"
+Books,How many books are there in your home?
+Exercise,Exercise or practice a sport before or after school
+OwnRoom,Which of the following are in your [home]: A room of your own
+FamilyCommitment,Working in household/take care of family members before or after school
+Preference_Math,Agree/disagree: Math is one of my favourite subjects.
+Preference_Reading,Agree/disagree: Reading is one of my favourite subjects.
+Preference_Science,Agree/disagree: Science is one of my favourite subjects.
+Math,Average of 10 Plausible Values of Math Scores
+Reading,Average of 10 Plausible Values of Reading Scores
+Science,Average of 10 Plausible Values of Science Scores
