@@ -334,19 +334,20 @@ body <- dashboardBody(
                              width = 12,
                              solidHeader =TRUE,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 "A decision tree is a machine learning algorithm that partitions the data into subsets. The partitioning process starts with a binary split and continues until no further splits can be made. Various branches of variable length are formed. The goal of a decision tree is to encapsulate the training data in the smallest possible tree, i.e. simplest possible explanation for the variation in scores."
+                                 "A Decision Tree is a machine learning algorithm that partitions the data into subsets. The partitioning process starts with a binary split and continues until no further splits can be made. Various branches of variable length are formed. The goal of a decision tree is to encapsulate the training data in the smallest possible tree, i.e. simplest possible explanation for the variation in scores."
                                  )
                              )
                          ),
                          
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                         box(title = tags$p("Variable Selection", style = "font-weight: bold;"),
+                         box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
                              status = "primary",
-                             collapsible = FALSE,
+                             collapsible = TRUE,
+                             collapsed = FALSE,
                              width = 12,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                  pickerInput(
-                                   inputId = "mb_target_",
+                                   inputId = "dt_target_",
                                    label = "Scores",
                                    choices = c("Math", "Reading", "Science"), 
                                    selected = "Math",
@@ -358,7 +359,7 @@ body <- dashboardBody(
                                  )),
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                  pickerInput(
-                                   inputId = "mb_vars_",
+                                   inputId = "dt_vars_",
                                    label = "Variables",
                                    choices = list(
                                      `School Environment` = list("School Type" = "SchoolType",
@@ -394,8 +395,9 @@ body <- dashboardBody(
                          ),
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                       box(title = tags$p("Model Specification", style = "font-weight: bold;"),
-                           closable = FALSE,
+                       box(title = tags$p("Step 2: Model Specification", style = "font-weight: bold;"),
+                           collapsible = TRUE,
+                           collapsed = TRUE,
                            width = 12,
                            status = "primary",
                            solidHeader = FALSE,
@@ -446,20 +448,21 @@ body <- dashboardBody(
                        hidden(div(id = "dt_kfold_group",
                                            style = "padding = 0em; margin-right: -0.5em; margin-top: -1em",
                                            box(
-                                             title = tags$p("Tuning Parameters", style = "font-weight: bold;"),
+                                             title = tags$p("Step 3: Tuning Parameters", style = "font-weight: bold;"),
                                              status = "primary",
-                                             collapsible = FALSE,
+                                             collapsible = TRUE,
+                                             collapsed = FALSE,
                                              width = 12,
                                              div(style = "padding = 0em; margin-top: -0.5em",
                                                  numericInput(inputId = "dt_rkfold_number",
-                                                              label = "Number of Splits:",
+                                                              label = "K-Fold:",
                                                               min = 2,
                                                               max = 50,
                                                               step = 1,
                                                               value = 10),
                                                  div(style = "padding = 0em; margin-top: -0.8em",
                                                      numericInput(inputId = "dt_rkfold_repeat",
-                                                                  label = "Tree Depth:",
+                                                                  label = "Repeat Count:",
                                                                   min = 1,
                                                                   max = 10,
                                                                   step = 1,
@@ -549,24 +552,247 @@ body <- dashboardBody(
                      )
                    )
             ),
-    tabItem(tabName = "tab_rf"),
+    
+    ### Random Forest  ----------------------------------------------------
+    tabItem(tabName = "tab_rf",
+            
+            #### Random Forest Toggle Column  ----------------------------------------------------
+            column(width = 2,
+                   fluidRow(
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p(span(icon("tree"), "Random Forest"), style = "font-weight: bold; color: #FFFFFF"),
+                             status = "info",
+                             collapsible = FALSE,
+                             width = 12,
+                             solidHeader =TRUE,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 "A Random Forest is like a group decision-making team in machine learning. It combines the opinions of many “trees” (individual models) to make better predictions, creating a more robust and accurate overall model. This randomness introduces variability among individual trees, reducing the risk of overfitting and improving overall prediction performance."
+                             )
+                         )
+                     ),
+                     
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             collapsed = FALSE,
+                             width = 12,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "rf_target_",
+                                   label = "Scores",
+                                   choices = c("Math", "Reading", "Science"), 
+                                   selected = "Math",
+                                   multiple = FALSE,
+                                   options = list(`actions-box` = TRUE),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                                   inline = FALSE,
+                                   width = NULL
+                                 )),
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "rf_vars_",
+                                   label = "Variables",
+                                   choices = list(
+                                     `School Environment` = list("School Type" = "SchoolType",
+                                                                 "Loneliness" = "Loneliness",
+                                                                 "Classroom Safety" = "ClassroomSafety",
+                                                                 "Teacher Support" = "TeacherSupport"),
+                                     `Personal` = list("Gender" = "Gender",
+                                                       "Math Homework Time" = "Homework_Math",
+                                                       "Reading Homework Time" = "Homework_Reading",
+                                                       "Science Homework Time" = "Homework_Science",
+                                                       "Preference for Math" = "Preference_Math",
+                                                       "Preference for Reading" = "Preference_Reading",
+                                                       "Preference for Science" = "Preference_Science",
+                                                       "Exercise" = "Exercise"),
+                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                                                            "Immigration" = "Immigration",
+                                                            "Home Language" = "HomeLanguage",
+                                                            "Sibling" = "Sibling",
+                                                            "Aircon" = "Aircon",
+                                                            "Helper" = "Helper",
+                                                            "Vehicle" = "Vehicle",
+                                                            "Books" = "Books",
+                                                            "Own Room" = "OwnRoom",
+                                                            "Family Commitment" = "FamilyCommitment")),
+                                   selected = colnames(stu_mb[1:24]),
+                                   multiple = TRUE,
+                                   options = list(`actions-box` = TRUE),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                                   inline = FALSE,
+                                   width = NULL
+                                 ))
+                         )
+                     ),
+                     div(
+                       style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                       box(title = tags$p("Step 2: Model Specification", style = "font-weight: bold;"),
+                           collapsible = TRUE,
+                           collapsed = TRUE,
+                           width = 12,
+                           status = "primary",
+                           solidHeader = FALSE,
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               chooseSliderSkin("Flat"),
+                               sliderInput(inputId = "rf_partition_",
+                                           label = "Train-Test Partition:",
+                                           min = 0.05,
+                                           max = 0.95,
+                                           value = c(0.8))
+                               ),
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               chooseSliderSkin("Flat"),
+                               sliderInput(inputId = "rf_treenum_",
+                                           label = "No. of Trees:",
+                                           min = 5,
+                                           max = 500,
+                                           value = c(50))
+                               ),
+                           div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                               selectInput(inputId = "rf_varimpmode_",
+                                           label = "Variable Importance Measure:",
+                                           choices = c("Gini Importance" = "impurity",
+                                                       "Permutation Importance" = "permutation"),
+                                           selected = "impurity")
+                               )
+                           )
+                       ),
+                     div(
+                       style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                       box(title = tags$p("Step 3: Resampling Options", style = "font-weight: bold;"),
+                           collapsible = TRUE,
+                           collapsed = TRUE,
+                           width = 12,
+                           status = "primary",
+                           solidHeader = FALSE,
+                           div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                               selectInput(inputId = "rf_resamplingmethod_",
+                                           label = "Resampling Method:",
+                                           choices = c("Bootstrap" = "rf_bootstrap",
+                                                       "Cross Validation" = "rf_cvkfold",
+                                                       "Repeated Cross-Validation" = "rf_repeatkfold"),
+                                           selected = "rf_bootstrap")
+                               ),
+                           hidden(tags$div(id = "rf_cvkfold_group",
+                                           numericInput(inputId = "rf_cvkfold_number",
+                                                        label = "K-fold:",
+                                                        min = 2,
+                                                        max = 50,
+                                                        step = 1,
+                                                        value = 10)
+                                           )
+                                  ),
+                           hidden(tags$div(id = "rf_rcvkfold_group",
+                                            numericInput(inputId = "rf_rcvkfold_number",
+                                                         label = "K-Fold:",
+                                                         min = 2,
+                                                         max = 50,
+                                                         step = 1,
+                                                         value = 10),
+                                            div(style = "padding = 0em; margin-top: -0.8em",
+                                                numericInput(inputId = "rv_rcvkfold_repeat",
+                                                             label = "Repeat Count:",
+                                                             min = 1,
+                                                             max = 10,
+                                                             step = 1,
+                                                             value = 3)
+                                            )
+                                        )
+                                  )
+                           )
+                       ),
+                     div(
+                       style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                       box(title = tags$p("Step 4: Tuning Parameters", style = "font-weight: bold;"),
+                           collapsible = TRUE,
+                           collapsed = TRUE,
+                           width = 12,
+                           status = "primary",
+                           solidHeader = FALSE,  
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               selectInput(inputId = "rf_splitrule_",
+                                       label = "Split Rule:",
+                                       choices = c("Variance" = "variance",
+                                                    "Extra Trees" = "extratrees",
+                                                    "Max Stat" = "maxstat"),
+                                       selected = "variance")),
+
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               chooseSliderSkin("Flat"),
+                               sliderInput(inputId = "rf_minnodesize_",
+                                           label = "Minimum Node Size:",
+                                           min = 2,
+                                           max = 50,
+                                           value = 5)
+                           ),
+
+
+                           div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                               actionButton(inputId = "rf_action_",
+                                            label = "Run Analysis",
+                                            icon = icon("wrench")),
+                               align = "center"
+                               )
+                           )
+                       )
+                     )
+                   ),
+            
+            #### Random Forest Results Column  ----------------------------------------------------
+            
+            column(width = 10,
+                   fluidRow(
+                     style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                     div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                         valueBoxOutput("rf_display_R2_", width = 4),
+                         valueBoxOutput("rf_display_RMSE_", width = 4),
+                         valueBoxOutput("rf_display_MAE_", width = 4)
+                     )
+                   ),
+                   fluidRow(
+                     div(
+                       style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                       box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
+                           closable = FALSE,
+                           width = 12,
+                           status = "primary",
+                           
+                           #### Random Forest - Actual vs Predicted ----------------------------------------------------
+                           column(width = 6, 
+                                  plotOutput("rf_plotpredvsactual_",
+                                             width = "100%",
+                                             height = "30vh")),
+                           
+                           
+                           #### Random Forest - Actual vs Residuals ----------------------------------------------------
+                           column(width = 6, 
+                                  plotOutput("rf_plotresidvsactual_",
+                                             width = "100%",
+                                             height = "30vh"))
+                           )
+                       )
+                     )
+                   ),
+            column(width = 10,
+                   fluidRow(
+                     style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                         box(title = tags$p("Variable Importance (Top 40)", style = "font-weight: bold;"),
+                             closable = FALSE,
+                             width = 12,
+                             status = "primary",
+                             plotOutput("rf_varimp_plot_",
+                                        width = "100%")
+                             )
+                         )
+                     )
+                   )
+            ),
     tabItem(tabName = "tab_gb")          
             #### Decision Tree Results Column 2 ----------------------------------------------------
     )
 )
-
-
-
-                
-                              
-                     
-              
-                     
-                     
-    
-  
-
-
 
 
 
@@ -602,7 +828,7 @@ server <- function(input, output) {
   output$home_studnum_ <- renderValueBox({
     valueBox(
       value = tags$p(nrow(stu), style = "font-size: 60%;"),
-      subtitle = tags$p(paste0("Participanting Students"), style = "font-size: 80%;"), 
+      subtitle = tags$p(paste0("Participating Students"), style = "font-size: 80%;"), 
       icon = tags$i(icon("children"), style="font-size: 60%"),
       color = "yellow"
     )
@@ -664,8 +890,8 @@ server <- function(input, output) {
 
   # Combine Selected Variables
   dt_selected_variables <- reactive({
-      c(input$mb_target_,
-        input$mb_vars_)
+      c(input$dt_target_,
+        input$dt_vars_)
       })  
   
   dt_data <- reactive({
@@ -693,58 +919,7 @@ server <- function(input, output) {
 
   # DT Sidebar Toggles  ----------------------------------------------------
   ## Model Tuning Parameters 
-  
-  # ### Display Selection depending on resampling method
-  # observeEvent(input$dt_resamplingmethod_, {
-  #   if (input$dt_resamplingmethod_ == "dt_cvkfold") {
-  #     shinyjs::show("dt_cvkfold_group")
-  #   }
-  #   else {
-  #     shinyjs::hide("dt_cvkfold_group")
-  #   }
-  # })
-  # 
-  # observeEvent(input$dt_resamplingmethod_, {
-  #   if (input$dt_resamplingmethod_ == "dt_repeatkfold") {
-  #     shinyjs::show("dt_repeatkfold_group")
-  #   }
-  #   else {
-  #     shinyjs::hide("dt_repeatkfold_group")
-  #   }
-  # })
-  
-  # observeEvent(input$dt_resamplingmethod_, {
-  #   if (input$dt_resamplingmethod_ == "dt_repeatkfold") {
-  #     shinyjs::show("dt_repeatkfold_group")
-  #   }
-  #   else {
-  #     shinyjs::hide("dt_repeatkfold_group")
-  #   }
-  # })
-  #   
-  # ### Assign Model Train Control Parameters
-  # dt_bs_resample <- eventReactive(
-  #   input$dt_action_, {    
-  #   trainControl(method = "none"
-  #                )
-  #     })
-  # 
-  # dt_cvkfold_resample  <- eventReactive(
-  #   input$dt_action_, {    
-  #     trainControl(method = "cv",
-  #                  number = input$dt_cvkfold_number
-  #     )
-  #   })
-  # 
-  # dt_cvrepeatkfold_resample <- eventReactive(
-  #   input$dt_action_, {    
-  #     trainControl(method = "repeatedcv",
-  #                  number = input$dt_repeatkfold_number,
-  #                  repeats = input$dt_repeatkfold_repeat
-  #     )
-  #   })
-  
-  
+
   ### Display Selection after first model run
   observeEvent(input$dt_action_, {
     shinyjs::show("dt_kfold_group")
@@ -753,7 +928,7 @@ server <- function(input, output) {
   # DT Model  ----------------------------------------------------
   dtmodel <- eventReactive(
     input$dt_action_, {
-      if (input$mb_target_ == "Math") {
+      if (input$dt_target_ == "Math") {
         train(
           form = Math ~ .,
           data = dt_traindata(),
@@ -768,7 +943,7 @@ server <- function(input, output) {
           # else {dt_cvrepeatkfold_resample()}
         )}
       
-      else if (input$mb_target_ == "Reading") {
+      else if (input$dt_target_ == "Reading") {
         train(
           form = Reading ~ .,
           data = dt_traindata(),
@@ -801,7 +976,7 @@ server <- function(input, output) {
   
   dtmodel_prune <- eventReactive(
     input$dt_tunemodel_, {
-      if (input$mb_target_ == "Math") {
+      if (input$dt_target_ == "Math") {
         train(
           form = Math ~ .,
           data = dt_traindata(),
@@ -812,7 +987,7 @@ server <- function(input, output) {
                                    repeats = input$dt_rkfold_repeat)
         )}
       
-      else if (input$mb_target_ == "Reading") {
+      else if (input$dt_target_ == "Reading") {
         train(
           form = Reading ~ .,
           data = dt_traindata(),
@@ -1095,8 +1270,8 @@ server <- function(input, output) {
       valueBox(
         value = tags$p(modeltype, style = "font-size: 60%;"), 
         subtitle = tags$p("Complexity Parameter:  Used to control the size of the decision tree and to select the optimal tree size. The tree will stop dividing nodes when the reduction in relative error is less than a certain value.", 
-                          style = "font-size: 80%;"), 
-        icon = tags$i(icon("trophy"), style="font-size: 60%"),
+                          style = "font-size: 100%;"), 
+        icon = tags$i(icon("trophy"), style="font-size: 80%"),
         color = "yellow"
       )
     )
@@ -1106,8 +1281,260 @@ server <- function(input, output) {
   # observeEvent(input$dt_tunemodel_, dt_showcpbox(dt_showcp_prune()))
   
   
-
+  # RF Data Manipulation  ----------------------------------------------------
   
+  # Combine Selected Variables
+  rf_selected_variables <- reactive({
+    c(input$rf_target_,
+      input$rf_vars_)
+  })  
+  
+  rf_data <- reactive({
+    stu_mb %>%
+      select(all_of(rf_selected_variables()))
+  }
+  )
+  
+  rf_index <- eventReactive(
+    input$rf_action_, {
+      set.seed(1234)
+      caret::createDataPartition(rf_data()[[1]], p = input$rf_partition_, list = FALSE)      
+    }
+  )
+  
+  rf_traindata <- eventReactive(
+    input$rf_action_, {
+      rf_data()[rf_index(),]
+    })
+  
+  rf_testdata <- eventReactive(
+    input$rf_action_, {
+      rf_data()[-rf_index(),]
+    })
+  
+  # RF Sidebar Toggles  ----------------------------------------------------
+  ## Model Tuning Parameters 
+  
+  # ### Display Selection depending on resampling method
+   observeEvent(input$rf_resamplingmethod_, {
+    if (input$rf_resamplingmethod_ == "rf_cvkfold") {
+      shinyjs::show("rf_cvkfold_group")
+    }
+     else {
+      shinyjs::hide("rf_cvkfold_group")
+    }
+  })
+
+  observeEvent(input$rf_resamplingmethod_, {
+    if (input$rf_resamplingmethod_ == "rf_repeatkfold") {
+      shinyjs::show("rf_rcvkfold_group")
+    }
+    else {
+      shinyjs::hide("rf_rcvkfold_group")
+    }
+  })
+  
+  # RF Model  ----------------------------------------------------
+  
+  ## Assign Model Train Control Parameters
+  rf_bs_resample <- eventReactive(
+    input$rf_action_, {
+    trainControl(method = "none"
+                 )
+      })
+
+  rf_cvkfold_resample  <- eventReactive(
+    input$rf_action_, {
+      trainControl(method = "cv",
+                   number = input$rf_cvkfold_number
+      )
+    })
+
+  rf_rcvkfold_resample <- eventReactive(
+    input$rf_action_, {
+      trainControl(method = "repeatedcv",
+                   number = input$rf_rcvkfold_number,
+                   repeats = input$rv_rcvkfold_repeat
+      )
+    })
+  
+  
+  rf_tgrid <- eventReactive(
+    input$rf_action_, {
+      expand.grid(
+        mtry = sqrt(ncol(rf_traindata())),
+        splitrule = input$rf_splitrule_,
+        min.node.size = input$rf_minnodesize_
+      )
+      
+    })
+  
+  rfmodel <- eventReactive(
+    input$rf_action_, {
+      if (input$rf_target_ == "Math") {
+        train(
+          form = Math ~ .,
+          data = rf_traindata(),
+          method = "ranger",
+          num.trees = input$rf_treenum_,
+          importance = input$rf_varimpmode_,
+          local.importance = TRUE,
+          tuneGrid  = rf_tgrid(),
+          trControl =
+            if(input$rf_resamplingmethod_ == "rf_bootstrap")
+              { rf_bs_resample() }
+            else if (input$rf_resamplingmethod_ == "rf_cvkfold")
+            { rf_cvkfold_resample() }
+            else { rf_rcvkfold_resample() }
+        )}
+      
+      else if (input$rf_target_ == "Reading") {
+        train(
+          form = Reading ~ .,
+          data = rf_traindata(),
+          method = "ranger",
+          num.trees = input$rf_treenum_,
+          importance = input$rf_varimpmode_,
+          local.importance = TRUE,
+          tuneGrid  = rf_tgrid(),
+          trControl = 
+            if(input$rf_resamplingmethod_ == "rf_bootstrap")
+            { rf_bs_resample() }
+          else if (input$rf_resamplingmethod_ == "rf_cvkfold")
+          { rf_cvkfold_resample() }
+          else { rf_rcvkfold_resample() }
+        )}
+      
+      else {
+        train(
+          form = Science ~ .,
+          data = rf_traindata(),
+          method = "ranger",
+          num.trees = input$rf_treenum_,
+          importance = input$rf_varimpmode_,
+          local.importance = TRUE,
+          tuneGrid  = rf_tgrid(),
+          trControl = 
+            if(input$rf_resamplingmethod_ == "rf_bootstrap")
+            { rf_bs_resample() }
+          else if (input$rf_resamplingmethod_ == "rf_cvkfold")
+          { rf_cvkfold_resample() }
+          else { rf_rcvkfold_resample() }
+        )}
+    })  
+  
+  ## Predicting Results
+  predictrf_model <- eventReactive(
+    input$rf_action_, {
+      predict(rfmodel(), 
+              newdata = rf_testdata())
+    })
+  
+  predict_rf <- eventReactive(
+    input$rf_action_, {
+      bind_cols(
+        Actual = rf_testdata()[[1]],
+        Predicted = predictrf_model(),
+        Residuals = predictrf_model() - rf_testdata()[[1]])
+    })
+  
+  ## Plot Predicted vs Actual
+  rf_plot_predvsactual <- eventReactive(
+    input$rf_action_, {
+      ggplot(data = predict_rf(),
+             aes(x = Actual, y = Predicted)) +
+        geom_point(alpha = 0.2, color = "grey40") +
+        geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
+        geom_abline(intercept = 0, slope = 1, linetype = 2, color = "#20948b", size = 0.8) +
+        labs(title = "Predicted vs Actual")+ 
+        theme_minimal()
+    })
+  
+  output$rf_plotpredvsactual_ <- renderPlot({
+    rf_plot_predvsactual()
+  })
+
+  ## Plot Residuals vs Actual
+  rf_plot_residvsactual <- eventReactive(
+    input$rf_action_, {
+      ggplot(data = predict_rf(),
+             aes(x = Actual, y = Residuals)) +
+        geom_point(alpha = 0.2, color = "grey40") +
+        geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
+        geom_hline(yintercept = 0, linetype = 2, color = "#20948b", size = 0.8) +
+        labs(title = "Residuals vs Actual")+ 
+        theme_minimal()
+    })
+  
+  
+  output$rf_plotresidvsactual_ <- renderPlot({
+    rf_plot_residvsactual()
+  })
+  
+
+  ## Statistical Analysis
+  ### R2
+  rf_R2 <- eventReactive(
+    input$rf_action_, {
+      round(caret::R2(predictrf_model(),
+                       rf_testdata()[[1]]),3)
+    }
+  )
+      
+  ### RMSE
+  rf_RMSE <- eventReactive(
+    input$rf_action_, {
+      round(caret::RMSE(predictrf_model(),
+                        rf_testdata()[[1]]),3)
+    }
+  )
+  
+  ### MAE
+  rf_MAE <- eventReactive(
+    input$rf_action_, {
+      round(caret::MAE(predictrf_model(),
+                       rf_testdata()[[1]]),3)
+    }
+  )  
+  
+  output$rf_display_R2_ <- renderValueBox({
+    valueBox(
+      value = tags$p(rf_R2(), style = "font-size: 60%;"),
+      subtitle = tags$p(paste0("R-Square"), style = "font-size: 80%;"), 
+      icon = tags$i(icon("calculator"), style="font-size: 60%"),
+      color = "yellow"
+    )
+  })
+  
+  output$rf_display_RMSE_ <- renderValueBox({
+    valueBox(
+      value = tags$p(rf_RMSE(), style = "font-size: 60%;"),
+      subtitle = tags$p(paste0("RMSE"), style = "font-size: 80%;"), 
+      icon = tags$i(icon("calculator"), style="font-size: 60%"),
+      color = "yellow"
+    )
+  })
+  
+  output$rf_display_MAE_ <- renderValueBox({
+    valueBox(
+      value = tags$p(rf_MAE(), style = "font-size: 60%;"),
+      subtitle = tags$p(paste0("MAE"), style = "font-size: 80%;"), 
+      icon = tags$i(icon("calculator"), style="font-size: 60%"),
+      color = "yellow"
+    )
+  })
+  
+  ## Random Forest - Variable Importance
+  rf_varimp_plot <- eventReactive(
+    input$rf_action_, {
+      vip::vip(rfmodel(), num_features = 40, bar = FALSE)
+    }
+  )  
+  
+  output$rf_varimp_plot_ <-
+    renderPlot({
+      rf_varimp_plot()
+    })
   
 }
 
