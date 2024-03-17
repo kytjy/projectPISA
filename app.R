@@ -328,6 +328,18 @@ body <- dashboardBody(
             column(width = 2,
                    fluidRow(
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p(span(icon("tree"), "Decision Tree"), style = "font-weight: bold; color: #FFFFFF"),
+                             status = "info",
+                             collapsible = FALSE,
+                             width = 12,
+                             solidHeader =TRUE,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 "A decision tree is a machine learning algorithm that partitions the data into subsets. The partitioning process starts with a binary split and continues until no further splits can be made. Various branches of variable length are formed. The goal of a decision tree is to encapsulate the training data in the smallest possible tree, i.e. simplest possible explanation for the variation in scores."
+                                 )
+                             )
+                         ),
+                         
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
                          box(title = tags$p("Variable Selection", style = "font-weight: bold;"),
                              status = "primary",
                              collapsible = FALSE,
@@ -382,7 +394,7 @@ body <- dashboardBody(
                          ),
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                       box(title = tags$p(span(icon("tree"), "Decision Tree"), style = "font-weight: bold;"),
+                       box(title = tags$p("Model Specification", style = "font-weight: bold;"),
                            closable = FALSE,
                            width = 12,
                            status = "primary",
@@ -421,13 +433,14 @@ body <- dashboardBody(
                            #                         value = 10)
                            #                 )
                            #        ),
-                           div(style = "padding = 0em; margin-top: 2em; font-size: 10px;",
+                           div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
                                actionButton(inputId = "dt_action_",
-                                            label ="Run Analysis",
+                                            label = "Run Analysis",
                                             icon = icon("wrench")),
                                align = "center"
+                           )                      
                            )
-                       ),
+                     ),
                        
                       # Box Sidebar for Model Tuning Parameters
                        hidden(div(id = "dt_kfold_group",
@@ -438,14 +451,14 @@ body <- dashboardBody(
                                              collapsible = FALSE,
                                              width = 12,
                                              div(style = "padding = 0em; margin-top: -0.5em",
-                                                 numericInput(inputId = "dt_tkfold_number",
+                                                 numericInput(inputId = "dt_rkfold_number",
                                                               label = "Number of Splits:",
                                                               min = 2,
                                                               max = 50,
                                                               step = 1,
                                                               value = 10),
                                                  div(style = "padding = 0em; margin-top: -0.8em",
-                                                     numericInput(inputId = "dt_repeatkfold_repeat",
+                                                     numericInput(inputId = "dt_rkfold_repeat",
                                                                   label = "Tree Depth:",
                                                                   min = 1,
                                                                   max = 10,
@@ -455,26 +468,25 @@ body <- dashboardBody(
                                                  div(style = "padding = 0em; margin-top: -0.8em",
                                                      numericInput(inputId = "dt_cp",
                                                                   label = "Complexity Parameter:",
-                                                                  min = 0.01,
+                                                                  min = 0.00001,
                                                                   max = 1,
-                                                                  step = 0.001,
+                                                                  step = 0.00001,
                                                                   value = 0.02)
                                                      ),
                                                  div(style = "padding = 0em; margin-top: 2em; font-size: 10px;",
-                                                     actionButton(inputId = "dt_tunemodel",
+                                                     actionButton(inputId = "dt_tunemodel_",
                                                                   label = "Tune Model",
                                                                   icon = icon("scissors"),
-                                                                  align = "center"
-                                                                  )
+                                                                  ),
+                                                     align = "center"
                                                      )
                                                  )
-                                           )
+                                             )
                                   )
+                              )
 
-                           )
-                       )
-                     )
-                   ),
+                   )
+            ),
             
             #### Decision Tree Results Column 1 ----------------------------------------------------
           
@@ -502,15 +514,21 @@ body <- dashboardBody(
                              
                            )
                        )
+                     )
                      ,
-                   div(
+                   fluidRow(div(
                      style = "padding = 0em; margin-left: 0em; margin-top: 0.5em; height: 100% ",
                      box(title = tags$p("Best Tune", style = "font-weight: bold;"),
                          closable = FALSE,
                          width = 12,
-                         status = "primary")
+                         status = "primary",
+                         plotOutput("dt_cp_plot_",
+                                    width = "100%",
+                                    height = "30vh"),
+                         valueBoxOutput("dt_showcp_", width =12)
+                         )
                      )
-                   )
+                     )
                    ),
             column(width = 5,
                    fluidRow(
@@ -530,14 +548,13 @@ body <- dashboardBody(
                              )
                      )
                    )
-                ),
+            ),
     tabItem(tabName = "tab_rf"),
     tabItem(tabName = "tab_gb")          
             #### Decision Tree Results Column 2 ----------------------------------------------------
-            
-            
-            )
     )
+)
+
 
 
                 
@@ -782,6 +799,42 @@ server <- function(input, output) {
         )}
       })
   
+  dtmodel_prune <- eventReactive(
+    input$dt_tunemodel_, {
+      if (input$mb_target_ == "Math") {
+        train(
+          form = Math ~ .,
+          data = dt_traindata(),
+          method = "rpart",
+          tuneGrid = expand.grid(cp = input$dt_cp),
+          trControl = trainControl(method = "repeatedcv",
+                                   number = input$dt_rkfold_number,
+                                   repeats = input$dt_rkfold_repeat)
+        )}
+      
+      else if (input$mb_target_ == "Reading") {
+        train(
+          form = Reading ~ .,
+          data = dt_traindata(),
+          method = "rpart",
+          tuneGrid = expand.grid(cp = input$dt_cp),
+          trControl = trainControl(method = "repeatedcv",
+                                   number = input$dt_rkfold_number,
+                                   repeats = input$dt_rkfold_repeat)
+        )}
+      
+      else {
+        train(
+          form = Science ~ .,
+          data = dt_traindata(),
+          method = "rpart",
+          tuneGrid = expand.grid(cp = input$dt_cp),
+          trControl = trainControl(method = "repeatedcv",
+                                   number = input$dt_rkfold_number,
+                                   repeats = input$dt_rkfold_repeat)
+        )}
+    })  
+  
   dt_rpartplot <- eventReactive(
     input$dt_action_, {
       rpart.plot(dtmodel()$finalModel,
@@ -791,14 +844,24 @@ server <- function(input, output) {
                  nn=TRUE)
     })
   
-  output$dt_rpartplot_ <-
-    renderPlot({
-      dt_rpartplot()
+  dt_rpartplot_prune <- eventReactive(
+    input$dt_tunemodel_, {
+      rpart.plot(dtmodel_prune()$finalModel,
+                 box.palette="GnBu",
+                 branch.lty=3, 
+                 shadow.col="gray", 
+                 nn=TRUE)
     })
-        
+  
+  ### Function to plot decision tree
+  dt_plotrpart = function(modeltype){
+    output$dt_rpartplot_ = renderPlot(modeltype)
+  }
+
+  observeEvent(input$dt_action_, dt_plotrpart(dt_rpartplot()))
+  observeEvent(input$dt_tunemodel_, dt_plotrpart(dt_rpartplot_prune()))
 
   
-  # DT First Run Results  ----------------------------------------------------
   ## Predicting Results
   predictdt_model <- eventReactive(
     input$dt_action_, {
@@ -814,6 +877,20 @@ server <- function(input, output) {
           Residuals = predictdt_model() - dt_testdata()[[1]])
       })
   
+  predictdt_model_prune <- eventReactive(
+    input$dt_tunemodel_, {
+      predict(dtmodel_prune(), 
+              newdata = dt_testdata())
+    })
+  
+  predict_dt_prune <- eventReactive(
+    input$dt_tunemodel_, {
+      bind_cols(
+        Actual = dt_testdata()[[1]],
+        Predicted = predictdt_model_prune(),
+        Residuals = predictdt_model_prune() - dt_testdata()[[1]])
+    })
+  
   ## Plot Predicted vs Actual
   dt_plot_predvsactual <- eventReactive(
     input$dt_action_, {
@@ -822,13 +899,31 @@ server <- function(input, output) {
         geom_point(alpha = 0.2, color = "grey40") +
         geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
         geom_abline(intercept = 0, slope = 1, linetype = 2, color = "#20948b", size = 0.8) +
-        labs(title = "Predicted vs Actual")
+        labs(title = "Predicted vs Actual")+ 
+        theme_minimal()
     })
   
-  output$dt_plot_predvsactual_ <-
-    renderPlot({
-      dt_plot_predvsactual()
+  ## Plot Predicted vs Actual - Pruned Model
+  dt_plot_predvsactual_prune <- eventReactive(
+    input$dt_tunemodel_, {
+      ggplot(data = predict_dt_prune(),
+             aes(x = Actual, y = Predicted)) +
+        geom_point(alpha = 0.2, color = "grey40") +
+        geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
+        geom_abline(intercept = 0, slope = 1, linetype = 2, color = "#20948b", size = 0.8) +
+        labs(title = "Predicted vs Actual")+ 
+        theme_minimal()
     })
+  
+  
+  ### Function to plot Residuals vs Actual
+  dt_plotpredvsactual = function(modeltype){
+    output$dt_plot_predvsactual_ = renderPlot(modeltype)
+  }
+  
+  observeEvent(input$dt_action_, dt_plotpredvsactual(dt_plot_predvsactual()))
+  observeEvent(input$dt_tunemodel_, dt_plotpredvsactual(dt_plot_predvsactual_prune()))
+  
   
   ## Plot Residuals vs Actual
   dt_plot_residvsactual <- eventReactive(
@@ -838,64 +933,182 @@ server <- function(input, output) {
         geom_point(alpha = 0.2, color = "grey40") +
         geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
         geom_hline(yintercept = 0, linetype = 2, color = "#20948b", size = 0.8) +
-        labs(title = "Residuals vs Predicted")
+        labs(title = "Residuals vs Actual")+ 
+        theme_minimal()
     })
   
-  output$dt_plot_residvsactual_ <-
-    renderPlot({
-      dt_plot_residvsactual()
-    })  
+  ## Plot Residuals vs Actual - Pruned Model
+  dt_plot_residvsactual_prune <- eventReactive(
+    input$dt_tunemodel_, {
+      ggplot(data = predict_dt_prune(),
+             aes(x = Actual, y = Residuals)) +
+        geom_point(alpha = 0.2, color = "grey40") +
+        geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
+        geom_hline(yintercept = 0, linetype = 2, color = "#20948b", size = 0.8) +
+        labs(title = "Residuals vs Predicted")+ 
+        theme_minimal()
+    }) 
   
-  ## Model Statistics
+  ### Function to plot Residuals vs Actual
+  dt_plotresidvsactual = function(modeltype){
+    output$dt_plot_residvsactual_ = renderPlot(modeltype)
+  }
+  
+  observeEvent(input$dt_action_, dt_plotresidvsactual(dt_plot_residvsactual()))
+  observeEvent(input$dt_tunemodel_, dt_plotresidvsactual(dt_plot_residvsactual_prune()))
+
+
+  
+  ## Model Statistic
+  ### RMSE
   dt_RMSE <- eventReactive(
     input$dt_action_, {
       round(caret::RMSE(predictdt_model(),
-                  dt_testdata()[[1]]),4)
+                  dt_testdata()[[1]]),3)
     }
   )
   
+  dt_RMSE_prune <- eventReactive(
+    input$dt_tunemodel_, {
+      round(caret::RMSE(predictdt_model_prune(),
+                        dt_testdata()[[1]]),3)
+    }
+  )
+  
+  dt_display_RMSE = function(modeltype){
+    output$dt_RMSE_ = renderValueBox(
+      valueBox(
+        value = tags$p(modeltype, style = "font-size: 60%;"), 
+        subtitle = tags$p(paste0("RMSE"), style = "font-size: 80%;"), 
+        icon = tags$i(icon("calculator"), style="font-size: 60%"),
+        color = "yellow"
+      )
+    )
+  }
+
+  observeEvent(input$dt_action_, dt_display_RMSE(dt_RMSE()))
+  observeEvent(input$dt_tunemodel_, dt_display_RMSE(dt_RMSE_prune()))
+  
+  ### R2
   dt_R2 <- eventReactive(
     input$dt_action_, {
       round(caret::R2(predictdt_model(),
-                  dt_testdata()[[1]]),2)
+                  dt_testdata()[[1]]),3)
     }
   )
   
-  dt_MAE <- eventReactive(
-    input$dt_action_, {
-      round(caret::MAE(predictdt_model(),
-                dt_testdata()[[1]]),2)
+  dt_R2_prune <- eventReactive(
+    input$dt_tunemodel_, {
+      round(caret::R2(predictdt_model_prune(),
+                       dt_testdata()[[1]]),3)
     }
   )  
 
-  output$dt_RMSE_ <- renderValueBox({
-    valueBox(
-      value = tags$p(dt_RMSE(), style = "font-size: 60%;"),
-      subtitle = tags$p(paste0("RMSE"), style = "font-size: 80%;"), 
-      icon = tags$i(icon("calculator"), style="font-size: 60%"),
-      color = "yellow"
-    )    
-  })
-
-  output$dt_R2_ <- renderValueBox({
-    valueBox(
-      value = tags$p(dt_R2(), style = "font-size: 60%;"),
-      subtitle = tags$p(paste0("R-Square"), style = "font-size: 80%;"), 
-      icon = tags$i(icon("calculator"), style="font-size: 60%"),
-      color = "yellow"
-    )    
-  })
   
-  output$dt_MAE_ <- renderValueBox({
-    valueBox(
-      value = tags$p(dt_MAE(), style = "font-size: 60%;"),
-      subtitle = tags$p(paste0("MAE"), style = "font-size: 80%;"), 
-      icon = tags$i(icon("calculator"), style="font-size: 60%"),
-      color = "yellow"
-    )    
-  })
+  dt_display_R2 = function(modeltype){
+    output$dt_R2_ = renderValueBox(
+      valueBox(
+        value = tags$p(modeltype, style = "font-size: 60%;"), 
+        subtitle = tags$p(paste0("R-Square"), style = "font-size: 80%;"), 
+        icon = tags$i(icon("calculator"), style="font-size: 60%"),
+        color = "yellow"
+      )
+    )
+  }
+  
+  observeEvent(input$dt_action_, dt_display_R2(dt_R2()))
+  observeEvent(input$dt_tunemodel_, dt_display_R2(dt_R2_prune()))
+  
+  ### MAE
+  dt_MAE <- eventReactive(
+    input$dt_action_, {
+      round(caret::MAE(predictdt_model(),
+                       dt_testdata()[[1]]),3)
+    }
+  )  
+  
+  dt_MAE_prune <- eventReactive(
+    input$dt_tunemodel_, {
+      round(caret::MAE(predictdt_model_prune(),
+                       dt_testdata()[[1]]),3)
+    }
+  )  
 
 
+  dt_display_MAE = function(modeltype){
+    output$dt_MAE_ = renderValueBox(
+      valueBox(
+        value = tags$p(modeltype, style = "font-size: 60%;"), 
+        subtitle = tags$p(paste0("MAE"), style = "font-size: 80%;"), 
+        icon = tags$i(icon("calculator"), style="font-size: 60%"),
+        color = "yellow"
+      )
+    )
+  }
+  
+  observeEvent(input$dt_action_, dt_display_MAE(dt_MAE()))
+  observeEvent(input$dt_tunemodel_, dt_display_MAE(dt_MAE_prune()))
+  
+  
+  
+  ### CP
+  #### CP ValueBox
+  dt_cp_plot <- eventReactive(
+    input$dt_action_, {
+      plot(dtmodel())
+    }
+  )  
+  
+  # dt_cp_plot_prune <- eventReactive(
+  #   input$dt_tunemodel_, {
+  #     plot(dtmodel_prune())
+  #   }
+  # )  
+  
+  
+  ### Function to plot Residuals vs Actual
+  dt_plotcpplot = function(modeltype){
+    output$dt_cp_plot_ = renderPlot(modeltype)
+  }
+  
+  observeEvent(input$dt_action_, dt_plotcpplot(dt_cp_plot()))
+  # observeEvent(input$dt_tunemodel_, dt_plotcpplot(dt_cp_plot_prune()))
+  
+  
+  #### CP Plot
+  dt_showcp <- eventReactive(
+    input$dt_action_, {
+      round(dtmodel()$bestTune,5)
+    }
+  )  
+  
+  
+  # dt_showcp_prune <- eventReactive(
+  #   input$dt_tunemodel_, {
+  #     round(dtmodel_prune()$bestTune,5)
+  #   }
+  # )
+  # 
+ 
+  dt_showcpbox = function(modeltype){
+    output$dt_showcp_ = renderValueBox(
+      valueBox(
+        value = tags$p(modeltype, style = "font-size: 60%;"), 
+        subtitle = tags$p("Complexity Parameter:  Used to control the size of the decision tree and to select the optimal tree size. The tree will stop dividing nodes when the reduction in relative error is less than a certain value.", 
+                          style = "font-size: 80%;"), 
+        icon = tags$i(icon("trophy"), style="font-size: 60%"),
+        color = "yellow"
+      )
+    )
+  }
+  
+  observeEvent(input$dt_action_, dt_showcpbox(dt_showcp()))
+  # observeEvent(input$dt_tunemodel_, dt_showcpbox(dt_showcp_prune()))
+  
+  
+
+  
+  
 }
 
 
