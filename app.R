@@ -407,7 +407,8 @@ body <- dashboardBody(
                                            label = "Train-Test Partition:",
                                            min = 0.05,
                                            max = 0.95,
-                                           value = c(0.8))),
+                                           value = c(0.8)
+                                           )),
                            # div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                            #     tags$p("Select proportion of data used to train model", style = "font-style: italic;")),
                            # div(style = "padding = 0em; margin-top: 0.5em",
@@ -789,8 +790,200 @@ body <- dashboardBody(
                      )
                    )
             ),
-    tabItem(tabName = "tab_gb")          
-            #### Decision Tree Results Column 2 ----------------------------------------------------
+    tabItem(tabName = "tab_gb",
+            
+            #### Gradient Boosting Toggle Column  ----------------------------------------------------
+            column(width = 2,
+                   fluidRow(
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p(span(icon("tree"), "Gradient Boosting"), style = "font-weight: bold; color: #FFFFFF"),
+                             status = "info",
+                             collapsible = FALSE,
+                             width = 12,
+                             solidHeader =TRUE,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 "Gradient Boosting is an ensemble machine learning technique that combines the predictions from several models to improve the overall predictive accuracy."
+                             )
+                         )
+                     ),
+                     
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             collapsed = FALSE,
+                             width = 12,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "gb_target_",
+                                   label = "Scores",
+                                   choices = c("Math", "Reading", "Science"), 
+                                   selected = "Math",
+                                   multiple = FALSE,
+                                   options = list(`actions-box` = TRUE),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                                   inline = FALSE,
+                                   width = NULL
+                                 )),
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "gb_vars_",
+                                   label = "Variables",
+                                   choices = list(
+                                     `School Environment` = list("School Type" = "SchoolType",
+                                                                 "Loneliness" = "Loneliness",
+                                                                 "Classroom Safety" = "ClassroomSafety",
+                                                                 "Teacher Support" = "TeacherSupport"),
+                                     `Personal` = list("Gender" = "Gender",
+                                                       "Math Homework Time" = "Homework_Math",
+                                                       "Reading Homework Time" = "Homework_Reading",
+                                                       "Science Homework Time" = "Homework_Science",
+                                                       "Preference for Math" = "Preference_Math",
+                                                       "Preference for Reading" = "Preference_Reading",
+                                                       "Preference for Science" = "Preference_Science",
+                                                       "Exercise" = "Exercise"),
+                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                                                            "Immigration" = "Immigration",
+                                                            "Home Language" = "HomeLanguage",
+                                                            "Sibling" = "Sibling",
+                                                            "Aircon" = "Aircon",
+                                                            "Helper" = "Helper",
+                                                            "Vehicle" = "Vehicle",
+                                                            "Books" = "Books",
+                                                            "Own Room" = "OwnRoom",
+                                                            "Family Commitment" = "FamilyCommitment")),
+                                   selected = colnames(stu_mb[1:24]),
+                                   multiple = TRUE,
+                                   options = list(`actions-box` = TRUE),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                                   inline = FALSE,
+                                   width = NULL
+                                 ))
+                         )
+                     ),
+                     div(
+                       style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                       box(title = tags$p("Step 2: Model Specification", style = "font-weight: bold;"),
+                           collapsible = TRUE,
+                           collapsed = TRUE,
+                           width = 12,
+                           status = "primary",
+                           solidHeader = FALSE,
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               chooseSliderSkin("Flat"),
+                               sliderInput(inputId = "gb_partition_",
+                                           label = "Train-Test Partition:",
+                                           min = 0.05,
+                                           max = 0.95,
+                                           value = c(0.8))
+                           ),
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               chooseSliderSkin("Flat"),
+                               sliderInput(inputId = "gb_interactiondepth_",
+                                           label = "Number of Boosting Iterations:",
+                                           min = 1,
+                                           max = 5,
+                                           value = 1)
+                           ),
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               chooseSliderSkin("Flat"),
+                               sliderInput(inputId = "gb_treenumrange_",
+                                           label = "No. of Trees:",
+                                           min = 5,
+                                           max = 500,
+                                           value = 10))
+                           ,
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               numericInput(inputId = "gb_minnodesize",
+                                           label = "Learning Rate:",
+                                           min = 0.01,
+                                           max = 1.0,
+                                           step = 0.01,
+                                           value = c(0.01))
+                           )
+                           )
+                       )
+                     ),
+                     div(
+                       style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                       box(title = tags$p("Step 3: Resampling Options", style = "font-weight: bold;"),
+                           collapsible = TRUE,
+                           collapsed = TRUE,
+                           width = 12,
+                           status = "primary",
+                           solidHeader = FALSE,
+                           div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                               selectInput(inputId = "rf_resamplingmethod_",
+                                           label = "Resampling Method:",
+                                           choices = c("Bootstrap" = "rf_bootstrap",
+                                                       "Cross Validation" = "rf_cvkfold",
+                                                       "Repeated Cross-Validation" = "rf_repeatkfold"),
+                                           selected = "rf_bootstrap")
+                           ),
+                           hidden(tags$div(id = "rf_cvkfold_group",
+                                           numericInput(inputId = "rf_cvkfold_number",
+                                                        label = "K-fold:",
+                                                        min = 2,
+                                                        max = 50,
+                                                        step = 1,
+                                                        value = 10)
+                           )
+                           ),
+                           hidden(tags$div(id = "rf_rcvkfold_group",
+                                           numericInput(inputId = "rf_rcvkfold_number",
+                                                        label = "K-Fold:",
+                                                        min = 2,
+                                                        max = 50,
+                                                        step = 1,
+                                                        value = 10),
+                                           div(style = "padding = 0em; margin-top: -0.8em",
+                                               numericInput(inputId = "rv_rcvkfold_repeat",
+                                                            label = "Repeat Count:",
+                                                            min = 1,
+                                                            max = 10,
+                                                            step = 1,
+                                                            value = 3)
+                                           )
+                           )
+                           )
+                       )
+                     ),
+                     div(
+                       style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                       box(title = tags$p("Step 4: Tuning Parameters", style = "font-weight: bold;"),
+                           collapsible = TRUE,
+                           collapsed = TRUE,
+                           width = 12,
+                           status = "primary",
+                           solidHeader = FALSE,  
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               selectInput(inputId = "rf_splitrule_",
+                                           label = "Split Rule:",
+                                           choices = c("Variance" = "variance",
+                                                       "Extra Trees" = "extratrees",
+                                                       "Max Stat" = "maxstat"),
+                                           selected = "variance")),
+                           
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               chooseSliderSkin("Flat"),
+                               sliderInput(inputId = "rf_minnodesize_",
+                                           label = "Minimum Node Size:",
+                                           min = 2,
+                                           max = 50,
+                                           value = 5)
+                           ),
+                           
+                           
+                           div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                               actionButton(inputId = "rf_action_",
+                                            label = "Run Analysis",
+                                            icon = icon("wrench")),
+                               align = "center"
+                           )
+                       )
+                     )
+                   )
+            )          
     )
 )
 
