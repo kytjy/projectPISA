@@ -1,4 +1,4 @@
-CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework_Reading,Homework_Science,SchoolType,ParentsEducation,Immigration,HomeLanguage,Sibling,Aircon,Helper,Vehicle,Books,Exercise,OwnRoom,FamilyCommitment,Preference_Math,Preference_Reading,Preference_Science,Math,Reading,Science
+SchoolID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework_Reading,Homework_Science,SchoolType,ParentsEducation,Immigration,HomeLanguage,Sibling,Aircon,Helper,Vehicle,Books,Exercise,OwnRoom,FamilyCommitment,Preference_Math,Preference_Reading,Preference_Science,Math,Reading,Science
 70200052,Disagree,Agree,Most lesson,Female,≤ 0.5hr,≤ 0.5hr,0.5hr - 1hr,Public,Tertiary,Native,English,≥3,No,No,1,>500,1,No,10,Disagree,Agree,Agree,605.2533,667.4296,639.7873
 70200134,Disagree,Strongly Agree,Most lesson,Male,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Post-Secondary,Native,English,≥3,Yes,Yes,0,26 - 100,4,Yes,2,Strongly Agree,Agree,Agree,689.9528,627.6078,672.0703
 70200112,Disagree,Agree,Most lesson,Male,0.5hr - 1hr,1hr - 2hr,1hr - 2hr,Public,Secondary,Native,Others,1,Yes,No,1,26 - 100,2,Yes,0,Agree,Disagree,Agree,676.7768,582.9252,660.0384
@@ -252,7 +252,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200049,Strongly Disagree,Strongly Agree,Every lesson,Male,1hr - 2hr,≤ 0.5hr,1hr - 2hr,Public,Post-Secondary,Native,English,2,Yes,Yes,0,1 - 10,8,Yes,6,Disagree,Disagree,Strongly Agree,542.0563999999999,589.5471,532.7933
 70200124,Disagree,Agree,Every lesson,Female,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Post-Secondary,Native,English,1,Yes,No,1,26 - 100,5,Yes,3,Disagree,Agree,Strongly Agree,583.5301000000001,555.0715,610.8884
 70200001,Agree,Strongly Agree,Every lesson,Male,3 - 4 hr,≤ 0.5hr,1hr - 2hr,Public,Tertiary,Native,English,0,Yes,No,1,26 - 100,1,Yes,8,Strongly Agree,Strongly Disagree,Agree,648.7936,599.6503,614.473
-70200121,Disagree,Strongly Agree,Every lesson,Male,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,3rd Generation,English,0,Yes,NA,0,26 - 100,5,Yes,1,Strongly Agree,Strongly Agree,Strongly Agree,512.8482,489.7642,484.1183
 70200013,Agree,Agree,Some lessons,Male,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Secondary,Native,Others,1,Yes,No,0,1 - 10,8,Yes,0,Disagree,Agree,Disagree,613.4365,554.3651,583.4512
 70200114,Agree,Agree,Every lesson,Female,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Post-Secondary,Native,Others,1,Yes,No,2,26 - 100,4,Yes,8,Agree,Disagree,Disagree,603.4209,566.8107,576.8643
 70200002,Disagree,Agree,Most lesson,Female,2hr - 3hr,1hr - 2hr,1hr - 2hr,Public,Post-Secondary,Native,Others,1,Yes,No,1,1 - 10,0,Yes,5,Strongly Agree,Agree,Agree,495.8993,488.96299999999997,454.6044
@@ -527,7 +526,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200083,Disagree,Strongly Agree,Every lesson,Female,0.5hr - 1hr,≤ 0.5hr,1hr - 2hr,Public,Tertiary,3rd Generation,English,1,Yes,No,0,26 - 100,5,Yes,5,Disagree,Agree,Agree,578.2337,610.3068,605.1003
 70200159,Disagree,Strongly Agree,Most lesson,Male,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Tertiary,Native,English,1,Yes,Yes,1,201-500,3,Yes,0,Strongly Disagree,Agree,Strongly Agree,680.3377,635.6526,704.0494
 70200155,Disagree,Strongly Agree,Every lesson,Female,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Post-Secondary,3rd Generation,Others,1,Yes,No,1,26 - 100,1,Yes,0,Agree,Disagree,Agree,711.4351,583.4935,677.0807
-70200034,Strongly Disagree,Strongly Agree,Most lesson,Male,0.5hr - 1hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,3rd Generation,English,1,Yes,NA,1,201-500,10,Yes,5,Strongly Agree,Agree,Strongly Agree,546.0793,469.2686,571.0571
 70200005,Strongly Disagree,Agree,Most lesson,Female,2hr - 3hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,Native,Others,1,Yes,No,1,26 - 100,0,Yes,2,Disagree,Disagree,Disagree,619.6347000000001,638.1815,605.8005
 70200139,Disagree,Strongly Agree,Every lesson,Male,3 - 4 hr,2hr - 3hr,2hr - 3hr,Public,Tertiary,Native,English,1,Yes,No,1,26 - 100,3,Yes,0,Strongly Agree,Disagree,Strongly Agree,689.5434,632.6784,642.5669
 70200104,Agree,Agree,Every lesson,Male,1hr - 2hr,≤ 0.5hr,1hr - 2hr,Private,Tertiary,3rd Generation,English,2,Yes,Yes,1,26 - 100,3,Yes,1,Agree,Disagree,Agree,595.5957,574.5934,597.4502
@@ -615,7 +613,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200157,Agree,Agree,Some lessons,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,Native,English,2,Yes,Yes,1,26 - 100,3,No,5,Agree,Agree,Agree,696.6976,637.7652,706.2128
 70200020,Strongly Disagree,Strongly Disagree,Every lesson,Female,1hr - 2hr,≤ 0.5hr,0.5hr - 1hr,Public,Tertiary,Native,English,1,Yes,Yes,2,11 - 25,2,Yes,0,Agree,Strongly Agree,Agree,699.3726,638.2155,683.363
 70200049,Strongly Disagree,Strongly Agree,Every lesson,Female,2hr - 3hr,0.5hr - 1hr,1hr - 2hr,Public,Tertiary,3rd Generation,Others,1,Yes,No,0,1 - 10,4,No,10,Agree,Agree,Strongly Agree,531.4735,510.1216,475.1535
-70200052,Disagree,Strongly Agree,Every lesson,Female,0.5hr - 1hr,2hr - 3hr,1hr - 2hr,Public,Post-Secondary,3rd Generation,Others,2,Yes,NA,0,26 - 100,2,Yes,2,Agree,Strongly Agree,Strongly Agree,453.3756,515.0972,480.4212
 70200146,Strongly Disagree,Strongly Agree,Most lesson,Female,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Secondary,Native,Others,1,Yes,No,1,101 - 200,4,No,10,Strongly Agree,Disagree,Strongly Agree,513.1603,457.6742,497.7873
 70200035,Disagree,Strongly Agree,Most lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,3rd Generation,English,≥3,Yes,No,0,26 - 100,5,Yes,1,Disagree,Disagree,Agree,690.8355,619.3112,671.1067
 70200119,Disagree,Strongly Agree,Most lesson,Female,0.5hr - 1hr,≤ 0.5hr,0.5hr - 1hr,Public,Tertiary,Native,English,≥3,Yes,No,2,201-500,2,No,2,Agree,Disagree,Agree,712.7609,660.1981,612.3694
@@ -1194,7 +1191,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200142,Agree,Agree,Every lesson,Female,0.5hr - 1hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,English,2,Yes,Yes,1,26 - 100,1,Yes,0,Strongly Disagree,Strongly Disagree,Strongly Disagree,643.3646,646.2159,601.5818
 70200144,Disagree,Strongly Agree,Every lesson,Male,≤ 0.5hr,0.5hr - 1hr,0.5hr - 1hr,Private,Post-Secondary,3rd Generation,Others,2,Yes,Yes,2,>500,0,No,0,Disagree,Agree,Strongly Agree,674.6377,534.9074,640.345
 70200155,Strongly Disagree,Strongly Agree,Every lesson,Female,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,2nd Generation,Others,0,Yes,No,1,201-500,0,Yes,0,Strongly Disagree,Disagree,Strongly Disagree,679.5966999999999,668.1409,675.607
-70200112,Disagree,Agree,Most lesson,Male,1hr - 2hr,2hr - 3hr,1hr - 2hr,Public,Post-Secondary,2nd Generation,English,1,Yes,NA,1,1 - 10,3,Yes,0,Strongly Agree,Strongly Disagree,Strongly Agree,714.5394,657.9331999999999,671.2514
 70200106,Strongly Disagree,Agree,Most lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,2nd Generation,Others,1,Yes,No,1,101 - 200,0,No,0,Strongly Agree,Strongly Agree,Strongly Disagree,660.127,625.1528,627.5052000000001
 70200136,Strongly Disagree,Strongly Agree,Most lesson,Male,3 - 4 hr,0.5hr - 1hr,3 - 4 hr,Public,Tertiary,Native,English,1,Yes,No,0,101 - 200,6,Yes,9,Agree,Agree,Strongly Agree,630.7207999999999,594.1778,666.5627
 70200071,Strongly Disagree,Strongly Agree,Some lessons,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,Others,1,Yes,No,0,201-500,0,Yes,1,Strongly Agree,Disagree,Strongly Agree,723.674,662.6121,678.566
@@ -1308,7 +1304,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200125,Strongly Disagree,Strongly Agree,Every lesson,Female,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,Native,English,0,Yes,No,2,26 - 100,0,Yes,0,Disagree,Strongly Agree,Disagree,646.1305,673.3217,649.4132
 70200020,Disagree,Agree,Some lessons,Female,0.5hr - 1hr,1hr - 2hr,1hr - 2hr,Public,Post-Secondary,Native,Others,1,Yes,No,1,1 - 10,4,Yes,0,Strongly Agree,Strongly Disagree,Agree,640.6243,614.0065999999999,629.9068
 70200091,Disagree,Agree,Every lesson,Male,≤ 0.5hr,0.5hr - 1hr,1hr - 2hr,Public,Tertiary,2nd Generation,Others,2,Yes,No,1,201-500,3,No,0,Strongly Agree,Agree,Strongly Agree,763.5047,682.5043,684.4035
-70200109,Disagree,Agree,Every lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Post-Secondary,3rd Generation,Others,1,NA,NA,0,11 - 25,6,No,5,Agree,Agree,Agree,437.9307,359.4924,367.45230000000004
 70200052,Strongly Disagree,Agree,Some lessons,Female,1hr - 2hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,Native,English,1,No,No,0,26 - 100,2,Yes,10,Strongly Disagree,Strongly Agree,Strongly Agree,392.3092,406.951,493.0362
 70200001,Disagree,Strongly Agree,Every lesson,Male,0.5hr - 1hr,≤ 0.5hr,0.5hr - 1hr,Public,Tertiary,2nd Generation,Others,0,Yes,No,1,101 - 200,0,Yes,1,Strongly Agree,Disagree,Strongly Agree,753.5507,675.7676,718.3496
 70200037,Disagree,Agree,Every lesson,Female,0.5hr - 1hr,≤ 0.5hr,0.5hr - 1hr,Public,Post-Secondary,Native,English,1,Yes,No,0,26 - 100,0,No,0,Agree,Agree,Agree,520.0749,536.241,542.5246
@@ -1377,7 +1372,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200068,Disagree,Agree,Some lessons,Female,0.5hr - 1hr,≤ 0.5hr,1hr - 2hr,Public,Post-Secondary,Native,English,≥3,Yes,No,1,26 - 100,4,No,2,Agree,Disagree,Strongly Agree,426.11,358.7924,420.6757
 70200159,Strongly Disagree,Strongly Agree,Every lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,Native,English,1,Yes,No,0,101 - 200,10,No,10,Agree,Strongly Agree,Agree,450.7609,492.5886,459.0591
 70200021,Strongly Agree,Strongly Agree,Most lesson,Male,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Post-Secondary,Native,Others,1,Yes,Yes,0,26 - 100,8,No,9,Disagree,Disagree,Agree,469.4176,446.3789,483.5143
-70200157,Agree,Agree,Most lesson,Male,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,2nd Generation,English,1,Yes,NA,1,11 - 25,1,Yes,0,Agree,Agree,Agree,439.9901,398.1281,408.3882
 70200061,Disagree,Strongly Agree,Every lesson,Female,2hr - 3hr,1hr - 2hr,1hr - 2hr,Public,Secondary,Native,English,1,Yes,Yes,1,26 - 100,0,No,0,Strongly Agree,Agree,Agree,617.446,606.0675,633.27
 70200060,Agree,Strongly Agree,Every lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Post-Secondary,2nd Generation,Others,1,Yes,No,0,26 - 100,10,Yes,6,Agree,Agree,Agree,660.3623,581.7228,620.7301
 70200044,Disagree,Strongly Agree,Most lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,English,≥3,Yes,Yes,1,201-500,2,Yes,0,Strongly Agree,Strongly Agree,Strongly Agree,787.4584,744.5125,723.0565
@@ -1663,7 +1657,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200099,Agree,Agree,Most lesson,Female,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Post-Secondary,Native,English,2,Yes,No,0,26 - 100,5,No,1,Strongly Agree,Disagree,Agree,622.2885,609.4717,573.3612
 70200137,Strongly Disagree,Agree,Most lesson,Male,1hr - 2hr,3 - 4 hr,3 - 4 hr,Public,Post-Secondary,Native,English,0,Yes,No,0,26 - 100,6,No,6,Disagree,Strongly Agree,Strongly Agree,346.4396,424.8256,379.6783
 70200005,Strongly Disagree,Agree,Every lesson,Female,0.5hr - 1hr,1hr - 2hr,0.5hr - 1hr,Public,Post-Secondary,Native,English,0,Yes,No,0,11 - 25,4,Yes,10,Agree,Agree,Disagree,418.529,368.3164,413.4006
-70200043,Strongly Disagree,Strongly Agree,Every lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Post-Secondary,2nd Generation,English,2,NA,NA,1,201-500,3,Yes,0,Strongly Agree,Agree,Agree,560.5592,515.7099000000001,549.6781
 70200118,Disagree,Agree,Every lesson,Female,2hr - 3hr,0.5hr - 1hr,0.5hr - 1hr,Public,Secondary,2nd Generation,Others,1,Yes,No,0,201-500,4,Yes,0,Agree,Disagree,Strongly Agree,603.7931,619.7312000000001,584.0456
 70200132,Disagree,Strongly Agree,Every lesson,Male,0.5hr - 1hr,0.5hr - 1hr,2hr - 3hr,Public,Tertiary,3rd Generation,Others,≥3,Yes,No,1,>500,8,Yes,10,Disagree,Disagree,Disagree,539.6437999999999,493.1744,560.8204000000001
 70200119,Strongly Disagree,Strongly Agree,Every lesson,Female,2hr - 3hr,0.5hr - 1hr,1hr - 2hr,Public,Tertiary,2nd Generation,Others,1,Yes,Yes,1,>500,2,Yes,7,Strongly Agree,Disagree,Agree,731.3985,651.6631,682.3584
@@ -1961,7 +1954,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200089,Disagree,Agree,Every lesson,Female,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,English,1,Yes,No,1,1 - 10,0,Yes,2,Strongly Disagree,Agree,Agree,434.3259,497.9889,478.3871
 70200086,Disagree,Agree,Most lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Post-Secondary,Native,Others,1,Yes,No,≥3,1 - 10,5,No,0,Strongly Disagree,Disagree,Strongly Disagree,507.3125,440.4108,492.0392
 70200135,Agree,Strongly Agree,Every lesson,Male,1hr - 2hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,English,≥3,Yes,No,1,201-500,9,Yes,5,Strongly Agree,Agree,Strongly Agree,643.7055,582.6923,637.3606
-70200156,Disagree,Strongly Agree,Some lessons,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Private,Tertiary,3rd Generation,Others,1,Yes,NA,0,101 - 200,5,Yes,0,Strongly Agree,Strongly Agree,Strongly Agree,588.4309000000001,527.0912,632.1167
 70200025,Strongly Disagree,Agree,Every lesson,Female,3 - 4 hr,1hr - 2hr,3 - 4 hr,Public,Post-Secondary,Native,Others,1,Yes,No,0,26 - 100,0,No,0,Strongly Agree,Agree,Strongly Agree,662.4964,591.6451,597.8134
 70200151,Strongly Disagree,Strongly Agree,Every lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Secondary,Native,Others,2,Yes,Yes,1,1 - 10,5,No,0,Strongly Agree,Agree,Strongly Agree,648.6857,606.5703,641.2929
 70200116,Agree,Strongly Agree,Some lessons,Male,≤ 0.5hr,≤ 0.5hr,0.5hr - 1hr,Public,Tertiary,Native,English,0,Yes,No,0,1 - 10,4,Yes,0,Disagree,Disagree,Agree,472.4561,384.0868,435.7713
@@ -2173,7 +2165,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200155,Disagree,Strongly Agree,Most lesson,Female,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Tertiary,2nd Generation,English,0,Yes,No,1,26 - 100,6,Yes,8,Disagree,Agree,Agree,643.4684,651.8763,668.2847
 70200132,Disagree,Strongly Agree,Most lesson,Female,≤ 0.5hr,≤ 0.5hr,1hr - 2hr,Public,Tertiary,Native,English,0,Yes,No,1,101 - 200,0,No,0,Agree,Disagree,Agree,693.5037,634.228,629.8862
 70200050,Disagree,Strongly Disagree,Most lesson,Female,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Secondary,Native,Others,≥3,Yes,No,0,0,1,Yes,5,Strongly Disagree,Strongly Disagree,Agree,671.5162,591.8524,618.6543
-70200048,Strongly Disagree,Strongly Agree,Every lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,3rd Generation,Others,1,Yes,NA,1,11 - 25,4,Yes,8,Strongly Agree,Strongly Disagree,Strongly Agree,585.0416,557.1672,605.0193
 70200083,Disagree,Agree,Some lessons,Female,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Post-Secondary,Native,English,≥3,Yes,No,0,11 - 25,0,Yes,2,Agree,Disagree,Agree,411.7935,424.8972,389.3846
 70200006,Strongly Disagree,Strongly Agree,Every lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,3rd Generation,Others,≥3,Yes,No,0,11 - 25,8,No,3,Agree,Disagree,Agree,432.9918,308.6247,373.3215
 70200030,Disagree,Agree,Some lessons,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Post-Secondary,Native,English,≥3,No,No,1,1 - 10,3,No,1,Agree,Agree,Agree,524.0565,440.4075,461.9429
@@ -2463,7 +2454,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200092,Disagree,Strongly Agree,Every lesson,Male,1hr - 2hr,≤ 0.5hr,1hr - 2hr,Public,Post-Secondary,2nd Generation,English,0,Yes,No,0,>500,1,Yes,0,Agree,Disagree,Strongly Agree,681.7087,621.8481,611.9449
 70200101,Strongly Disagree,Strongly Agree,Most lesson,Male,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,Native,English,1,Yes,No,2,26 - 100,5,Yes,3,Agree,Agree,Agree,726.5916,642.8712,703.3859
 70200145,Disagree,Agree,Most lesson,Female,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Post-Secondary,Native,English,1,Yes,No,0,26 - 100,1,Yes,4,Agree,Disagree,Strongly Agree,597.9422000000001,596.3282,587.7107
-70200161,Strongly Disagree,Strongly Agree,Every lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Secondary,2nd Generation,Others,2,Yes,NA,0,1 - 10,2,Yes,0,Strongly Agree,Agree,Agree,589.8594,552.6507,571.1605
 70200110,Disagree,Strongly Agree,Most lesson,Male,0.5hr - 1hr,0.5hr - 1hr,1hr - 2hr,Public,Tertiary,Native,English,1,Yes,Yes,2,101 - 200,10,Yes,0,Strongly Agree,Agree,Strongly Agree,709.2389,581.1983,684.2702
 70200064,Disagree,Disagree,Most lesson,Female,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Post-Secondary,Native,English,1,Yes,No,2,26 - 100,0,No,2,Disagree,Disagree,Disagree,743.628,689.6806,724.4344
 70200020,Disagree,Strongly Agree,Every lesson,Female,≤ 0.5hr,1hr - 2hr,0.5hr - 1hr,Public,Post-Secondary,Native,English,2,Yes,Yes,1,26 - 100,0,Yes,0,Strongly Agree,Strongly Disagree,Strongly Agree,695.4951,620.0714,638.2545
@@ -2562,7 +2552,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200009,Disagree,Strongly Agree,Some lessons,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Secondary,2nd Generation,English,≥3,Yes,Yes,0,1 - 10,6,No,0,Disagree,Disagree,Disagree,473.9612,391.2206,504.1157
 70200109,Strongly Disagree,Strongly Agree,Every lesson,Male,2hr - 3hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,2nd Generation,English,1,Yes,Yes,0,>500,0,Yes,10,Disagree,Agree,Agree,532.6993,574.9988999999999,575.2123
 70200018,Disagree,Agree,Every lesson,Male,≤ 0.5hr,≤ 0.5hr,0.5hr - 1hr,Public,Tertiary,2nd Generation,Others,1,Yes,No,0,26 - 100,0,Yes,10,Strongly Agree,Strongly Agree,Agree,651.5429,608.1313,638.1565
-70200026,Strongly Disagree,Strongly Agree,Every lesson,Female,0.5hr - 1hr,1hr - 2hr,1hr - 2hr,Public,Secondary,3rd Generation,Others,1,Yes,NA,0,26 - 100,2,Yes,10,Strongly Disagree,Strongly Disagree,Strongly Agree,538.9548,468.7795,578.7712
 70200031,Strongly Disagree,Strongly Agree,Every lesson,Female,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,2nd Generation,Others,0,Yes,No,0,26 - 100,7,Yes,0,Strongly Disagree,Strongly Disagree,Strongly Disagree,497.183,362.6407,474.8819
 70200085,Disagree,Agree,Every lesson,Female,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,Native,English,1,Yes,No,1,26 - 100,1,Yes,0,Agree,Disagree,Agree,616.4662,664.2975,624.8912
 70200062,Strongly Disagree,Strongly Agree,Some lessons,Female,0.5hr - 1hr,≤ 0.5hr,1hr - 2hr,Public,Tertiary,Native,English,1,Yes,No,1,201-500,2,Yes,0,Strongly Disagree,Agree,Strongly Agree,613.2721,649.5825,606.1664
@@ -3510,7 +3499,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200111,Strongly Disagree,Strongly Agree,Every lesson,Male,1hr - 2hr,2hr - 3hr,1hr - 2hr,Public,Post-Secondary,Native,Others,1,Yes,No,0,11 - 25,0,Yes,6,Strongly Agree,Disagree,Strongly Agree,698.5433,611.4903,585.3615
 70200014,Disagree,Strongly Agree,Every lesson,Male,2hr - 3hr,2hr - 3hr,2hr - 3hr,Public,Post-Secondary,Native,English,1,Yes,Yes,1,101 - 200,10,Yes,2,Strongly Agree,Agree,Strongly Agree,687.6252,577.8197,612.2556
 70200014,Disagree,Strongly Agree,Most lesson,Male,≤ 0.5hr,0.5hr - 1hr,≤ 0.5hr,Public,Tertiary,Native,English,0,Yes,No,1,26 - 100,8,Yes,3,Strongly Agree,Disagree,Agree,654.4057,577.4298,579.3679
-70200056,Agree,Strongly Disagree,Every lesson,Male,> 4hr,> 4hr,> 4hr,Public,Tertiary,Native,Others,0,NA,NA,0,>500,10,Yes,10,Strongly Agree,Strongly Agree,Strongly Agree,523.7551,258.6862,490.31
 70200063,Strongly Agree,Disagree,Some lessons,Female,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,2nd Generation,English,2,Yes,No,0,26 - 100,0,Yes,1,Disagree,Agree,Disagree,595.3282,622.6548,577.3317
 70200075,Disagree,Strongly Agree,Most lesson,Female,2hr - 3hr,1hr - 2hr,2hr - 3hr,Public,Tertiary,3rd Generation,English,1,Yes,No,0,26 - 100,0,No,0,Disagree,Agree,Agree,586.8092,596.0942,600.7042
 70200102,Agree,Agree,Some lessons,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Primary,Native,Others,≥3,No,No,0,1 - 10,5,No,0,Strongly Agree,Disagree,Agree,454.5555,327.19280000000003,445.3597
@@ -3539,7 +3527,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200082,Strongly Disagree,Strongly Agree,Every lesson,Female,1hr - 2hr,≤ 0.5hr,1hr - 2hr,Public,Tertiary,2nd Generation,Others,1,Yes,No,0,26 - 100,4,Yes,4,Agree,Agree,Disagree,723.4474,670.5973,695.1151
 70200014,Disagree,Strongly Agree,Some lessons,Female,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Post-Secondary,Native,English,≥3,Yes,No,1,26 - 100,10,No,0,Disagree,Disagree,Strongly Agree,658.0877,603.9892,610.51
 70200095,Disagree,Agree,Most lesson,Female,3 - 4 hr,1hr - 2hr,2hr - 3hr,Public,Tertiary,Native,Others,≥3,Yes,No,1,26 - 100,0,No,10,Strongly Disagree,Strongly Disagree,Strongly Disagree,422.1612,407.1057,398.7763
-70200073,Disagree,Strongly Agree,Most lesson,Male,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Secondary,Native,Others,1,Yes,NA,1,101 - 200,10,Yes,7,Strongly Agree,Strongly Agree,Strongly Agree,555.561,433.902,575.1635
 70200158,Disagree,Strongly Agree,Every lesson,Female,2hr - 3hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,3rd Generation,Others,0,Yes,No,0,11 - 25,1,Yes,2,Agree,Strongly Disagree,Strongly Agree,530.0782,510.484,514.4321
 70200067,Disagree,Agree,Most lesson,Female,0.5hr - 1hr,0.5hr - 1hr,≤ 0.5hr,Public,Tertiary,Native,Others,0,Yes,Yes,≥3,11 - 25,2,Yes,0,Disagree,Disagree,Strongly Disagree,527.6692,521.906,579.499
 70200080,Strongly Disagree,Agree,Every lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,Native,English,1,Yes,No,1,26 - 100,6,Yes,0,Strongly Agree,Strongly Disagree,Agree,394.8577,301.8103,437.7985
@@ -3759,7 +3746,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200137,Disagree,Strongly Agree,Every lesson,Female,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Secondary,Native,Others,≥3,No,No,1,11 - 25,6,Yes,10,Agree,Agree,Agree,384.6102,412.2686,355.5912
 70200111,Strongly Disagree,Agree,Every lesson,Female,0.5hr - 1hr,0.5hr - 1hr,1hr - 2hr,Public,Post-Secondary,Native,English,1,Yes,No,0,201-500,0,Yes,9,Agree,Agree,Agree,504.5602,450.6076,529.2977
 70200098,Disagree,Agree,Every lesson,Female,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Post-Secondary,Native,English,≥3,Yes,Yes,0,26 - 100,2,No,0,Agree,Agree,Disagree,561.8892,619.1304,600.0283999999999
-70200043,Disagree,Agree,Most lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Secondary,3rd Generation,Others,2,Yes,NA,0,11 - 25,3,Yes,0,Agree,Disagree,Agree,623.9013,568.5753,596.7171
 70200144,Agree,Strongly Agree,Most lesson,Male,≤ 0.5hr,1hr - 2hr,1hr - 2hr,Private,Tertiary,3rd Generation,Others,1,Yes,No,≥3,201-500,1,Yes,5,Strongly Agree,Agree,Agree,675.6485,532.0762,634.2179
 70200062,Agree,Agree,Most lesson,Female,2hr - 3hr,≤ 0.5hr,2hr - 3hr,Public,Secondary,Native,Others,0,Yes,No,0,26 - 100,8,No,1,Disagree,Disagree,Agree,624.8012,665.2505,628.9507
 70200130,Disagree,Agree,Every lesson,Female,0.5hr - 1hr,≤ 0.5hr,0.5hr - 1hr,Public,Secondary,Native,English,≥3,Yes,No,0,11 - 25,4,No,0,Agree,Disagree,Agree,582.425,561.6926,571.6886
@@ -3832,7 +3818,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200035,Disagree,Agree,Most lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Secondary,Native,English,2,Yes,No,1,26 - 100,5,Yes,3,Disagree,Disagree,Agree,632.7088,564.3695,588.8999
 70200062,Disagree,Strongly Agree,Most lesson,Female,1hr - 2hr,≤ 0.5hr,3 - 4 hr,Public,Tertiary,Native,English,1,Yes,No,1,201-500,6,No,5,Agree,Disagree,Disagree,711.1547,706.7344,700.9159999999999
 70200066,Disagree,Agree,Most lesson,Male,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,2nd Generation,Others,1,Yes,No,0,11 - 25,0,Yes,5,Strongly Agree,Strongly Disagree,Strongly Agree,733.1556,678.7478,712.572
-70200078,Strongly Disagree,Strongly Agree,Every lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Private,Tertiary,3rd Generation,English,0,Yes,NA,0,11 - 25,2,Yes,0,Disagree,Disagree,Disagree,540.8058,555.8737,481.01709999999997
 70200039,Strongly Disagree,Agree,Every lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Secondary,Native,Others,≥3,Yes,No,1,11 - 25,2,No,0,Agree,Agree,Disagree,541.7116,471.1584,512.8789
 70200132,Strongly Disagree,Strongly Agree,Every lesson,Female,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,English,1,Yes,Yes,2,11 - 25,2,Yes,0,Agree,Agree,Agree,677.9275,685.8359,655.3771
 70200113,Disagree,Strongly Agree,Every lesson,Female,1hr - 2hr,0.5hr - 1hr,2hr - 3hr,Public,Tertiary,Native,English,2,Yes,No,1,201-500,0,No,0,Strongly Disagree,Agree,Disagree,651.7946000000001,644.9411,657.91009999999994
@@ -3993,7 +3978,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200029,Strongly Agree,Strongly Agree,Every lesson,Female,0.5hr - 1hr,≤ 0.5hr,2hr - 3hr,Public,Post-Secondary,Native,English,2,Yes,No,1,201-500,5,No,1,Strongly Agree,Agree,Disagree,565.014,565.6468,611.6091
 70200072,Disagree,Strongly Agree,Most lesson,Male,0.5hr - 1hr,≤ 0.5hr,0.5hr - 1hr,Public,Secondary,Native,English,2,Yes,No,0,0,0,Yes,2,Agree,Agree,Agree,494.2259,458.8289,516.2635
 70200055,Agree,Disagree,Some lessons,Female,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,Native,Others,0,Yes,No,0,1 - 10,10,No,10,Agree,Agree,Agree,354.7531,331.5564,300.7889
-70200005,Strongly Agree,Strongly Agree,Every lesson,Male,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,Native,Others,1,Yes,NA,0,11 - 25,10,Yes,0,Strongly Disagree,Strongly Disagree,Strongly Disagree,451.8385,391.9592,398.8942
 70200130,Disagree,Strongly Agree,Every lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,English,≥3,Yes,Yes,1,101 - 200,4,No,0,Strongly Agree,Disagree,Strongly Agree,646.7955,591.5513,630.5398
 70200147,Strongly Disagree,Agree,Every lesson,Female,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Private,Tertiary,3rd Generation,English,0,Yes,No,0,26 - 100,3,Yes,8,Strongly Agree,Disagree,Strongly Agree,591.4592,564.4746,585.9023
 70200040,Strongly Agree,Strongly Agree,Every lesson,Male,1hr - 2hr,≤ 0.5hr,2hr - 3hr,Public,Tertiary,Native,English,1,Yes,Yes,0,26 - 100,0,Yes,0,Agree,Agree,Agree,632.8658,613.0571,605.9491
@@ -4078,7 +4062,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200144,Agree,Agree,Every lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Private,Tertiary,3rd Generation,Others,0,Yes,Yes,2,26 - 100,8,Yes,10,Agree,Disagree,Agree,635.1154,504.2026,563.8548
 70200020,Agree,Agree,Most lesson,Female,1hr - 2hr,0.5hr - 1hr,2hr - 3hr,Public,Post-Secondary,3rd Generation,Others,2,Yes,No,1,11 - 25,0,No,0,Agree,Agree,Agree,717.3454,641.7409,712.0048
 70200072,Strongly Disagree,Agree,Most lesson,Female,0.5hr - 1hr,≤ 0.5hr,1hr - 2hr,Public,Post-Secondary,Native,Others,2,Yes,No,1,11 - 25,0,Yes,0,Agree,Disagree,Disagree,614.9439,552.2899,588.341
-70200055,Disagree,Strongly Agree,Every lesson,Male,2hr - 3hr,1hr - 2hr,2hr - 3hr,Public,Tertiary,Native,English,≥3,NA,No,0,1 - 10,0,Yes,10,Agree,Strongly Agree,Agree,410.8334,407.9406,418.5493
 70200155,Disagree,Strongly Agree,Every lesson,Female,0.5hr - 1hr,≤ 0.5hr,1hr - 2hr,Public,Tertiary,Native,English,1,Yes,No,0,>500,2,Yes,0,Strongly Agree,Strongly Disagree,Strongly Agree,761.5551,761.2947,721.1146
 70200075,Disagree,Strongly Agree,Every lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Post-Secondary,Native,English,2,Yes,No,1,26 - 100,4,No,10,Agree,Agree,Agree,630.1866,582.9947,581.5328
 70200127,Disagree,Strongly Agree,Every lesson,Female,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Post-Secondary,Native,English,2,Yes,Yes,1,201-500,4,No,0,Disagree,Disagree,Agree,584.3876,547.2366,555.3088
@@ -4181,7 +4164,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200163,Strongly Disagree,Agree,Every lesson,Female,2hr - 3hr,≤ 0.5hr,0.5hr - 1hr,Public,Secondary,Native,English,1,Yes,No,1,1 - 10,3,Yes,4,Strongly Agree,Strongly Disagree,Strongly Agree,565.1063,570.8039,524.7198
 70200162,Agree,Strongly Agree,Most lesson,Female,1hr - 2hr,0.5hr - 1hr,0.5hr - 1hr,Private,Tertiary,Native,Others,≥3,No,No,0,201-500,6,Yes,5,Strongly Disagree,Disagree,Strongly Agree,535.8163000000001,497.3059,551.3484
 70200113,Agree,Agree,Most lesson,Male,> 4hr,> 4hr,> 4hr,Public,Tertiary,Native,English,1,Yes,Yes,2,26 - 100,5,Yes,5,Strongly Agree,Strongly Agree,Strongly Agree,583.9539,508.20669999999996,529.5643
-70200131,Strongly Agree,Agree,Most lesson,Female,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Secondary,Native,Others,0,Yes,NA,0,1 - 10,0,Yes,0,Strongly Disagree,Agree,Agree,475.4221,443.0496,471.7845
 70200044,Strongly Disagree,Strongly Agree,Every lesson,Male,2hr - 3hr,2hr - 3hr,2hr - 3hr,Public,Tertiary,Native,English,1,Yes,Yes,0,26 - 100,10,Yes,10,Agree,Agree,Disagree,541.1515,517.3896,549.2961
 70200056,Disagree,Agree,Most lesson,Female,2hr - 3hr,1hr - 2hr,2hr - 3hr,Public,Secondary,Native,English,1,Yes,No,0,26 - 100,2,No,8,Disagree,Disagree,Disagree,476.13800000000003,484.0169,446.5122
 70200105,Disagree,Strongly Agree,Every lesson,Female,0.5hr - 1hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,English,2,Yes,Yes,1,26 - 100,1,Yes,3,Strongly Agree,Agree,Strongly Disagree,463.4094,497.9356,443.1654
@@ -4262,7 +4244,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200101,Agree,Strongly Agree,Most lesson,Male,0.5hr - 1hr,≤ 0.5hr,1hr - 2hr,Public,Post-Secondary,Native,Others,1,Yes,No,0,101 - 200,6,No,0,Strongly Agree,Disagree,Agree,751.6123,645.1529,662.702
 70200002,Agree,Agree,Never or almost never,Female,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Secondary,Native,English,0,Yes,No,0,1 - 10,2,No,0,Agree,Agree,Agree,584.678,562.7675,529.8064
 70200067,Strongly Disagree,Strongly Agree,Every lesson,Female,0.5hr - 1hr,≤ 0.5hr,≤ 0.5hr,Public,Secondary,3rd Generation,Others,2,No,No,0,11 - 25,0,No,0,Strongly Agree,Agree,Disagree,434.662,296.9289,326.3727
-70200163,Disagree,Strongly Agree,Most lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Post-Secondary,Native,English,2,Yes,NA,0,0,5,Yes,0,Disagree,Strongly Agree,Strongly Agree,392.9905,416.3683,447.40840000000003
 70200052,Agree,Strongly Agree,Every lesson,Female,≤ 0.5hr,0.5hr - 1hr,1hr - 2hr,Public,Tertiary,Native,English,2,Yes,Yes,1,11 - 25,5,No,1,Strongly Disagree,Disagree,Disagree,548.5403,562.567,508.4921
 70200145,Disagree,Agree,Most lesson,Female,≤ 0.5hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,2nd Generation,English,1,Yes,No,0,26 - 100,0,Yes,2,Strongly Disagree,Agree,Strongly Agree,647.3882,677.7495,662.1445
 70200131,Disagree,Strongly Agree,Every lesson,Male,0.5hr - 1hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,Others,1,Yes,No,1,201-500,3,Yes,4,Disagree,Agree,Agree,585.0354,569.2299,595.3069
@@ -4378,7 +4359,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200043,Disagree,Strongly Agree,Every lesson,Female,≤ 0.5hr,0.5hr - 1hr,0.5hr - 1hr,Public,Post-Secondary,Native,English,0,Yes,No,0,26 - 100,2,No,0,Strongly Agree,Disagree,Agree,679.5394,577.9072,630.1847
 70200021,Strongly Disagree,Agree,Every lesson,Male,1hr - 2hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,3rd Generation,Others,1,Yes,No,0,11 - 25,7,Yes,1,Agree,Disagree,Agree,551.355,570.3111,559.0554999999999
 70200021,Strongly Agree,Strongly Agree,Every lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,2nd Generation,Others,0,Yes,No,1,26 - 100,0,Yes,0,Agree,Agree,Agree,611.6282,610.3155,591.2852
-70200085,Strongly Disagree,Agree,Most lesson,Male,≤ 0.5hr,≤ 0.5hr,1hr - 2hr,Public,Tertiary,Native,English,≥3,NA,Yes,≥3,101 - 200,9,No,1,Strongly Disagree,Strongly Agree,Strongly Agree,423.3836,396.276,415.19169999999997
 70200120,Disagree,Agree,Every lesson,Female,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Post-Secondary,Native,English,2,Yes,Yes,0,26 - 100,0,No,0,Agree,Disagree,Strongly Disagree,458.2768,456.3705,468.7035
 70200067,Disagree,Agree,Most lesson,Female,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Post-Secondary,Native,English,≥3,No,No,1,11 - 25,2,No,4,Agree,Disagree,Disagree,480.535,460.1115,458.3318
 70200153,Disagree,Agree,Every lesson,Female,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,English,1,Yes,No,1,11 - 25,2,Yes,2,Agree,Disagree,Disagree,620.0162,576.1028,638.4971
@@ -4461,7 +4441,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200014,Strongly Disagree,Agree,Some lessons,Female,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,Native,English,2,Yes,Yes,2,26 - 100,5,No,0,Agree,Agree,Disagree,553.228,535.4112,515.2046
 70200009,Disagree,Agree,Most lesson,Male,≤ 0.5hr,≤ 0.5hr,0.5hr - 1hr,Public,Tertiary,Native,English,1,Yes,Yes,1,101 - 200,8,Yes,0,Agree,Agree,Agree,546.8054,365.71659999999997,472.33820000000003
 70200058,Disagree,Agree,Every lesson,Female,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Post-Secondary,Native,English,≥3,Yes,No,1,26 - 100,2,No,2,Agree,Agree,Agree,514.3833,430.1275,509.1669
-70200129,Disagree,Agree,Every lesson,Female,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Tertiary,2nd Generation,Others,1,Yes,NA,1,26 - 100,4,Yes,2,Disagree,Strongly Agree,Agree,429.1968,452.4158,477.345
 70200063,Disagree,Strongly Agree,Every lesson,Female,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,Native,English,≥3,Yes,Yes,1,26 - 100,2,Yes,0,Strongly Disagree,Strongly Agree,Strongly Agree,598.3149,596.1365,584.0053
 70200044,Agree,Agree,Every lesson,Male,0.5hr - 1hr,≤ 0.5hr,0.5hr - 1hr,Public,Tertiary,Native,English,≥3,Yes,No,≥3,101 - 200,0,Yes,0,Disagree,Agree,Disagree,703.2885,646.4041,715.7978
 70200024,Strongly Disagree,Strongly Agree,Every lesson,Male,0.5hr - 1hr,1hr - 2hr,0.5hr - 1hr,Public,Tertiary,3rd Generation,Others,1,Yes,No,1,11 - 25,10,Yes,2,Agree,Agree,Disagree,478.25579999999997,491.134,504.61969999999997
@@ -4533,7 +4512,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200007,Disagree,Agree,Most lesson,Female,1hr - 2hr,1hr - 2hr,0.5hr - 1hr,Public,Secondary,Native,Others,1,Yes,Yes,1,26 - 100,2,No,0,Agree,Agree,Strongly Disagree,470.0751,499.3387,473.6897
 70200160,Disagree,Agree,Every lesson,Male,≤ 0.5hr,0.5hr - 1hr,1hr - 2hr,Public,Secondary,2nd Generation,Others,1,Yes,No,0,11 - 25,1,No,5,Strongly Agree,Disagree,Disagree,462.0316,357.19,392.3164
 70200104,Disagree,Agree,Some lessons,Female,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Private,Tertiary,3rd Generation,English,2,Yes,Yes,1,>500,1,Yes,6,Strongly Disagree,Strongly Agree,Disagree,624.4962,705.9942,628.2799
-70200122,Strongly Disagree,Agree,Every lesson,Male,1hr - 2hr,1hr - 2hr,1hr - 2hr,Public,Tertiary,Native,English,2,Yes,NA,1,26 - 100,0,Yes,0,Disagree,Disagree,Agree,584.6689,535.5919,553.6236
 70200031,Agree,Strongly Agree,Most lesson,Female,1hr - 2hr,2hr - 3hr,2hr - 3hr,Public,Post-Secondary,Native,English,1,Yes,No,0,11 - 25,3,Yes,0,Agree,Strongly Disagree,Agree,496.8529,496.7199,495.4848
 70200048,Strongly Disagree,Agree,Every lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Post-Secondary,2nd Generation,Others,0,Yes,No,0,26 - 100,2,Yes,3,Disagree,Agree,Strongly Disagree,470.3044,448.8227,440.6494
 70200043,Disagree,Strongly Agree,Most lesson,Male,≤ 0.5hr,≤ 0.5hr,0.5hr - 1hr,Public,Post-Secondary,Native,Others,1,No,No,0,11 - 25,4,Yes,0,Strongly Agree,Strongly Disagree,Agree,674.0481,586.8946,622.1843
@@ -4807,7 +4785,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200100,Disagree,Strongly Agree,Every lesson,Male,2hr - 3hr,1hr - 2hr,1hr - 2hr,Public,Post-Secondary,Native,Others,≥3,Yes,No,1,26 - 100,3,Yes,7,Agree,Disagree,Agree,505.8026,461.8376,478.0428
 70200068,Strongly Disagree,Strongly Disagree,Every lesson,Female,≤ 0.5hr,≤ 0.5hr,0.5hr - 1hr,Public,Secondary,3rd Generation,Others,≥3,Yes,No,0,1 - 10,1,Yes,1,Strongly Agree,Agree,Strongly Agree,564.2676,521.6845,589.1939
 70200163,Strongly Disagree,Strongly Agree,Every lesson,Female,0.5hr - 1hr,1hr - 2hr,1hr - 2hr,Public,Post-Secondary,Native,English,2,Yes,Yes,0,1 - 10,7,No,10,Disagree,Disagree,Disagree,428.8402,481.1045,461.8875
-70200025,Disagree,Strongly Agree,Most lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Post-Secondary,Native,English,1,Yes,NA,1,26 - 100,7,Yes,0,Disagree,Agree,Disagree,528.0601,526.1876,552.0055
 70200096,Disagree,Agree,Every lesson,Female,0.5hr - 1hr,0.5hr - 1hr,≤ 0.5hr,Public,Post-Secondary,Native,Others,1,Yes,No,0,1 - 10,0,Yes,2,Disagree,Agree,Disagree,598.8834,561.2256,586.6212
 70200151,Disagree,Strongly Agree,Most lesson,Male,1hr - 2hr,≤ 0.5hr,0.5hr - 1hr,Public,Post-Secondary,Native,English,1,Yes,No,1,1 - 10,2,Yes,0,Agree,Disagree,Agree,689.9257,612.7079,644.5971
 70200137,Disagree,Agree,Every lesson,Female,2hr - 3hr,1hr - 2hr,2hr - 3hr,Public,Tertiary,Native,English,1,Yes,No,1,101 - 200,3,No,8,Strongly Agree,Agree,Disagree,564.9606,528.6988,526.6728
@@ -4848,7 +4825,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200124,Disagree,Strongly Agree,Every lesson,Female,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,English,2,Yes,No,1,>500,2,No,3,Strongly Agree,Strongly Agree,Strongly Disagree,669.9060000000001,753.0769,719.1088
 70200026,Agree,Strongly Agree,Every lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Post-Secondary,Native,English,1,Yes,Yes,0,101 - 200,0,No,0,Strongly Agree,Strongly Agree,Agree,557.8732,541.4453,550.0120000000001
 70200132,Strongly Disagree,Strongly Agree,Every lesson,Male,1hr - 2hr,0.5hr - 1hr,1hr - 2hr,Public,Tertiary,Native,English,0,Yes,No,1,26 - 100,3,Yes,0,Strongly Agree,Agree,Agree,754.8109,739.5031,753.135
-70200129,Strongly Agree,Agree,Never or almost never,Male,0.5hr - 1hr,0.5hr - 1hr,1hr - 2hr,Public,Post-Secondary,Native,Others,1,Yes,NA,1,26 - 100,4,Yes,6,Agree,Disagree,Disagree,507.6603,513.232,495.98359999999997
 70200015,Disagree,Agree,Every lesson,Female,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Post-Secondary,Native,Others,≥3,Yes,No,1,1 - 10,6,Yes,10,Disagree,Disagree,Disagree,468.077,471.2534,512.0261
 70200011,Disagree,Agree,Every lesson,Female,0.5hr - 1hr,≤ 0.5hr,0.5hr - 1hr,Public,Post-Secondary,2nd Generation,Others,2,Yes,Yes,2,26 - 100,3,No,0,Strongly Agree,Strongly Disagree,Strongly Agree,648.7338,590.529,610.9828
 70200011,Disagree,Agree,Most lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,Native,English,1,Yes,No,2,26 - 100,0,Yes,0,Disagree,Disagree,Disagree,560.6022,523.3689,543.7849
@@ -5174,7 +5150,6 @@ CNTSCHID,Loneliness,ClassroomSafety,TeacherSupport,Gender,Homework_Math,Homework
 70200053,Disagree,Agree,Most lesson,Female,0.5hr - 1hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,2nd Generation,Others,1,Yes,No,0,26 - 100,2,No,5,Agree,Disagree,Disagree,579.5597,616.2286,610.2155
 70200139,Strongly Disagree,Agree,Most lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,Native,English,1,Yes,No,0,26 - 100,5,Yes,6,Strongly Agree,Disagree,Strongly Agree,674.8764,637.4087,638.6237
 70200095,Disagree,Strongly Agree,Every lesson,Male,0.5hr - 1hr,0.5hr - 1hr,0.5hr - 1hr,Public,Tertiary,Native,English,≥3,Yes,Yes,1,101 - 200,10,Yes,5,Agree,Agree,Strongly Agree,569.6038,599.7816,514.4836
-70200009,Agree,Agree,Most lesson,Female,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,Others,2,Yes,NA,0,26 - 100,7,Yes,0,Strongly Disagree,Strongly Agree,Agree,453.3766,411.1722,472.46889999999996
 70200122,Strongly Disagree,Disagree,Every lesson,Male,≤ 0.5hr,≤ 0.5hr,≤ 0.5hr,Public,Tertiary,Native,English,1,Yes,No,1,>500,10,No,1,Disagree,Disagree,Disagree,398.86220000000003,402.76120000000003,377.4926
 70200117,Agree,Agree,Every lesson,Male,0.5hr - 1hr,≤ 0.5hr,1hr - 2hr,Public,Post-Secondary,Native,English,≥3,Yes,No,1,26 - 100,0,No,0,Disagree,Disagree,Agree,573.3974000000001,533.2714,523.8468
 70200110,Disagree,Strongly Agree,Every lesson,Male,2hr - 3hr,2hr - 3hr,3 - 4 hr,Public,Tertiary,Native,English,1,Yes,Yes,2,1 - 10,0,Yes,1,Agree,Disagree,Agree,693.109,656.9678,630.0639
