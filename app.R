@@ -12,7 +12,7 @@
 #==============================#
 
 pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinythemes", "shinyjs",
-               "tidyverse", "DT",
+               "tidyverse", "DT", "kableExtra",
                "ranger", "vip", "rpart.plot", "caret", "tidymodels", "gbm",
                "ExPanDaR", "kableExtra","plotly", "scales")
 
@@ -395,7 +395,7 @@ body <- dashboardBody(
                          ),
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                       box(title = tags$p("Step 2: Model Specification", style = "font-weight: bold;"),
+                       box(title = tags$p("Step 2: Data Splitting", style = "font-weight: bold;"),
                            collapsible = TRUE,
                            collapsed = TRUE,
                            width = 12,
@@ -409,33 +409,6 @@ body <- dashboardBody(
                                            max = 0.95,
                                            value = c(0.8)
                                            )),
-                           # div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                           #     tags$p("Select proportion of data used to train model", style = "font-style: italic;")),
-                           # div(style = "padding = 0em; margin-top: 0.5em",
-                           #     numericInput(inputId = "dt_tunelength_",
-                           #                  label = "Initial Tune Length:",
-                           #                  value = 4,
-                           #                  min = 1,
-                           #                  max = 10,
-                           #                  step = 1
-                           #     )),
-                           # div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
-                           #     selectInput(inputId = "dt_resamplingmethod_",
-                           #                 label = "Resampling Method:",
-                           #                 choices = c("Bootstrap" = "dt_bootstrap",
-                           #                             "Cross Validation" = "dt_cvkfold",
-                           #                             "Repeated Cross-Validation" = "dt_repeatkfold"),
-                           #                 selected = "dt_bootstrap"
-                           #     )),
-                           # hidden(tags$div(id = "dt_cvkfold_group",
-                           #                  numericInput(inputId = "dt_cvkfold_number",
-                           #                         label = "K-fold:",
-                           #                         min = 2,
-                           #                         max = 50,
-                           #                         step = 1,
-                           #                         value = 10)
-                           #                 )
-                           #        ),
                            div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
                                actionButton(inputId = "dt_action_",
                                             label = "Run Analysis",
@@ -628,7 +601,7 @@ body <- dashboardBody(
                      ),
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                       box(title = tags$p("Step 2: Model Specification", style = "font-weight: bold;"),
+                       box(title = tags$p("Step 2: Data Splitting", style = "font-weight: bold;"),
                            collapsible = TRUE,
                            collapsed = TRUE,
                            width = 12,
@@ -794,7 +767,6 @@ body <- dashboardBody(
             
             #### Gradient Boosting Toggle Column  ----------------------------------------------------
             column(width = 2,
-                   fluidRow(
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
                          box(title = tags$p(span(icon("tree"), "Gradient Boosting"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
@@ -863,7 +835,7 @@ body <- dashboardBody(
                      ),
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                       box(title = tags$p("Step 2: Model Specification", style = "font-weight: bold;"),
+                       box(title = tags$p("Step 2: Data Splitting", style = "font-weight: bold;"),
                            collapsible = TRUE,
                            collapsed = TRUE,
                            width = 12,
@@ -876,34 +848,9 @@ body <- dashboardBody(
                                            min = 0.05,
                                            max = 0.95,
                                            value = c(0.8))
-                           ),
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               chooseSliderSkin("Flat"),
-                               sliderInput(inputId = "gb_interactiondepth_",
-                                           label = "Number of Boosting Iterations:",
-                                           min = 1,
-                                           max = 5,
-                                           value = 1)
-                           ),
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               chooseSliderSkin("Flat"),
-                               sliderInput(inputId = "gb_treenumrange_",
-                                           label = "No. of Trees:",
-                                           min = 5,
-                                           max = 500,
-                                           value = 10))
-                           ,
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               numericInput(inputId = "gb_minnodesize",
-                                           label = "Learning Rate:",
-                                           min = 0.01,
-                                           max = 1.0,
-                                           step = 0.01,
-                                           value = c(0.01))
                            )
                            )
-                       )
-                     ),
+                       ),
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
                        box(title = tags$p("Step 3: Resampling Options", style = "font-weight: bold;"),
@@ -913,15 +860,15 @@ body <- dashboardBody(
                            status = "primary",
                            solidHeader = FALSE,
                            div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
-                               selectInput(inputId = "rf_resamplingmethod_",
+                               selectInput(inputId = "gb_resamplingmethod_",
                                            label = "Resampling Method:",
-                                           choices = c("Bootstrap" = "rf_bootstrap",
-                                                       "Cross Validation" = "rf_cvkfold",
-                                                       "Repeated Cross-Validation" = "rf_repeatkfold"),
-                                           selected = "rf_bootstrap")
+                                           choices = c("Bootstrap" = "gb_bootstrap",
+                                                       "Cross Validation" = "gb_cvkfold",
+                                                       "Repeated Cross-Validation" = "gb_repeatkfold"),
+                                           selected = "gb_bootstrap")
                            ),
-                           hidden(tags$div(id = "rf_cvkfold_group",
-                                           numericInput(inputId = "rf_cvkfold_number",
+                           hidden(tags$div(id = "gb_cvkfold_group",
+                                           numericInput(inputId = "gb_cvkfold_number",
                                                         label = "K-fold:",
                                                         min = 2,
                                                         max = 50,
@@ -929,15 +876,15 @@ body <- dashboardBody(
                                                         value = 10)
                            )
                            ),
-                           hidden(tags$div(id = "rf_rcvkfold_group",
-                                           numericInput(inputId = "rf_rcvkfold_number",
+                           hidden(tags$div(id = "gb_rcvkfold_group",
+                                           numericInput(inputId = "gb_rcvkfold_number",
                                                         label = "K-Fold:",
                                                         min = 2,
                                                         max = 50,
                                                         step = 1,
                                                         value = 10),
                                            div(style = "padding = 0em; margin-top: -0.8em",
-                                               numericInput(inputId = "rv_rcvkfold_repeat",
+                                               numericInput(inputId = "gb_rcvkfold_repeat",
                                                             label = "Repeat Count:",
                                                             min = 1,
                                                             max = 10,
@@ -957,32 +904,114 @@ body <- dashboardBody(
                            status = "primary",
                            solidHeader = FALSE,  
                            div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               selectInput(inputId = "rf_splitrule_",
-                                           label = "Split Rule:",
-                                           choices = c("Variance" = "variance",
-                                                       "Extra Trees" = "extratrees",
-                                                       "Max Stat" = "maxstat"),
-                                           selected = "variance")),
-                           
+                               chooseSliderSkin("Flat"),
+                               numericInput(inputId = "gb_interactiondepth",
+                                           label = "Max. Tree Depth: ",
+                                           min = 2,
+                                           max = 10,
+                                           step = 1,
+                                           value = 2)
+                           ),
                            div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                chooseSliderSkin("Flat"),
-                               sliderInput(inputId = "rf_minnodesize_",
-                                           label = "Minimum Node Size:",
+                               sliderInput(inputId = "gb_treenumrange",
+                                           label = "Boosting Iterations:",
+                                           min = 5,
+                                           max = 500,
+                                           value = c(100))
+                               ),
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               chooseSliderSkin("Flat"),
+                               sliderInput(inputId = "gb_minnodesize",
+                                           label = "Min. Node Size:",
                                            min = 2,
                                            max = 50,
                                            value = 5)
                            ),
-                           
-                           
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               numericInput(inputId = "gb_shrinkage",
+                                            label = "Learning Rate:",
+                                            min = 0.01,
+                                            max = 1.0,
+                                            step = 0.01,
+                                            value = c(0.01))
+                           ),
                            div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
-                               actionButton(inputId = "rf_action_",
+                               actionButton(inputId = "gb_action_",
                                             label = "Run Analysis",
-                                            icon = icon("wrench")),
+                                            icon = icon("wrench")
+                                            ),
+                               
                                align = "center"
                            )
                        )
                      )
-                   )
+                   ),
+            (column(width = 5,
+                    div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                        box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
+                            status = "info",
+                            collapsible = FALSE,
+                            width = 12,
+                            solidHeader =FALSE,
+
+                                #### Gradient Boosting Actual vs Predicted ----------------------------------------------------
+                                column(width = 6, 
+                                       plotOutput("gb_plotpredvsactual_",
+                                                  width = "100%",
+                                                  height = "30vh")),
+                                
+                                
+                                #### Gradient Boosting - Actual vs Residuals ----------------------------------------------------
+                                column(width = 6, 
+                                       plotOutput("gb_plotresidvsactual_",
+                                                  width = "100%",
+                                                  height = "30vh"))
+                            )),
+                    hidden(div(id = "gb_modelplottab",
+                               style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                               box(title = tags$p("Resampling Profile", style = "font-weight: bold;"),
+                                   status = "info",
+                                   collapsible = FALSE,
+                                   width = 12,
+                                   solidHeader =FALSE,
+                                   plotOutput("gb_modelplot_",
+                                              width = "100%",
+                                              height = "30vh"))
+                        )
+                        )
+                    )
+             ),
+            (column(width = 5,
+                    fluidRow(
+                      style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                      div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                          valueBoxOutput("gb_display_R2_", width = 4),
+                          valueBoxOutput("gb_display_RMSE_", width = 4),
+                          valueBoxOutput("gb_display_MAE_", width = 4)
+                      )
+                    ),
+                    div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                        box(title = tags$p("Variable Importance", style = "font-weight: bold;"),
+                            status = "info",
+                            collapsible = FALSE,
+                            width = 12,
+                            solidHeader =FALSE,
+                            plotOutput("gb_varimp_plot_",
+                                       width = "100%"))
+                    ),
+                    hidden(div(id = "gb_besttuneplottab", 
+                               style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                               box(title = tags$p("Best Tune", style = "font-weight: bold;"),
+                                   status = "info",
+                                   collapsible = FALSE,
+                                   width = 12,
+                                   solidHeader =FALSE,
+                                   tableOutput("dt_besttune_"))
+                        )
+                        )
+                    )
+             )
             )          
     )
 )
@@ -1122,6 +1151,8 @@ server <- function(input, output) {
   dtmodel <- eventReactive(
     input$dt_action_, {
       if (input$dt_target_ == "Math") {
+        set.seed(1234)
+        
         train(
           form = Math ~ .,
           data = dt_traindata(),
@@ -1137,6 +1168,8 @@ server <- function(input, output) {
         )}
       
       else if (input$dt_target_ == "Reading") {
+        set.seed(1234)
+        
         train(
           form = Reading ~ .,
           data = dt_traindata(),
@@ -1144,14 +1177,11 @@ server <- function(input, output) {
           trControl = trainControl(method = "repeatedcv",
                                    number = 5,
                                    repeats = 2)
-          #   if(input$dt_resamplingmethod_ == "dt_bootstrap") 
-          #   {dt_bs_resample()}
-          # else if (input$dt_resamplingmethod_ == "dt_cvkfold") 
-          # {dt_cvkfold_resample()}
-          # else {dt_cvrepeatkfold_resample()}
         )}
       
       else {
+        set.seed(1234)
+        
         train(
           form = Science ~ .,
           data = dt_traindata(),
@@ -1159,17 +1189,14 @@ server <- function(input, output) {
           trControl = trainControl(method = "repeatedcv",
                                    number = 5,
                                    repeats = 2)
-          #   if(input$dt_resamplingmethod_ == "dt_bootstrap") 
-          #   {dt_bs_resample()}
-          # else if (input$dt_resamplingmethod_ == "dt_cvkfold") 
-          # {dt_cvkfold_resample()}
-          # else {dt_cvrepeatkfold_resample()}
         )}
       })
   
   dtmodel_prune <- eventReactive(
     input$dt_tunemodel_, {
       if (input$dt_target_ == "Math") {
+        set.seed(1234)
+        
         train(
           form = Math ~ .,
           data = dt_traindata(),
@@ -1181,6 +1208,8 @@ server <- function(input, output) {
         )}
       
       else if (input$dt_target_ == "Reading") {
+        set.seed(1234)
+        
         train(
           form = Reading ~ .,
           data = dt_traindata(),
@@ -1192,6 +1221,8 @@ server <- function(input, output) {
         )}
       
       else {
+        set.seed(1234)
+        
         train(
           form = Science ~ .,
           data = dt_traindata(),
@@ -1565,6 +1596,8 @@ server <- function(input, output) {
   rfmodel <- eventReactive(
     input$rf_action_, {
       if (input$rf_target_ == "Math") {
+        set.seed(1234)
+        
         train(
           form = Math ~ .,
           data = rf_traindata(),
@@ -1582,6 +1615,8 @@ server <- function(input, output) {
         )}
       
       else if (input$rf_target_ == "Reading") {
+        set.seed(1234)
+        
         train(
           form = Reading ~ .,
           data = rf_traindata(),
@@ -1599,6 +1634,8 @@ server <- function(input, output) {
         )}
       
       else {
+        set.seed(1234)
+        
         train(
           form = Science ~ .,
           data = rf_traindata(),
@@ -1727,6 +1764,337 @@ server <- function(input, output) {
   output$rf_varimp_plot_ <-
     renderPlot({
       rf_varimp_plot()
+    })
+  
+  # GB Data Manipulation  ----------------------------------------------------
+  
+  # Combine Selected Variables
+  gb_selected_variables <- reactive({
+    c(input$gb_target_,
+      input$gb_vars_)
+  })  
+  
+  gb_data <- reactive({
+    stu_mb %>%
+      select(all_of(gb_selected_variables()))
+  }
+  )
+  
+  gb_index <- eventReactive(
+    input$gb_action_, {
+      set.seed(1234)
+      caret::createDataPartition(gb_data()[[1]], p = input$gb_partition_, list = FALSE)      
+    }
+  )
+  
+  gb_traindata <- eventReactive(
+    input$gb_action_, {
+      gb_data()[gb_index(),]
+    })
+  
+  gb_testdata <- eventReactive(
+    input$gb_action_, {
+      gb_data()[-gb_index(),]
+    })
+  
+  # RF Sidebar Toggles  ----------------------------------------------------
+  ## Model Tuning Parameters 
+  
+  # ### Display Selection depending on resampling method
+  observeEvent(input$gb_resamplingmethod_, {
+    if (input$gb_resamplingmethod_ == "gb_cvkfold") {
+      shinyjs::show("gb_cvkfold_group")
+    }
+    else {
+      shinyjs::hide("gb_cvkfold_group")
+    }
+  })
+  
+  observeEvent(input$gb_resamplingmethod_, {
+    if (input$gb_resamplingmethod_ == "gb_repeatkfold") {
+      shinyjs::show("gb_rcvkfold_group")
+    }
+    else {
+      shinyjs::hide("gb_rcvkfold_group")
+    }
+  })
+  
+  # GB Model  ----------------------------------------------------
+  
+  ## Assign Model Train Control Parameters
+  gb_bs_resample <- eventReactive(
+    input$gb_action_, {
+      trainControl(method = "none"
+      )
+    })
+  
+  gb_cvkfold_resample  <- eventReactive(
+    input$gb_action_, {
+      trainControl(method = "cv",
+                   number = input$gb_cvkfold_number
+      )
+    })
+  
+  gb_rcvkfold_resample <- eventReactive(
+    input$gb_action_, {
+      trainControl(method = "repeatedcv",
+                   number = input$gb_rcvkfold_number,
+                   repeats = input$gb_rcvkfold_repeat
+      )
+    })
+  
+  gb_treenumrange_  <- eventReactive(
+    input$gb_action_, {
+      seq(from = 0.5 * input$gb_treenumrange,
+          to = 5 *input$gb_treenumrange,
+          length.out = 20)
+    }) 
+  
+
+  gb_interactiondepth_ <- eventReactive(
+    input$gb_action_, {
+      seq(from = max(1, input$gb_interactiondepth -1),
+          to = min(10, input$gb_interactiondepth + 1),
+          length.out = 3)
+    }) 
+  
+  gb_shrinkage_ <- eventReactive(
+    input$gb_action_, {
+      seq(from = max(0.01, input$gb_shrinkage -0.01),
+          to = min(1, input$gb_shrinkage + 0.01),
+          length.out = 3)
+    }) 
+  
+  gb_tgrid <- eventReactive(
+    input$gb_action_, {
+      if (input$gb_resamplingmethod_ == "gb_bootstrap") {
+        expand.grid(
+          interaction.depth = input$gb_interactiondepth, 
+          n.trees = input$gb_treenumrange,
+          shrinkage = input$gb_shrinkage, 
+          n.minobsinnode = input$gb_minnodesize
+        )        
+      }
+      else (
+      expand.grid(
+        interaction.depth = gb_interactiondepth_(), 
+        n.trees = gb_treenumrange_(),
+        shrinkage = gb_shrinkage_(), 
+        n.minobsinnode = input$gb_minnodesize
+      ))
+      
+    })
+  
+
+  gbmodel <- eventReactive(
+    input$gb_action_, {
+      if (input$gb_target_ == "Math") {
+        set.seed(1234)
+        
+        train(
+          form = Math ~ .,
+          data = gb_traindata(),
+          method = "gbm",
+          verbose = FALSE,
+          tuneGrid  = gb_tgrid(),
+          trControl =
+            if(input$gb_resamplingmethod_ == "gb_bootstrap")
+            { gb_bs_resample() }
+          else if (input$gb_resamplingmethod_ == "gb_cvkfold")
+          { gb_cvkfold_resample() }
+          else { gb_rcvkfold_resample() }
+        )}
+      
+      else if (input$gb_target_ == "Reading") {
+        set.seed(1234)
+        
+        train(
+          form = Reading ~ .,
+          data = gb_traindata(),
+          method = "gbm",
+          verbose = FALSE,
+          tuneGrid  = gb_tgrid(),
+          trControl =
+            if(input$gb_resamplingmethod_ == "gb_bootstrap")
+            { gb_bs_resample() }
+          else if (input$gb_resamplingmethod_ == "gb_cvkfold")
+          { gb_cvkfold_resample() }
+          else { gb_rcvkfold_resample() }
+        )}
+      
+      else {
+        set.seed(1234)
+        
+        train(
+          form = Science ~ .,
+          data = gb_traindata(),
+          method = "gbm",
+          verbose = FALSE,
+          tuneGrid  = gb_tgrid(),
+          trControl =
+            if(input$gb_resamplingmethod_ == "gb_bootstrap")
+            { gb_bs_resample() }
+          else if (input$gb_resamplingmethod_ == "gb_cvkfold")
+          { gb_cvkfold_resample() }
+          else { gb_rcvkfold_resample() }
+        )}
+    })  
+  
+  ## Predicting Results
+  predictgb_model <- eventReactive(
+    input$gb_action_, {
+      predict(gbmodel(), 
+              newdata = gb_testdata())
+    })
+  
+  predict_gb <- eventReactive(
+    input$gb_action_, {
+      bind_cols(
+        Actual = gb_testdata()[[1]],
+        Predicted = predictgb_model(),
+        Residuals = predictgb_model() - gb_testdata()[[1]])
+    })
+  
+  ## Plot Predicted vs Actual
+  gb_plot_predvsactual <- eventReactive(
+    input$gb_action_, {
+      ggplot(data = predict_gb(),
+             aes(x = Actual, y = Predicted)) +
+        geom_point(alpha = 0.2, color = "grey40") +
+        geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
+        geom_abline(intercept = 0, slope = 1, linetype = 2, color = "#20948b", size = 0.8) +
+        labs(title = "Predicted vs Actual")+ 
+        theme_minimal()
+    })
+  
+  output$gb_plotpredvsactual_ <- renderPlot({
+    gb_plot_predvsactual()
+  })
+  
+  ## Plot Residuals vs Actual
+  gb_plot_residvsactual <- eventReactive(
+    input$gb_action_, {
+      ggplot(data = predict_gb(),
+             aes(x = Actual, y = Residuals)) +
+        geom_point(alpha = 0.2, color = "grey40") +
+        geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
+        geom_hline(yintercept = 0, linetype = 2, color = "#20948b", size = 0.8) +
+        labs(title = "Residuals vs Actual")+ 
+        theme_minimal()
+    })
+  
+  
+  output$gb_plotresidvsactual_ <- renderPlot({
+    gb_plot_residvsactual()
+  })
+  
+  ## Statistical Analysis
+  ### R2
+  gb_R2 <- eventReactive(
+    input$gb_action_, {
+      round(caret::R2(predictgb_model(),
+                      gb_testdata()[[1]]),3)
+    }
+  )
+  
+  output$gb_display_R2_ <- renderValueBox({
+    valueBox(
+      value = tags$p(gb_R2(), style = "font-size: 60%;"),
+      subtitle = tags$p(paste0("R-Square"), style = "font-size: 80%;"), 
+      icon = tags$i(icon("calculator"), style="font-size: 60%"),
+      color = "yellow"
+    )
+  })
+  
+  ### RMSE
+  gb_RMSE <- eventReactive(
+    input$gb_action_, {
+      round(caret::RMSE(predictgb_model(),
+                        gb_testdata()[[1]]),3)
+    }
+  )
+  
+  output$gb_display_RMSE_ <- renderValueBox({
+    valueBox(
+      value = tags$p(gb_RMSE(), style = "font-size: 60%;"),
+      subtitle = tags$p(paste0("RMSE"), style = "font-size: 80%;"), 
+      icon = tags$i(icon("calculator"), style="font-size: 60%"),
+      color = "yellow"
+    )
+  })
+  
+  ### MAE
+  gb_MAE <- eventReactive(
+    input$gb_action_, {
+      round(caret::MAE(predictgb_model(),
+                       gb_testdata()[[1]]),3)
+    }
+  )  
+
+  output$gb_display_MAE_ <- renderValueBox({
+    valueBox(
+      value = tags$p(gb_MAE(), style = "font-size: 60%;"),
+      subtitle = tags$p(paste0("MAE"), style = "font-size: 80%;"), 
+      icon = tags$i(icon("calculator"), style="font-size: 60%"),
+      color = "yellow"
+    )
+  })
+  
+  
+  #### Best Tune Results
+  dt_besttune <- eventReactive(
+    input$gb_action_, {
+     gbmodel()$bestTune %>% 
+        knitr::kable(col.names = c("Number of Trees",
+                                   "Max. Tree Depth",
+                                   "Learning Rate",
+                                   "Min. Node Size")) %>% 
+        kable_styling(full_width = F,
+                      bootstrap_options = c("hover"))
+    }
+  ) 
+
+  
+  output$dt_besttune_ <- renderText({
+    dt_besttune()
+  })
+  
+  
+  gb_modelplot <- eventReactive(
+    input$gb_action_, {
+      plot(gbmodel())
+    }
+  )  
+  
+  output$gb_modelplot_ <-
+    renderPlot({
+      gb_modelplot()
+    })
+  
+  
+  observeEvent(input$gb_resamplingmethod_, {
+    if (input$gb_resamplingmethod_ == "gb_bootstrap") {
+      shinyjs::hide("gb_modelplottab")
+      shinyjs::hide("gb_besttuneplottab")
+      
+    }
+
+    else {
+      shinyjs::show("gb_modelplottab")
+      shinyjs::show("gb_besttuneplottab")    
+      }
+  })
+  
+  #### Variable Importance
+  gb_varimp_plot <- eventReactive(
+    input$gb_action_, {
+      vip::vip(gbmodel(), num_features = 40, bar = FALSE)
+    }
+  )  
+  
+  output$gb_varimp_plot_ <-
+    renderPlot({
+      gb_varimp_plot()
     })
   
 }
