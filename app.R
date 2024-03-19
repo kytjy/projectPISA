@@ -12,9 +12,10 @@
 #==============================#
 
 pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinythemes", "shinyjs",
-               "tidyverse", "DT", "kableExtra",
+               "tidyverse", "DT", "kableExtra", "plotly", "scales",
                "ranger", "vip", "rpart.plot", "caret", "tidymodels", "gbm",
-               "ExPanDaR", "kableExtra","plotly", "scales")
+               "waiter"
+               )
 
 #==============================#
 #~~~~~ Data Manipulation ~~~~~#
@@ -100,31 +101,35 @@ pplogo <- tags$a(
 header <- dashboardHeader(
   tags$li(class = "dropdown",
           tags$style(".main-header {max-height: 80px; font-size: 10px;}"),
-          tags$style(".main-header .logo {height: 80px; margin-top: 1em; margin-bottom: 1em; font-size: 10px;}"),
-          tags$style(".sidebar-toggle {height: 80px;margin-top: 1em; margin-bottom: 1em; font-size: 10px;}")
+          tags$style(".main-header .logo {height: 80px; margin-top: 1em; margin-bottom: 0em; font-size: 10px;}"),
+          tags$style(".sidebar-toggle {height: 80px;margin-top: 1em; margin-bottom: 0em; font-size: 10px;}")
   ),
   title = div(pplogo,
-              style = "position: relative; margin:3px 0px 0px 5px; display:right-align;"),
-  titleWidth = 90)
+              style = "position: relative; margin:0px 0px 0px 0px; display:right-align;"),
+  titleWidth = 80)
 
 ## Dashboard Sidebar ----------------------------------------------------
 sidebar <- dashboardSidebar(
-  tags$style(".left-side, .main-sidebar {padding-top: 150px; margin-left: 0px; font-size: 10px;}"),
-  width = 90,
+  tags$style(".left-side, .main-sidebar {padding-top: 120px; padding-right: 0px; margin-left: 0px; margin-right: 0px; font-size: 10px;}"),
+  width = 80,
+  minified = FALSE,
   sidebarMenu(
     id = "tabs",
     menuItem("Home", tabName = "tab_home", icon = icon("house")),
-    menuItem("Data Analysis", tabName = "tab_eda", icon = icon("magnifying-glass-chart") #startExpanded = TRUE,
-             #menuSubItem("Scores", tabName = "tab_target"),
-             #menuSubItem("Variables", tabName = "tab_variable"),
-    ),
+    menuItem("Data Analysis", tabName = "tab_eda", 
+             icon = icon("magnifying-glass-chart")
+             ),
     
-    menuItem("Cluster Analysis", tabName = "tab_cluster", icon = icon("users-viewfinder"),
+    menuItem("Cluster Analysis", tabName = "tab_cluster", 
+             icon = icon("users-viewfinder"),
+             startExpanded = TRUE,
              menuSubItem("Heatmap", tabName = "tab_heatmap"),
              menuSubItem("Parallel Plot", tabName = "tab_parallelplot")
              ),
     
-    menuItem("Regression", tabName = "tab_mod", icon = icon("tree"),
+    menuItem("Regression", tabName = "tab_mod", 
+             icon = icon("tree"),
+             startExpanded = TRUE,
              menuSubItem("Decision Tree", tabName = "tab_dt"),             
              menuSubItem("Random Forest", tabName = "tab_rf"),
              menuSubItem("Gradient Boosting", tabName = "tab_gb")
@@ -138,21 +143,18 @@ sidebar <- dashboardSidebar(
 
 body <- dashboardBody(
   ## Setting theme  ----------------------------------------------------
-  use_theme(mytheme),
+  use_googlefont("Noto Sans"),
   
+  use_theme(mytheme),
   
   useShinyjs(),
   
+  shinyjs::inlineCSS("body > div > header > nav > a {visibility: hidden}"),
+  
+  autoWaiter(),
+
+  
   ## CSS style  ----------------------------------------------------
-  ## Header  ----------------------------------------------------
-  tags$head(
-    tags$style(HTML('
-        
-        h1 {
-        
-        }
-        '))),
-        
   tags$head(
     tags$style(HTML(' 
         
@@ -179,11 +181,17 @@ body <- dashboardBody(
         /* main sidebar */
         .skin-blue .main-sidebar {
                               background-color: #f5f5eb;
-                              font-size: 10px;
+                              font-size: 10px;.
+                              
                               }
 
         /* active selected tab in the sidebarmenu */
         .skin-blue .main-sidebar .sidebar .sidebar-menu .active a{
+                              background-color: #f5f5eb ;
+                              font-size: 10px;
+        }
+        
+        .sidebar-menu li a{
                               background-color: #f5f5eb ;
                               font-size: 10px;
                               }
@@ -223,6 +231,13 @@ body <- dashboardBody(
                           font-size: 10px;
         }
         
+        .box {font-size: 10px;}
+        
+        .dropdown-item:hover {
+         color: #000000 ;
+         background-color: #DDAFA1 !important;
+         }
+        
          .myClass { 
               font-size: 10px;
               line-height: 50px;
@@ -232,7 +247,9 @@ body <- dashboardBody(
               padding: 0px;
               overflow: hidden;
               color: white;
-            }
+         }
+        
+        .shiny-input-container{padding:0px !important;}
                               '))),
   
   ## Text Styles  ----------------------------------------------------
@@ -724,7 +741,7 @@ body <- dashboardBody(
                          valueBoxOutput("rf_display_MAE_", width = 4)
                      )
                    ),
-                   fluidRow(
+
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
                        box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
@@ -746,7 +763,7 @@ body <- dashboardBody(
                                              height = "30vh"))
                            )
                        )
-                     )
+
                    ),
             column(width = 10,
                    fluidRow(
@@ -916,9 +933,10 @@ body <- dashboardBody(
                                chooseSliderSkin("Flat"),
                                sliderInput(inputId = "gb_treenumrange",
                                            label = "Boosting Iterations:",
-                                           min = 5,
+                                           min = 10,
                                            max = 500,
-                                           value = c(100))
+                                           step = 10,
+                                           value = c(10))
                                ),
                            div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                chooseSliderSkin("Flat"),
@@ -1845,7 +1863,7 @@ server <- function(input, output) {
   
   gb_treenumrange_  <- eventReactive(
     input$gb_action_, {
-      seq(from = 0.5 * input$gb_treenumrange,
+      seq(from = input$gb_treenumrange,
           to = 5 *input$gb_treenumrange,
           length.out = 20)
     }) 
