@@ -34,14 +34,14 @@ Science <- round(summary(stu$Science),1)
 
 db_summarystats <- as.data.frame(rbind(Math, Reading, Science))
 
-# Dashboard - Ternary Plot Tooltips
-stu_tt <- stu %>% 
-  mutate(rank_Math = round(percent_rank(Math)*100, 0),
-         rank_Reading = round(percent_rank(Reading)*100, 0),
-         rank_Science = round(percent_rank(Science)*100, 0),
-         tooltip = paste0("Math: ", round(Math,0), " | Percentile: ", rank_Math,
-                          "\nReading: ", round(Reading,0), " | Percentile: ", rank_Reading,
-                          "\nScience: ", round(Science),  " | Percentile: ", rank_Science))
+# # Dashboard - Ternary Plot Tooltips
+# stu_tt <- stu %>% 
+#   mutate(rank_Math = round(percent_rank(Math)*100, 0),
+#          rank_Reading = round(percent_rank(Reading)*100, 0),
+#          rank_Science = round(percent_rank(Science)*100, 0),
+#          tooltip = paste0("Math: ", round(Math,0), " | Percentile: ", rank_Math,
+#                           "\nReading: ", round(Reading,0), " | Percentile: ", rank_Reading,
+#                           "\nScience: ", round(Science),  " | Percentile: ", rank_Science))
 
 # Regression Model
 stu_mb <- stu %>% 
@@ -102,7 +102,8 @@ header <- dashboardHeader(
   tags$li(class = "dropdown",
           tags$style(".main-header {max-height: 80px; font-size: 10px;}"),
           tags$style(".main-header .logo {height: 80px; margin-top: 1em; margin-bottom: 0em; font-size: 10px;}"),
-          tags$style(".sidebar-toggle {height: 80px;margin-top: 1em; margin-bottom: 0em; font-size: 10px;}")
+          tags$style(".sidebar-toggle {height: 80px;margin-top: 1em; margin-bottom: 0em; font-size: 10px;}"),
+          tags$style(".navbar {min-height:20px !important}")
   ),
   title = div(pplogo,
               style = "position: relative; margin:0px 0px 0px 0px; display:right-align;"),
@@ -297,13 +298,31 @@ body <- dashboardBody(
                            ),
                          
                          fluidRow(
-                           box(
-                             title = tags$p("Relationship between subject scores", style = "font-weight: bold;"),
-                             plotlyOutput("db_ternplot_",
-                                          height = "40vh",
-                                          width = "100%"),
-                             status = "primary",
-                             width = 12
+                           tabBox(
+                             title = tags$p("Performance Distribution", style = "color: #7C6D62; font-weight: bold; font-size: 12px;"),
+                             width = 12,
+                             side = "right",
+                             selected = "Subject",
+                             tabPanel("Subject",
+                                      div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                          pickerInput(
+                                            inputId = "db_hist_subject",
+                                            label = "Subject",
+                                            choices = c("Math", "Reading", "Science"), 
+                                            selected = "Math",
+                                            multiple = FALSE,
+                                            options = list(style = "myClass"), 
+                                            choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                                            inline = FALSE,
+                                            width = NULL
+                                            ),
+                                          align = "center"
+                                          ),
+                                      plotlyOutput("db_hist_scores_",
+                                                   height = "30vh",
+                                                   width = "90%")),
+                             tabPanel("Predictors")
+
                            )
                          )
                          )
@@ -1134,34 +1153,74 @@ server <- function(input, output) {
   })
   
 
-  output$db_ternplot_ <- renderPlotly({
-    plot_ly(stu_tt,
-            type = "scatterternary",
-            mode = 'markers',
-            a = stu_tt$rank_Math,
-            b = stu_tt$rank_Reading,
-            c = stu_tt$rank_Science,
-            text = stu_tt$tooltip,
-            opacity = 0.6,
-            marker = list(color = '#4E7880',
-                          opacity = 0.6,
-                          size = 6,
-                          line = list('width' = 1, color = '#FFFFFF')
-            )
-    ) %>%
+
+  output$db_hist_scores_ <- renderPlotly({
+    histog <- 
+      plot_ly(stu,
+            color = I("#c7c8cc")) %>% 
+      add_histogram(x = ~ Math,
+                    hoverlabel = list(
+                      bgcolor = "black",
+                      bordercolor = "#ffffff"),
+                    hovertemplate=paste('Score: %{x}<br>',
+                                        'Number of Students: %{y}<extra></extra>')
+      ) %>% 
       layout(
-        ternary = list(
-          xsum = 100,
-          aaxis = list(title = 'Math'),
-          baxis = list(title ='Reading'),
-          caxis = list(title ='Science')
-        ),
         autosize = TRUE,
-        #automargin = FALSE,
-        margin = list(l=30,r=30,b=50,t=50,pad=4)
-        #width = 600, 
-        #height = 380
+        xaxis = list(title = "Subject Score",   
+                     showticklabels = TRUE),
+        yaxis = list(
+          title = "",
+          zeroline = FALSE,
+          showline = FALSE,
+          showticklabels = TRUE,
+          showgrid = FALSE
+        ),
+        plot_bgcolor = "#ffffff",
+        paper_bgcolor = "#ffffff",
+        bargap = 0.1
       )
+    
+    boxp <- plot_ly(stu,
+                    x = ~ Math,
+                    color = I("#c7c8cc"),
+                    type = "box",
+                    boxmean = T,
+                    fillcolor = "",
+                    line = list(color = "gray",
+                                width = 1.5),
+                    hoverlabel = list(
+                      bgcolor = "black",
+                      bordercolor = "#ffffff"
+                    ),
+                    marker = list(color = 'rgb(8,81,156)',
+                                  outliercolor = 'rgba(219, 64, 82, 0.6)',
+                                  line = list(outliercolor = 'rgba(219, 64, 82, 1.0)',
+                                              outlierwidth = 2))
+    ) %>% 
+      layout(
+        xaxis = list(title = "",
+                     zeroline = FALSE,
+                     showline = FALSE,
+                     showticklabels = TRUE,
+                     showgrid = FALSE,
+                     tickfont = list(size = 8)
+                     ),
+        yaxis = list(title = "",
+                     zeroline = FALSE,
+                     showline = FALSE,
+                     showticklabels = TRUE,
+                     showgrid = FALSE
+             ))
+    
+    subplot(boxp, histog, 
+            nrows = 2,
+            heights = c(0.2, 0.8),
+            #widths = c(0.8, 0.2),
+            shareX = TRUE) %>% 
+      layout(showlegend = FALSE
+      )
+    
   })
   
   # DT Data Manipulation  ----------------------------------------------------
@@ -2159,7 +2218,9 @@ server <- function(input, output) {
   #### Variable Importance
   gb_varimp_plot <- eventReactive(
     input$gb_action_, {
-      vip::vip(gbmodel(), num_features = 40, bar = FALSE)
+      vip::vip(gbmodel(), 
+               num_features = 40, 
+               geom = "point")
     }
   )  
   
