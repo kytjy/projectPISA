@@ -236,17 +236,25 @@ body <- dashboardBody(
         .dropdown-item:hover {
          color: #000000 ;
          background-color: #DDAFA1 !important;
-         }
+        }
+        
+        .optgroup-header {
+                font-size: 10px !important;
+        }
+        
+        input[type="number"] {
+        font-size: 10px;}
+
         
          .myClass { 
               font-size: 10px;
-              line-height: 50px;
-              text-align: left;
-              font-family: "Playfair Display", serif;
-              font-weight: bold;
-              padding: 0px;
-              overflow: hidden;
-              color: white;
+              #line-height: 50px;
+              #text-align: left;
+              #font-family: "Playfair Display", serif;
+              #font-weight: bold;
+              #padding: 0px;
+              #overflow: hidden;
+              #color: white;
          }
         
         .shiny-input-container{padding:0px !important;}
@@ -298,7 +306,7 @@ body <- dashboardBody(
                              width = 12
                            )
                          )
-                         ),
+                         )
                      
 
                      ),
@@ -369,7 +377,7 @@ body <- dashboardBody(
                                    choices = c("Math", "Reading", "Science"), 
                                    selected = "Math",
                                    multiple = FALSE,
-                                   options = list(`actions-box` = TRUE),
+                                   options = list(style = "myClass"), #list(`actions-box` = TRUE),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
                                    inline = FALSE,
                                    width = NULL
@@ -403,7 +411,7 @@ body <- dashboardBody(
                                                             "Family Commitment" = "FamilyCommitment")),
                                    selected = colnames(stu_mb[1:24]),
                                    multiple = TRUE,
-                                   options = list(`actions-box` = TRUE),
+                                   options = list(style = "myClass"),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
                                    width = NULL
@@ -429,7 +437,8 @@ body <- dashboardBody(
                            div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
                                actionButton(inputId = "dt_action_",
                                             label = "Run Analysis",
-                                            icon = icon("wrench")),
+                                            icon = icon("wrench"),
+                                            style = 'padding: 4px; font-size: 10px'),
                                align = "center"
                            )                      
                            )
@@ -471,6 +480,7 @@ body <- dashboardBody(
                                                      actionButton(inputId = "dt_tunemodel_",
                                                                   label = "Tune Model",
                                                                   icon = icon("scissors"),
+                                                                  style = 'padding: 4px; font-size: 10px'
                                                                   ),
                                                      align = "center"
                                                      )
@@ -575,7 +585,7 @@ body <- dashboardBody(
                                    choices = c("Math", "Reading", "Science"), 
                                    selected = "Math",
                                    multiple = FALSE,
-                                   options = list(`actions-box` = TRUE),
+                                   options = list(style = "myClass"),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
                                    inline = FALSE,
                                    width = NULL
@@ -609,11 +619,11 @@ body <- dashboardBody(
                                                             "Family Commitment" = "FamilyCommitment")),
                                    selected = colnames(stu_mb[1:24]),
                                    multiple = TRUE,
-                                   options = list(`actions-box` = TRUE),
+                                   options = list(style = "myClass"),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
-                                   width = NULL
-                                 ))
+                                   width = NULL)
+                                 )
                          )
                      ),
                      div(
@@ -722,7 +732,8 @@ body <- dashboardBody(
                            div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
                                actionButton(inputId = "rf_action_",
                                             label = "Run Analysis",
-                                            icon = icon("wrench")),
+                                            icon = icon("wrench"),
+                                            style = 'padding: 4px; font-size: 10px'),
                                align = "center"
                                )
                            )
@@ -742,9 +753,10 @@ body <- dashboardBody(
                      )
                    ),
 
-                     div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
-                       box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
+                     fluidRow(
+                       div(
+                         style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                         box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
                            closable = FALSE,
                            width = 12,
                            status = "primary",
@@ -762,12 +774,8 @@ body <- dashboardBody(
                                              width = "100%",
                                              height = "30vh"))
                            )
-                       )
+                       ),
 
-                   ),
-            column(width = 10,
-                   fluidRow(
-                     style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
                      div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
                          box(title = tags$p("Variable Importance (Top 40)", style = "font-weight: bold;"),
                              closable = FALSE,
@@ -778,12 +786,13 @@ body <- dashboardBody(
                              )
                          )
                      )
-                   )
+            )
             ),
     tabItem(tabName = "tab_gb",
             
             #### Gradient Boosting Toggle Column  ----------------------------------------------------
             column(width = 2,
+                   fluidRow(
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
                          box(title = tags$p(span(icon("tree"), "Gradient Boosting"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
@@ -809,7 +818,7 @@ body <- dashboardBody(
                                    choices = c("Math", "Reading", "Science"), 
                                    selected = "Math",
                                    multiple = FALSE,
-                                   options = list(`actions-box` = TRUE),
+                                   options = list(style = "myClass"),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
                                    inline = FALSE,
                                    width = NULL
@@ -843,7 +852,7 @@ body <- dashboardBody(
                                                             "Family Commitment" = "FamilyCommitment")),
                                    selected = colnames(stu_mb[1:24]),
                                    multiple = TRUE,
-                                   options = list(`actions-box` = TRUE),
+                                   options = list(style = "myClass"),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
                                    width = NULL
@@ -907,12 +916,12 @@ body <- dashboardBody(
                                                             max = 10,
                                                             step = 1,
                                                             value = 3)
+                                               )
                                            )
-                           )
                            )
                        )
                      ),
-                     div(
+                   div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
                        box(title = tags$p("Step 4: Tuning Parameters", style = "font-weight: bold;"),
                            collapsible = TRUE,
@@ -922,49 +931,77 @@ body <- dashboardBody(
                            solidHeader = FALSE,  
                            div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                chooseSliderSkin("Flat"),
-                               numericInput(inputId = "gb_interactiondepth",
-                                           label = "Max. Tree Depth: ",
-                                           min = 2,
-                                           max = 10,
-                                           step = 1,
-                                           value = 2)
-                           ),
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               chooseSliderSkin("Flat"),
-                               sliderInput(inputId = "gb_treenumrange",
-                                           label = "Boosting Iterations:",
-                                           min = 10,
-                                           max = 500,
-                                           step = 10,
-                                           value = c(10))
-                               ),
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               chooseSliderSkin("Flat"),
                                sliderInput(inputId = "gb_minnodesize",
                                            label = "Min. Node Size:",
                                            min = 2,
                                            max = 50,
                                            value = 5)
                            ),
+                           hidden(tags$div(id = "gb_cvkfold_tune",
+                                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                               sliderInput(inputId = "gb_cvkfold_interactiondepth",
+                                                           label = "Max. Tree Depth (select range): ",
+                                                           min = 2,
+                                                           max = 10,
+                                                           step = 1,
+                                                           value = c(1,3)
+                                                           )
+                                               ),
+                                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                               sliderInput(inputId = "gb_cvkfold_treenumrange",
+                                                           label = "Boosting Iterations (choose 2 for comparison):",
+                                                           min = 10,
+                                                           max = 500,
+                                                           step = 10,
+                                                           value = c(10, 50)
+                                                           )
+                                               )
+                                           )
+                                  ),
+                           hidden(tags$div(id = "gb_bs_tune",
+                                           style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                               sliderInput(inputId = "gb_bs_interactiondepth",
+                                                           label = "Max. Tree Depth: ",
+                                                           min = 2,
+                                                           max = 10,
+                                                           step = 1,
+                                                           value = 1
+                                                           )
+                                               ),
+                                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                               sliderInput(inputId = "gb_bs_treenumrange",
+                                                           label = "Boosting Iterations: ",
+                                                           min = 10,
+                                                           max = 500,
+                                                           step = 10,
+                                                           value = 10
+                                                           )
+                                               )
+                                           )
+                                  ),
                            div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                numericInput(inputId = "gb_shrinkage",
                                             label = "Learning Rate:",
                                             min = 0.01,
                                             max = 1.0,
                                             step = 0.01,
-                                            value = c(0.01))
+                                            value = c(0.01)
+                               )
                            ),
                            div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
                                actionButton(inputId = "gb_action_",
                                             label = "Run Analysis",
-                                            icon = icon("wrench")
+                                            icon = icon("wrench"),
+                                            style = 'padding: 4px; font-size: 10px'
                                             ),
-                               
                                align = "center"
+                               )
                            )
                        )
-                     )
+                   )
                    ),
+            
             (column(width = 5,
                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
                         box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
@@ -999,7 +1036,8 @@ body <- dashboardBody(
                         )
                         )
                     )
-             ),
+
+            ),
             (column(width = 5,
                     fluidRow(
                       style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
@@ -1837,6 +1875,21 @@ server <- function(input, output) {
     }
   })
   
+  #### Display tuning parameter selection box
+  observeEvent(input$gb_resamplingmethod_, {
+    if (input$gb_resamplingmethod_ == "gb_bootstrap") {      
+      shinyjs::hide("gb_cvkfold_tune")
+      shinyjs::show("gb_bs_tune")
+    }
+    else {
+
+      shinyjs::show("gb_cvkfold_tune")
+      shinyjs::hide("gb_bs_tune")
+      }
+  })
+
+   
+  
   # GB Model  ----------------------------------------------------
   
   ## Assign Model Train Control Parameters
@@ -1861,24 +1914,24 @@ server <- function(input, output) {
       )
     })
   
-  gb_treenumrange_  <- eventReactive(
+  gb_cvkfold_treenumrange_  <- eventReactive(
     input$gb_action_, {
-      seq(from = input$gb_treenumrange,
-          to = 5 *input$gb_treenumrange,
-          length.out = 20)
+      seq(from = input$gb_cvkfold_treenumrange[1],
+          to = input$gb_cvkfold_treenumrange[2],
+          length.out = 10)
     }) 
   
 
-  gb_interactiondepth_ <- eventReactive(
+  gb_cvkfold_interactiondepth_ <- eventReactive(
     input$gb_action_, {
-      seq(from = max(1, input$gb_interactiondepth -1),
-          to = min(10, input$gb_interactiondepth + 1),
-          length.out = 3)
+      seq(from = max(1, input$gb_cvkfold_interactiondepth[1]),
+          to = min(10, input$gb_cvkfold_interactiondepth[2]),
+          by = 1)
     }) 
   
-  gb_shrinkage_ <- eventReactive(
+  gb_cvkfold_shrinkage_ <- eventReactive(
     input$gb_action_, {
-      seq(from = max(0.01, input$gb_shrinkage -0.01),
+      seq(from = max(0.01, input$gb_shrinkage - 0.01),
           to = min(1, input$gb_shrinkage + 0.01),
           length.out = 3)
     }) 
@@ -1887,17 +1940,17 @@ server <- function(input, output) {
     input$gb_action_, {
       if (input$gb_resamplingmethod_ == "gb_bootstrap") {
         expand.grid(
-          interaction.depth = input$gb_interactiondepth, 
-          n.trees = input$gb_treenumrange,
+          interaction.depth = input$gb_bs_interactiondepth, 
+          n.trees = input$gb_bs_treenumrange,
           shrinkage = input$gb_shrinkage, 
           n.minobsinnode = input$gb_minnodesize
         )        
       }
       else (
       expand.grid(
-        interaction.depth = gb_interactiondepth_(), 
-        n.trees = gb_treenumrange_(),
-        shrinkage = gb_shrinkage_(), 
+        interaction.depth = gb_cvkfold_interactiondepth_(), 
+        n.trees = gb_cvkfold_treenumrange_(),
+        shrinkage = gb_cvkfold_shrinkage_(), 
         n.minobsinnode = input$gb_minnodesize
       ))
       
