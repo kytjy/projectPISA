@@ -12,7 +12,7 @@
 #==============================#
 
 pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinythemes", "shinyjs",
-               "tidyverse", "DT", "kableExtra", "plotly", "scales",
+               "tidyverse", "DT", "kableExtra", "plotly", "scales", "gt",
                "ranger", "vip", "rpart.plot", "caret", "tidymodels", "gbm",
                "waiter"
                )
@@ -113,7 +113,7 @@ header <- dashboardHeader(
 sidebar <- dashboardSidebar(
   tags$style(".left-side, .main-sidebar {padding-top: 120px; padding-right: 0px; margin-left: 0px; margin-right: 0px; font-size: 10px;}"),
   width = 80,
-  minified = FALSE,
+  minified = TRUE,
   sidebarMenu(
     id = "tabs",
     menuItem("Home", tabName = "tab_home", icon = icon("house")),
@@ -232,12 +232,12 @@ body <- dashboardBody(
                           font-size: 10px;
         }
         
-        .selectize-input.focus {
-        border-color: #DDAFA1;
-        outline: 0;
-        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
-        box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(221, 175, 161, 1);
-        }
+        # .selectize-input.focus {
+        # border-color: #DDAFA1;
+        # outline: 0;
+        # -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+        # box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(221, 175, 161, 1);
+        # }
         
         .box {font-size: 10px;}
         
@@ -249,6 +249,26 @@ body <- dashboardBody(
         .optgroup-header {
                 font-size: 10px !important;
         }
+        
+        .cbcontainer {
+        display: inline-block;
+        }
+        
+        .checkbox {
+               text-align: right;
+               display: inline-block;
+        }
+        .checkbox input {
+               float: right;
+               position: relative !important;
+               margin: 0px !important;
+               padding-left: 5px !important;
+        }
+        
+        .checkbox label {
+                padding-left: 0px !important;
+                padding-right: 5px !important;
+             }
         
         input[type="number"] {
         font-size: 10px;}
@@ -305,37 +325,18 @@ body <- dashboardBody(
                            ),
                          
                          fluidRow(
-                           tabBox(
-                             title = tags$p("Performance Distribution", style = "color: #7C6D62; font-weight: bold; font-size: 12px;"),
-                             width = 12,
-                             side = "right",
-                             selected = "Subject",
-                             tabPanel("Predictors"),
-                             
-                             tabPanel("Subject",
-                                      div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                          pickerInput(
-                                            inputId = "db_hist_subject",
-                                            label = "Subject",
-                                            choices = c("Math", "Reading", "Science"), 
-                                            selected = "Math",
-                                            multiple = FALSE,
-                                            options = list(style = "myClass"), 
-                                            choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                                            inline = FALSE,
-                                            width = NULL
-                                            ),
-                                          align = "center"
-                                          ),
-                                      plotlyOutput("db_hist_scores_",
-                                                   height = "30vh",
-                                                   width = "90%"))
-                             
+
+                         )
+                         ),
+                     div(style = "padding = 0em; margin-left: 0em; margin-right: 0em; height: 100% ",
+                         fluidRow(
+                           box(title = "Variable List", #tags$p("", style = "color: #b3907A; font-weight: bold; font-size: 80%;"),
+                               status = "primary",
+                               collapsible = FALSE,
+                               width = 12,
+                               DT::dataTableOutput("db_varlist_"))
                            )
                          )
-                         )
-                     
-
                      ),
             
             #### Dashboard Right Column  ----------------------------------------------------
@@ -347,27 +348,136 @@ body <- dashboardBody(
                           valueBoxOutput("home_studnum_", width = 6),
                           valueBoxOutput("home_schnum_", width = 6)
                           ),
-                       
                        div(style = "padding = 0em; margin-left: 0em; margin-right: 0em",
-                          fluidRow(
-                            box(
-                              title = "Summary Statistics",
-                              status = "primary",
-                              width = 12,
-                              collapsible = FALSE,
-                              DT::dataTableOutput("db_summarystats_")
-                              )
-                            )
-                          ),
-                       div(style = "padding = 0em; margin-left: 0em; margin-right: 0em; height: 100% ",
                            fluidRow(
-                             box(title = "Variable List", #tags$p("", style = "color: #b3907A; font-weight: bold; font-size: 80%;"),
-                                 status = "primary",
-                                 collapsible = FALSE,
-                                 width = 12,
-                                 DT::dataTableOutput("db_varlist_"))
-                             )
+                           tabBox(
+                           title = tags$p("Performance & Variable Distribution", style = "color: #7C6D62; font-weight: bold; font-size: 12px;"),
+                           width = 12,
+                           side = "left",
+                           selected = "Subject",
+                           tabPanel("Subject",
+                                    div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                        pickerInput(
+                                          inputId = "db_hist_subject",
+                                          label = "Select Subject:",
+                                          choices = c("Math", "Reading", "Science"), 
+                                          selected = "Math",
+                                          multiple = FALSE,
+                                          options = list(style = "myClass"), 
+                                          choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                                          inline = TRUE,
+                                          width = NULL
+                                        ),
+                                        align = "center"
+                                    ),
+                                    div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                        plotlyOutput("db_hist_scores_",
+                                                     height = "30vh",
+                                                     width = "90%"),
+                                        tags$div(tags$br()),
+                                        DT::dataTableOutput("db_summarystats_"),
+                                        align = "center")
+                                    ),
+                           tabPanel("Frequency of Predictor Response",
+                                    div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                        pickerInput(
+                                          inputId = "db_bar_var",
+                                          label = "Select Variable: ",
+                                          choices = list(
+                                            `School Environment` = list("School Type" = "SchoolType",
+                                                                        "Loneliness" = "Loneliness",
+                                                                        "Classroom Safety" = "ClassroomSafety",
+                                                                        "Teacher Support" = "TeacherSupport"),
+                                            `Personal` = list("Gender" = "Gender",
+                                                              "Math Homework Time" = "Homework_Math",
+                                                              "Reading Homework Time" = "Homework_Reading",
+                                                              "Science Homework Time" = "Homework_Science",
+                                                              "Preference for Math" = "Preference_Math",
+                                                              "Preference for Reading" = "Preference_Reading",
+                                                              "Preference for Science" = "Preference_Science",
+                                                              "Exercise" = "Exercise"),
+                                            `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                                                                   "Immigration" = "Immigration",
+                                                                   "Home Language" = "HomeLanguage",
+                                                                   "Sibling" = "Sibling",
+                                                                   "Aircon" = "Aircon",
+                                                                   "Helper" = "Helper",
+                                                                   "Vehicle" = "Vehicle",
+                                                                   "Books" = "Books",
+                                                                   "Own Room" = "OwnRoom",
+                                                                   "Family Commitment" = "FamilyCommitment")),
+                                          selected = "SchoolType",
+                                          multiple = FALSE,
+                                          options = list(style = "myClass"),
+                                          choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                                          inline = TRUE,
+                                          width = NULL
+                                        ), 
+                                        align = "center"
+                                    ),
+                                    div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                        plotlyOutput("db_bar",
+                                                     height = "30vh",
+                                                     width = "90%"),
+                                        align = "center")
+                           ),
+                           tabPanel("Scores by Predictor",
+                                    div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                        pickerInput(
+                                          inputId = "db_boxviolin_target",
+                                          label = "Select Subject:",
+                                          choices = c("Math", "Reading", "Science"), 
+                                          selected = "Math",
+                                          multiple = FALSE,
+                                          options = list(style = "myClass"), 
+                                          choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                                          inline = TRUE,
+                                          width = NULL
+                                        ),
+                                        pickerInput(
+                                          inputId = "db_boxviolin_var",
+                                          label = "Select Variable: ",
+                                          choices = list(
+                                            `School Environment` = list("School Type" = "SchoolType",
+                                                                        "Loneliness" = "Loneliness",
+                                                                        "Classroom Safety" = "ClassroomSafety",
+                                                                        "Teacher Support" = "TeacherSupport"),
+                                            `Personal` = list("Gender" = "Gender",
+                                                              "Math Homework Time" = "Homework_Math",
+                                                              "Reading Homework Time" = "Homework_Reading",
+                                                              "Science Homework Time" = "Homework_Science",
+                                                              "Preference for Math" = "Preference_Math",
+                                                              "Preference for Reading" = "Preference_Reading",
+                                                              "Preference for Science" = "Preference_Science",
+                                                              "Exercise" = "Exercise"),
+                                            `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                                                                   "Immigration" = "Immigration",
+                                                                   "Home Language" = "HomeLanguage",
+                                                                   "Sibling" = "Sibling",
+                                                                   "Aircon" = "Aircon",
+                                                                   "Helper" = "Helper",
+                                                                   "Vehicle" = "Vehicle",
+                                                                   "Books" = "Books",
+                                                                   "Own Room" = "OwnRoom",
+                                                                   "Family Commitment" = "FamilyCommitment")),
+                                          selected = "SchoolType",
+                                          multiple = FALSE,
+                                          options = list(style = "myClass"),
+                                          choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                                          inline = TRUE,
+                                          width = NULL
+                                        ), 
+                                        align = "center"
+                                    ),
+                                    div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                        plotlyOutput("db_boxviolin",
+                                                     height = "30vh",
+                                                     width = "90%"),
+                                        align = "center")
+                                    )
                            )
+                           )
+                       )
                        )
                    )
                 #)
@@ -496,13 +606,21 @@ body <- dashboardBody(
                                                                   value = 3)
                                                      ),
                                                  div(style = "padding = 0em; margin-top: -0.8em",
+                                                     checkboxInput(inputId = "dt_bestcp",
+                                                                  label = "Model with the best complexity parameter  ",
+                                                                  value = TRUE)
+                                                 ),
+                                                 hidden(
+                                                   div(id = "dt_cp_opts",
+                                                     style = "padding = 0em; margin-top: -0.8em",
                                                      numericInput(inputId = "dt_cp",
                                                                   label = "Complexity Parameter:",
                                                                   min = 0.00001,
                                                                   max = 1,
                                                                   step = 0.00001,
                                                                   value = 0.02)
-                                                     ),
+                                                     )
+                                                   ),
                                                  div(style = "padding = 0em; margin-top: 2em; font-size: 10px;",
                                                      actionButton(inputId = "dt_tunemodel_",
                                                                   label = "Tune Model",
@@ -1148,11 +1266,18 @@ server <- function(input, output) {
     )
   })
   
+  summarystatstable <- reactive({
+    db_summarystats[input$db_hist_subject, ]
+  })
+  
+    
   output$db_summarystats_ <- DT::renderDataTable({
-      datatable(db_summarystats,
+      datatable(summarystatstable(),
                 options = list(dom = 't'),
                 class = "compact")
   })
+
+  
   
   output$db_varlist_ <- DT::renderDataTable({
     datatable(varlist,
@@ -1165,7 +1290,7 @@ server <- function(input, output) {
   output$db_hist_scores_ <- renderPlotly({
     histog <- 
       plot_ly(stu,
-            color = I("#c7c8cc")) %>% 
+            color = I("#caced8")) %>% 
       add_histogram(x = ~ get(input$db_hist_subject),
                     hoverlabel = list(
                       bgcolor = "black",
@@ -1191,11 +1316,11 @@ server <- function(input, output) {
     
     boxp <- plot_ly(stu,
                     x = ~ get(input$db_hist_subject),
-                    color = I("#c7c8cc"),
+                    color = I("#caced8"),
                     type = "box",
                     boxmean = T,
                     fillcolor = "",
-                    line = list(color = "gray",
+                    line = list(color = "#caced8",
                                 width = 1.5),
                     hoverlabel = list(
                       bgcolor = "black",
@@ -1229,6 +1354,51 @@ server <- function(input, output) {
       layout(showlegend = FALSE
       )
     
+  })
+  
+  
+  
+  output$db_boxviolin <- renderPlotly({
+    plot_ly(stu, 
+            x = ~ get(input$db_boxviolin_var),
+            y = ~ get(input$db_boxviolin_target),
+            line = list(width=1),
+            type = "violin",
+            spanmode = 'hard',
+            #marker = list(opacity = 0.5,
+            #              line = list(width = 2)),
+            box = list(visible = T),
+            #points = 'all',
+            scalemode = 'count',
+            meanline = list(visible = T,
+                            color = "red"),
+            color = I('#caced8'),
+            marker = list(
+              line = list(
+                width = 2,
+                color = '#caced8'
+              ),
+              symbol = 'line-ns')
+            ) %>% 
+      layout(yaxis = list(title = input$db_boxviolin_target),
+             xaxis = list(title = input$db_boxviolin_var)
+             )
+  })
+  
+  output$db_bar <- renderPlotly({
+    plot_ly(stu, 
+            x = ~ get(input$db_bar_var)
+            ) %>% 
+      add_histogram(
+            textposition = 'auto',
+            color = I('#caced8'),
+            textfont = list(size =10, 
+                            color = 'rgb(158,202,225)'
+                          )
+            ) %>% 
+      layout(yaxis = list(title = "No. of Students"),
+             xaxis = list(title = input$db_bar_var)
+      )
   })
   
   # DT Data Manipulation  ----------------------------------------------------
@@ -1268,6 +1438,15 @@ server <- function(input, output) {
   ### Display Selection after first model run
   observeEvent(input$dt_action_, {
     shinyjs::show("dt_kfold_group")
+  })
+  
+  ## Hide Complexity Parameter when box is checked, ie, model with best CP to be plotted
+  observeEvent(input$dt_bestcp, {
+    if (input$dt_bestcp == TRUE) {
+    shinyjs::hide("dt_cp_opts")
+    }
+    else {shinyjs::show("dt_cp_opts")
+      }
   })
   
   # DT Model  ----------------------------------------------------
@@ -1324,7 +1503,9 @@ server <- function(input, output) {
           form = Math ~ .,
           data = dt_traindata(),
           method = "rpart",
-          tuneGrid = expand.grid(cp = input$dt_cp),
+          tuneGrid = expand.grid(cp = if(input$dt_bestcp == TRUE) {dtmodel()$bestTune}
+                                 else {input$dt_cp}
+                                 ),
           trControl = trainControl(method = "repeatedcv",
                                    number = input$dt_rkfold_number,
                                    repeats = input$dt_rkfold_repeat)
