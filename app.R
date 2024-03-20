@@ -150,7 +150,7 @@ body <- dashboardBody(
   
   useShinyjs(),
   
-  shinyjs::inlineCSS("body > div > header > nav > a {visibility: hidden}"),
+  #shinyjs::inlineCSS("body > div > header > nav > a {visibility: hidden}"),
   
   autoWaiter(),
 
@@ -232,6 +232,13 @@ body <- dashboardBody(
                           font-size: 10px;
         }
         
+        .selectize-input.focus {
+        border-color: #DDAFA1;
+        outline: 0;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(221, 175, 161, 1);
+        }
+        
         .box {font-size: 10px;}
         
         .dropdown-item:hover {
@@ -303,6 +310,8 @@ body <- dashboardBody(
                              width = 12,
                              side = "right",
                              selected = "Subject",
+                             tabPanel("Predictors"),
+                             
                              tabPanel("Subject",
                                       div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                           pickerInput(
@@ -320,9 +329,8 @@ body <- dashboardBody(
                                           ),
                                       plotlyOutput("db_hist_scores_",
                                                    height = "30vh",
-                                                   width = "90%")),
-                             tabPanel("Predictors")
-
+                                                   width = "90%"))
+                             
                            )
                          )
                          )
@@ -1158,7 +1166,7 @@ server <- function(input, output) {
     histog <- 
       plot_ly(stu,
             color = I("#c7c8cc")) %>% 
-      add_histogram(x = ~ Math,
+      add_histogram(x = ~ get(input$db_hist_subject),
                     hoverlabel = list(
                       bgcolor = "black",
                       bordercolor = "#ffffff"),
@@ -1167,7 +1175,7 @@ server <- function(input, output) {
       ) %>% 
       layout(
         autosize = TRUE,
-        xaxis = list(title = "Subject Score",   
+        xaxis = list(title = paste0(input$db_hist_subject, " Score"),   
                      showticklabels = TRUE),
         yaxis = list(
           title = "",
@@ -1182,7 +1190,7 @@ server <- function(input, output) {
       )
     
     boxp <- plot_ly(stu,
-                    x = ~ Math,
+                    x = ~ get(input$db_hist_subject),
                     color = I("#c7c8cc"),
                     type = "box",
                     boxmean = T,
@@ -1202,14 +1210,14 @@ server <- function(input, output) {
         xaxis = list(title = "",
                      zeroline = FALSE,
                      showline = FALSE,
-                     showticklabels = TRUE,
+                     showticklabels = FALSE,
                      showgrid = FALSE,
                      tickfont = list(size = 8)
                      ),
         yaxis = list(title = "",
                      zeroline = FALSE,
                      showline = FALSE,
-                     showticklabels = TRUE,
+                     showticklabels = FALSE,
                      showgrid = FALSE
              ))
     
