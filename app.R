@@ -372,7 +372,7 @@ body <- dashboardBody(
                                     ),
                                     div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                         plotlyOutput("db_hist_scores_",
-                                                     height = "30vh",
+                                                     height = "40vh",
                                                      width = "90%"),
                                         tags$div(tags$br()),
                                         DT::dataTableOutput("db_summarystats_"),
@@ -417,7 +417,7 @@ body <- dashboardBody(
                                     ),
                                     div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                         plotlyOutput("db_bar",
-                                                     height = "30vh",
+                                                     height = "40vh",
                                                      width = "90%"),
                                         align = "center")
                            ),
@@ -471,7 +471,7 @@ body <- dashboardBody(
                                     ),
                                     div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                         plotlyOutput("db_boxviolin",
-                                                     height = "30vh",
+                                                     height = "40vh",
                                                      width = "90%"),
                                         align = "center")
                                     )
