@@ -250,25 +250,25 @@ body <- dashboardBody(
                 font-size: 10px !important;
         }
         
-        .cbcontainer {
-        display: inline-block;
-        }
-        
-        .checkbox {
-               text-align: right;
-               display: inline-block;
-        }
-        .checkbox input {
-               float: right;
-               position: relative !important;
-               margin: 0px !important;
-               padding-left: 5px !important;
-        }
-        
-        .checkbox label {
-                padding-left: 0px !important;
-                padding-right: 5px !important;
-             }
+        # .cbcontainer {
+        # display: inline-block;
+        # }
+        # 
+        # .checkbox {
+        #        text-align: left;
+        #        display: inline-block;
+        # }
+        # .checkbox input {
+        #        float: left;
+        #        position: relative !important;
+        #        margin-right: 0px !important;
+        #        padding-right: 0px !important;
+        # }
+        # 
+        # .checkbox label {
+        #         padding-left: 0px !important;
+        #         padding-right: 0px !important;
+        #      }
         
         input[type="number"] {
         font-size: 10px;}
@@ -483,6 +483,96 @@ body <- dashboardBody(
                 #)
             ),
     
+    ### Data Analysis **ARIEL**   ----------------------------------------------------
+    tabItem(tabName = "tab_eda",
+            
+            #### CDA Tab's Side Toggles ----------------------------------------------------
+            column(width = 2,
+                   fluidRow(
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p(span(icon("magnifying-glass"), "Data Analysis"), style = "font-weight: bold; color: #FFFFFF"),
+                             status = "info",
+                             collapsible = FALSE,
+                             width = 12,
+                             solidHeader =TRUE,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 "Provide a short description of the module here, or maybe description of the statistical tests."
+                             )
+                         )
+                     ),
+                     
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p("Variable Selection", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             collapsed = FALSE,
+                             width = 12,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 
+                                 ## ARIEL YOUR SIDE BAR TOGGLES CAN PUT HERE
+                                 pickerInput(
+                                   inputId = "cda_target_", ## ARIEL CAN CHANGE THIS NAME
+                                   label = "Scores",
+                                   choices = c("Math", "Reading", "Science"), 
+                                   selected = "Math",
+                                   multiple = FALSE,
+                                   options = list(style = "myClass"), #list(`actions-box` = TRUE),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                                   inline = FALSE,
+                                   width = NULL
+                                 )),
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "cda_vars_", ## ARIEL CAN CHANGE THIS NAME
+                                   label = "Variables",
+                                   choices = list(
+                                     `School Environment` = list("School Type" = "SchoolType",
+                                                                 "Loneliness" = "Loneliness",
+                                                                 "Classroom Safety" = "ClassroomSafety",
+                                                                 "Teacher Support" = "TeacherSupport"),
+                                     `Personal` = list("Gender" = "Gender",
+                                                       "Math Homework Time" = "Homework_Math",
+                                                       "Reading Homework Time" = "Homework_Reading",
+                                                       "Science Homework Time" = "Homework_Science",
+                                                       "Preference for Math" = "Preference_Math",
+                                                       "Preference for Reading" = "Preference_Reading",
+                                                       "Preference for Science" = "Preference_Science",
+                                                       "Exercise" = "Exercise"),
+                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                                                            "Immigration" = "Immigration",
+                                                            "Home Language" = "HomeLanguage",
+                                                            "Sibling" = "Sibling",
+                                                            "Aircon" = "Aircon",
+                                                            "Helper" = "Helper",
+                                                            "Vehicle" = "Vehicle",
+                                                            "Books" = "Books",
+                                                            "Own Room" = "OwnRoom",
+                                                            "Family Commitment" = "FamilyCommitment")),
+                                   selected = colnames(stu_mb[1:24]),
+                                   multiple = FALSE,
+                                   options = list(style = "myClass"),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                                   inline = FALSE,
+                                   width = NULL
+                                 ))
+                             )
+                         )
+                     )
+                   ),
+            column(width = 10,
+                   fluidRow(
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p("Variable Selection", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             collapsed = FALSE,
+                             width = 12 # ARIEL ADD COMMA HERE 
+                             ## ARIEL YOUR PLOTS CAN PUT HERE
+                             ))
+                   )
+                   )
+            
+            ),
     ### Decision Tree  ----------------------------------------------------
     tabItem(tabName = "tab_dt",
             
@@ -1603,7 +1693,13 @@ server <- function(input, output) {
         geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
         geom_abline(intercept = 0, slope = 1, linetype = 2, color = "#20948b", size = 0.8) +
         labs(title = "Predicted vs Actual")+ 
-        theme_minimal()
+        theme_minimal()+
+        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              axis.line.y = element_blank(),
+              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              plot.title = element_text(size=12, face="bold"),
+              axis.title = element_text(face="bold"),
+              axis.text = element_text(face="bold")) 
     })
   
   ## Plot Predicted vs Actual - Pruned Model
@@ -1615,7 +1711,13 @@ server <- function(input, output) {
         geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
         geom_abline(intercept = 0, slope = 1, linetype = 2, color = "#20948b", size = 0.8) +
         labs(title = "Predicted vs Actual")+ 
-        theme_minimal()
+        theme_minimal()+
+        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              axis.line.y = element_blank(),
+              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              plot.title = element_text(size=12, face="bold"),
+              axis.title = element_text(face="bold"),
+              axis.text = element_text(face="bold")) 
     })
   
   
@@ -1637,7 +1739,13 @@ server <- function(input, output) {
         geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
         geom_hline(yintercept = 0, linetype = 2, color = "#20948b", size = 0.8) +
         labs(title = "Residuals vs Actual")+ 
-        theme_minimal()
+        theme_minimal()+
+        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              axis.line.y = element_blank(),
+              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              plot.title = element_text(size=12, face="bold"),
+              axis.title = element_text(face="bold"),
+              axis.text = element_text(face="bold")) 
     })
   
   ## Plot Residuals vs Actual - Pruned Model
@@ -1649,7 +1757,13 @@ server <- function(input, output) {
         geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
         geom_hline(yintercept = 0, linetype = 2, color = "#20948b", size = 0.8) +
         labs(title = "Residuals vs Predicted")+ 
-        theme_minimal()
+        theme_minimal()+
+        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              axis.line.y = element_blank(),
+              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              plot.title = element_text(size=12, face="bold"),
+              axis.title = element_text(face="bold"),
+              axis.text = element_text(face="bold")) 
     }) 
   
   ### Function to plot Residuals vs Actual
@@ -1758,15 +1872,19 @@ server <- function(input, output) {
   #### CP ValueBox
   dt_cp_plot <- eventReactive(
     input$dt_action_, {
-      plot(dtmodel())
+      ggplot(dtmodel()) +
+        geom_point(alpha = 0.2, color = "grey40")+
+        theme_minimal()+
+        labs(y = "RMSE")+
+        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              axis.line.y = element_blank(),
+              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              plot.title = element_text(size=12, face="bold"),
+              axis.title = element_text(face="bold"),
+              axis.text = element_text(face="bold")) 
     }
   )  
-  
-  # dt_cp_plot_prune <- eventReactive(
-  #   input$dt_tunemodel_, {
-  #     plot(dtmodel_prune())
-  #   }
-  # )  
+
   
   
   ### Function to plot Residuals vs Actual
@@ -1981,7 +2099,13 @@ server <- function(input, output) {
         geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
         geom_abline(intercept = 0, slope = 1, linetype = 2, color = "#20948b", size = 0.8) +
         labs(title = "Predicted vs Actual")+ 
-        theme_minimal()
+        theme_minimal()+
+        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              axis.line.y = element_blank(),
+              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              plot.title = element_text(size=12, face="bold"),
+              axis.title = element_text(face="bold"),
+              axis.text = element_text(face="bold")) 
     })
   
   output$rf_plotpredvsactual_ <- renderPlot({
@@ -1997,7 +2121,13 @@ server <- function(input, output) {
         geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
         geom_hline(yintercept = 0, linetype = 2, color = "#20948b", size = 0.8) +
         labs(title = "Residuals vs Actual")+ 
-        theme_minimal()
+        theme_minimal()+
+        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              axis.line.y = element_blank(),
+              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              plot.title = element_text(size=12, face="bold"),
+              axis.title = element_text(face="bold"),
+              axis.text = element_text(face="bold")) 
     })
   
   
@@ -2283,7 +2413,13 @@ server <- function(input, output) {
         geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
         geom_abline(intercept = 0, slope = 1, linetype = 2, color = "#20948b", size = 0.8) +
         labs(title = "Predicted vs Actual")+ 
-        theme_minimal()
+        theme_minimal()+
+        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              axis.line.y = element_blank(),
+              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              plot.title = element_text(size=12, face="bold"),
+              axis.title = element_text(face="bold"),
+              axis.text = element_text(face="bold")) 
     })
   
   output$gb_plotpredvsactual_ <- renderPlot({
@@ -2299,7 +2435,13 @@ server <- function(input, output) {
         geom_smooth(method = "loess", formula = "y ~ x", color="#dfb2e9") +
         geom_hline(yintercept = 0, linetype = 2, color = "#20948b", size = 0.8) +
         labs(title = "Residuals vs Actual")+ 
-        theme_minimal()
+        theme_minimal()+
+        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              axis.line.y = element_blank(),
+              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              plot.title = element_text(size=12, face="bold"),
+              axis.title = element_text(face="bold"),
+              axis.text = element_text(face="bold")) 
     })
   
   
@@ -2382,6 +2524,10 @@ server <- function(input, output) {
   gb_modelplot <- eventReactive(
     input$gb_action_, {
       plot(gbmodel())
+        # theme(plot.title = element_text(size=12, face="bold"),
+        #       axis.title = element_text(face="bold"),
+        #       axis.text = element_text(face="bold"))
+
     }
   )  
   
