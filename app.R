@@ -11,10 +11,11 @@
 #~~~~~ Importing Packages~~~~~#
 #==============================#
 
-pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinythemes", "shinyjs",
+pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinythemes", "shinyjs", "waiter",
                "tidyverse", "DT", "kableExtra", "plotly", "scales", "gt",
                "ranger", "vip", "rpart.plot", "caret", "tidymodels", "gbm",
-               "waiter"
+               "dendextend", "heatmaply",
+               "parallelPlot", "poLCA", "rlang"
                )
 
 #==============================#
@@ -22,8 +23,6 @@ pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyW
 #==============================#
 
 # Loading files
-#stu <- read_csv("data/stu_SG_rcd.csv")
-
 stu <- read_rds("data/stu_SG_rcd.rds")
 varlist <- read_csv("data/var.csv")
 
@@ -34,19 +33,161 @@ Science <- round(summary(stu$Science),1)
 
 db_summarystats <- as.data.frame(rbind(Math, Reading, Science))
 
-# # Dashboard - Ternary Plot Tooltips
-# stu_tt <- stu %>% 
-#   mutate(rank_Math = round(percent_rank(Math)*100, 0),
-#          rank_Reading = round(percent_rank(Reading)*100, 0),
-#          rank_Science = round(percent_rank(Science)*100, 0),
-#          tooltip = paste0("Math: ", round(Math,0), " | Percentile: ", rank_Math,
-#                           "\nReading: ", round(Reading,0), " | Percentile: ", rank_Reading,
-#                           "\nScience: ", round(Science),  " | Percentile: ", rank_Science))
-
-# Regression Model
+# Regression Model - Data Selection
 stu_mb <- stu %>% 
-  select(2:26) %>% 
+  dplyr::select(2:26) %>% 
   na.omit()
+
+# Cluster Analysis - Data Manipulation
+stu_ca_less <- stu %>% 
+  dplyr::select(2:26) %>% 
+  na.omit()
+
+cat <- list(Math = NULL, Reading = NULL, Science = NULL, 
+            SchoolType = c("Public",
+                           "Private"),
+            Loneliness = c("Strongly Agree",
+                           "Agree",
+                           "Disagree",
+                           "Strongly Disagree"),
+            ClassroomSafety = c("Strongly Disagree",
+                                "Disagree",
+                                "Agree",
+                                "Strongly Agree"),
+            TeacherSupport = c("Never or almost never",
+                               "Some lessons",
+                               "Most lesson",
+                               "Every lesson"),
+            Gender = c("Female",
+                       "Male"),
+            Homework_Math = c("≤ 0.5hr",
+                              "0.5hr - 1hr",
+                              "1hr - 2hr",
+                              "2hr - 3hr",
+                              "3 - 4 hr",
+                              "> 4hr"),
+            Homework_Reading = c("≤ 0.5hr",
+                                 "0.5hr - 1hr",
+                                 "1hr - 2hr",
+                                 "2hr - 3hr",
+                                 "3 - 4 hr",
+                                 "> 4hr"),
+            Homework_Science = c("≤ 0.5hr",
+                                 "0.5hr - 1hr",
+                                 "1hr - 2hr",
+                                 "2hr - 3hr",
+                                 "3 - 4 hr",
+                                 "> 4hr"),
+            Preference_Math = c("Strongly Disagree",
+                                "Disagree",
+                                "Agree",
+                                "Strongly Agree"),
+            Preference_Reading = c("Strongly Disagree",
+                                   "Disagree",
+                                   "Agree",
+                                   "Strongly Agree"),
+            Preference_Science = c("Strongly Disagree",
+                                   "Disagree",
+                                   "Agree",
+                                   "Strongly Agree"),
+            Exercise = c("0",
+                         "1", 
+                         "2",
+                         "3",
+                         "4",
+                         "5",
+                         "6",
+                         "7",
+                         "8",
+                         "9",
+                         "10"),
+            ParentsEducation = c("Pre-Primary",
+                                 "Primary", 
+                                 "Secondary",
+                                 "Post-Secondary",
+                                 "Tertiary"),
+            Immigration = c("Native",
+                            "2nd Generation",
+                            "3rd Generation"),
+            HomeLanguage = c("English",
+                             "Others"),
+            Sibling = c("0",
+                        "1",
+                        "2",
+                        "≥3"),
+            Books = c("0",
+                      "1 - 10",
+                      "11 - 25",
+                      "26 - 100",
+                      "101 - 200",
+                      "201-500",
+                      ">500"),
+            Aircon = c("No", "Yes"),
+            Helper = c("No", "Yes"),
+            Vehicle = c("0",
+                        "1",
+                        "2",
+                        "≥3"),
+            OwnRoom = c("No", 
+                        "Yes"),
+            FamilyCommitment = c("0",
+                                 "1", 
+                                 "2",
+                                 "3",
+                                 "4",
+                                 "5",
+                                 "6",
+                                 "7",
+                                 "8",
+                                 "9",
+                                 "10"))
+
+
+# Recode for LCA
+median_math <- median(stu_ca_less$Math)
+median_reading <- median(stu_ca_less$Reading)
+median_science <- median(stu_ca_less$Science)
+
+stu_lca <- stu_ca_less %>%
+  mutate(Sibling = recode(Sibling,
+                          `0` = "No",
+                          `1` = "Yes",
+                          `2` = "Yes",
+                          `≥3` = "Yes")) %>%
+  mutate(Vehicle = recode(Vehicle,
+                          `0` = "No",
+                          `1` = "Yes",
+                          `2` = "Yes",
+                          `≥3` = "Yes")) %>%
+  mutate(Exercise = recode(Exercise,
+                           `0` = "No",
+                           `1` = "Yes",
+                           `2` = "Yes",
+                           `3` = "Yes",
+                           `4` = "Yes",
+                           `5` = "Yes",
+                           `6` = "Yes",
+                           `7` = "Yes",
+                           `8` = "Yes",
+                           `9` = "Yes",
+                           `10` = "Yes")) %>%
+  mutate(FamilyCommitment = recode(FamilyCommitment,
+                                   `0` = "No",
+                                   `1` = "Yes",
+                                   `2` = "Yes",
+                                   `3` = "Yes",
+                                   `4` = "Yes",
+                                   `5` = "Yes",
+                                   `6` = "Yes",
+                                   `7` = "Yes",
+                                   `8` = "Yes",
+                                   `9` = "Yes",
+                                   `10` = "Yes")) %>%
+  mutate(Math = ifelse(Math >= median_math, "Median and Above", "Below Median")) %>%
+  mutate(Reading = ifelse(Reading >= median_reading, "Median and Above", "Below Median")) %>%
+  mutate(Science = ifelse(Science >= median_science, "Median and Above", "Below Median"))
+
+stu_lca[-1] <- lapply(stu_lca[-1], factor)
 
 #========================#
 #~~~~~ Theme ~~~~~#
@@ -124,9 +265,10 @@ sidebar <- dashboardSidebar(
     menuItem("Cluster Analysis", tabName = "tab_cluster", 
              icon = icon("users-viewfinder"),
              startExpanded = TRUE,
-             menuSubItem("Heatmap", tabName = "tab_heatmap"),
-             menuSubItem("Parallel Plot", tabName = "tab_parallelplot")
-             ),
+             menuSubItem("Hierarchical Clustering", tabName = "tab_heatmap"),
+             menuSubItem("K-means Clustering", tabName = "tab_parallelplot"),
+             menuSubItem("Latent Class Analysis", tabName = "tab_lca")
+    ),
     
     menuItem("Regression", tabName = "tab_mod", 
              icon = icon("tree"),
@@ -286,6 +428,10 @@ body <- dashboardBody(
          }
         
         .shiny-input-container{padding:0px !important;}
+        
+        html.shiny-busy .container-fluid {
+        cursor: wait;}
+        
                               '))),
   
   ## Text Styles  ----------------------------------------------------
@@ -573,6 +719,506 @@ body <- dashboardBody(
                    )
             
             ),
+    ### Cluster Heatmap  ----------------------------------------------------
+    ### Cluster Heatmap  ----------------------------------------------------
+    tabItem(tabName = "tab_heatmap",
+            column(width = 2,
+                   fluidRow(
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p(span(icon("users-viewfinder"), "Cluster Heatmap"), style = "font-weight: bold; color: #FFFFFF"),
+                             status = "info",
+                             collapsible = TRUE,
+                             width = 12,
+                             solidHeader =TRUE,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 "A Cluster Heatmap is a heatmap with hierarchical clustering. The dendrograms on the side of the heatmap organises the rows and columns based on their similarities and differences, creating a hierachical tree structure. The clustering helps identify patterns and relationships within the data."
+                             )
+                         )
+                     ),
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100%",
+                         box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             collapsed = FALSE,
+                             width = 12,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "scores_heatmap",
+                                   label = "Scores",
+                                   choices = c("Math", "Reading", "Science"),
+                                   multiple = TRUE,
+                                   options = list(style = "myClass"), #list(`actions-box` = TRUE),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                                   inline = FALSE,
+                                   width = NULL)
+                             ),
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "vars_heatmap",
+                                   label = "Variables",
+                                   choices = list(
+                                     `School Environment` = list("School Type" = "SchoolType",
+                                                                 "Loneliness" = "Loneliness",
+                                                                 "Classroom Safety" = "ClassroomSafety",
+                                                                 "Teacher Support" = "TeacherSupport"),
+                                     `Personal` = list("Gender" = "Gender",
+                                                       "Math Homework Time" = "Homework_Math",
+                                                       "Reading Homework Time" = "Homework_Reading",
+                                                       "Science Homework Time" = "Homework_Science",
+                                                       "Preference for Math" = "Preference_Math",
+                                                       "Preference for Reading" = "Preference_Reading",
+                                                       "Preference for Science" = "Preference_Science",
+                                                       "Exercise" = "Exercise"),
+                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                                                            "Immigration" = "Immigration",
+                                                            "Home Language" = "HomeLanguage",
+                                                            "Sibling" = "Sibling",
+                                                            "Aircon" = "Aircon",
+                                                            "Helper" = "Helper",
+                                                            "Vehicle" = "Vehicle",
+                                                            "Books" = "Books",
+                                                            "Own Room" = "OwnRoom",
+                                                            "Family Commitment" = "FamilyCommitment")),
+                                   multiple = TRUE,
+                                   options = list(style = "myClass"),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                                   inline = FALSE,
+                                   width = NULL)
+                             ),
+                             div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                                 actionButton(inputId = "action_heatmap_vars",
+                                              label = "Confirm Selection",
+                                              icon = icon("filter"),
+                                              style = 'padding: 4px; font-size: 10px'),
+                                 align = "center")
+                         ),
+                         box(title = tags$p("Step 2: Data Sampling", style = "font-weight: bold;"),
+                             collapsible = TRUE,
+                             collapsed = TRUE,
+                             width = 12,
+                             status = "primary",
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 numericInput(inputId = "seed_heatmap", 
+                                              label = "Seed:", 
+                                              value = 123, 
+                                              step = 1),
+                                 selectInput(inputId = "groupby_heatmap", 
+                                             label = "Group by:", 
+                                             choices = " "),
+                                 sliderInput(inputId = "prop_heatmap", 
+                                             label = "Proportion:",
+                                             min = 0.1, 
+                                             max = 1.0, 
+                                             value = 0.1, 
+                                             step = 0.1),
+                                 selectInput(inputId = "replace_heatmap", 
+                                             label = "Replace?",
+                                             choices = c("False", "True")
+                                 )
+                             )
+                         ),
+                         box(title = tags$p("Step 3: Data Transformation", style = "font-weight: bold;"),
+                             collapsible = TRUE,
+                             collapsed = TRUE,
+                             width = 12,
+                             status = "primary",
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 radioButtons(inputId = "data_transformation_heatmap", 
+                                              label = " ",
+                                              choices = c("Scale by Column", 
+                                                          "Scale by Row",
+                                                          "Normalise", 
+                                                          "Percentise"),
+                                              selected = "Normalise")
+                             )
+                         ),
+                         box(title = tags$p("Step 4: Clustering Algorithm", style = "font-weight: bold;"),
+                             collapsible = TRUE,
+                             collapsed = TRUE,
+                             width = 12,
+                             status = "primary",
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 selectInput(inputId = "dist_method_heatmap", 
+                                             label = "Distance Metric:",
+                                             choices = c("euclidean", 
+                                                         "maximum", 
+                                                         "manhattan",
+                                                         "canberra", 
+                                                         "binary", 
+                                                         "minkowski")),
+                                 selectInput(inputId = "hclust_heatmap", 
+                                             label = "Hierarchical Clustering Method:",
+                                             choices = c("complete", 
+                                                         "ward.D",
+                                                         "ward.D2", 
+                                                         "single", 
+                                                         "average", 
+                                                         "mcquitty", 
+                                                         "median", 
+                                                         "centroid")),
+                                 selectInput(inputId = "seriation_heatmap", 
+                                             label = "Seriation:",
+                                             choices = c("none",
+                                                         "OLO", 
+                                                         "mean", 
+                                                         "GW")),
+                                 radioButtons(inputId = "clusters_heatmap",
+                                              label = "No. of Clusters",
+                                              choices = c("Auto", 
+                                                          "Manual"),
+                                              selected = "Auto"),
+                                 conditionalPanel(
+                                   condition = "input.clusters_heatmap == 'Manual'",
+                                   sliderInput(inputId = "numclusters_heatmap", 
+                                               label = "Manual Selection for No. of Clusters:",
+                                               min = 1, 
+                                               max = 15, 
+                                               value = 5,
+                                               step = 1)
+                                 ),
+                                 div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                                     actionButton(inputId = "action_heatmap",
+                                                  label = "Run Analysis",
+                                                  icon = icon("gear"),
+                                                  style = 'padding: 4px; font-size: 10px'),
+                                     align = "center")
+                             )
+                         )
+                     )
+                     )
+              ),
+              column(width = 10,
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100%",
+                         box(title = tags$p("Plot", style = "font-weight: bold;"), 
+                             collapsible = FALSE,
+                             status = "primary",
+                             width = 12,
+                             plotlyOutput("cluster_heatmap", height = "800px"),
+                             box(title = tags$p("Supplementary Information", style = "font-weight: bold"), 
+                                 collapsible = TRUE,
+                                 collapsed = TRUE,
+                                 width = 12,
+                                 fluidRow(
+                                   column(width = 4, 
+                                          uiOutput("active_heatmap_supp1"),
+                                          flipBox(id = "fb_heatmap_supp1",
+                                                  width = 12,
+                                                  front = wellPanel(
+                                                    style = "background: white",
+                                                    h5(strong("Best Clustering Method"), 
+                                                       align = "center"),
+                                                    h6("Click for More Information"),
+                                                    tableOutput("cluster_supp1")),
+                                                  back = wellPanel(
+                                                    p("The dend_expend() function in the dendextend package is used to determine the recommended clustering method to be used. The method with the highest optimum value is recommended.")))),
+                                   column(width = 8, 
+                                          uiOutput("active_heatmap_supp2"),
+                                          flipBox(id = "fb_heatmap_supp2",
+                                                  width = 12,
+                                                  front = wellPanel(
+                                                    style = "background: white",
+                                                    h5(strong("Optimal No. of Clusters"),
+                                                       align = "center"),
+                                                    h6("Click for More Information"),
+                                                    plotOutput("cluster_supp2")),
+                                                  back = wellPanel(
+                                                    p("The find_k() function in the dendextend package is used to determine the optimal number of clusters. Note that there could be discrepancy between the default number of clusters decided by the heatmaply() function used to plot the heatmap and the optimal number of clusters found by the find_k() function because different methods are used for determining the number of clusters. The heatmaply() function uses its internal algorithm, while the find_k function involves silhouette analysis.")
+                                                  )
+                                          )
+                                   )
+                                 )
+                             )
+                         )
+                     )
+              )
+    ),
+    
+    ### Parallel Plot  ----------------------------------------------------
+    tabItem(tabName = "tab_parallelplot",
+            column(width = 2,
+                   fluidRow(
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p(span(icon("users-viewfinder"), "Parallel Coordinates Plot"), style = "font-weight: bold; color: #FFFFFF"),
+                             status = "info",
+                             collapsible = TRUE,
+                             width = 12,
+                             solidHeader =TRUE,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 "A Parallel Coordinates Plot is used to explore and understand clusters identified by the k-means algorithm, showing the similarities and differences within and between clusters."
+                             )
+                         )
+                     ),
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             width = 12,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "scores_parallel",
+                                   label = "Scores",
+                                   choices = c("Math", "Reading", "Science"),
+                                   multiple = TRUE,
+                                   options = list(style = "myClass"),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                                   inline = FALSE,
+                                   width = NULL)
+                             ),
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "vars_parallel",
+                                   label = "Variables",
+                                   choices = list(
+                                     `School Environment` = list("School Type" = "SchoolType",
+                                                                 "Loneliness" = "Loneliness",
+                                                                 "Classroom Safety" = "ClassroomSafety",
+                                                                 "Teacher Support" = "TeacherSupport"),
+                                     `Personal` = list("Gender" = "Gender",
+                                                       "Math Homework Time" = "Homework_Math",
+                                                       "Reading Homework Time" = "Homework_Reading",
+                                                       "Science Homework Time" = "Homework_Science",
+                                                       "Preference for Math" = "Preference_Math",
+                                                       "Preference for Reading" = "Preference_Reading",
+                                                       "Preference for Science" = "Preference_Science",
+                                                       "Exercise" = "Exercise"),
+                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                                                            "Immigration" = "Immigration",
+                                                            "Home Language" = "HomeLanguage",
+                                                            "Sibling" = "Sibling",
+                                                            "Aircon" = "Aircon",
+                                                            "Helper" = "Helper",
+                                                            "Vehicle" = "Vehicle",
+                                                            "Books" = "Books",
+                                                            "Own Room" = "OwnRoom",
+                                                            "Family Commitment" = "FamilyCommitment")),
+                                   multiple = TRUE,
+                                   options = list(style = "myClass"),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                                   inline = FALSE,
+                                   width = NULL)
+                             ),
+                             div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                                 actionButton(inputId = "action_parallel_vars",
+                                              label = "Confirm Selection",
+                                              icon = icon("filter"),
+                                              style = 'padding: 4px; font-size: 10px'),
+                                 align = "center")
+                         ),
+                         box(title = tags$p("Step 2: Data Sampling", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             collapsed = TRUE,
+                             width = 12,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 numericInput(inputId = "seed_parallel", 
+                                              label = "Seed:", 
+                                              value = 123,
+                                              step = 1),
+                                 selectInput(inputId = "groupby_parallel", 
+                                             label = "Group by:", 
+                                             choices = " "),
+                                 sliderInput(inputId = "prop_parallel", 
+                                             label = "Proportion:",
+                                             min = 0.1, 
+                                             max = 1.0, 
+                                             value = 0.1, 
+                                             step = 0.1),
+                                 selectInput(inputId = "replace_parallel", 
+                                             label = "Replace?",
+                                             choices = c("False", "True")
+                                 )
+                             )
+                         ),
+                         box(title = tags$p("Step 3: Aesthetics", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             collapsed = TRUE,
+                             width = 12,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 selectInput(inputId = "ref_col_parallel", 
+                                             label = "Reference Column:",
+                                             choices = " "),
+                                 selectInput(inputId = "colscale_cont_parallel", 
+                                             label = "Colour Scale (Continuous Data):",
+                                             choices = c("Viridis", 
+                                                         "Inferno", 
+                                                         "Magma", 
+                                                         "Plasma", 
+                                                         "Warm", 
+                                                         "Cool", 
+                                                         "Rainbow", 
+                                                         "CubehelixDefault",
+                                                         "Blues", 
+                                                         "Greens", 
+                                                         "Greys", 
+                                                         "Oranges",
+                                                         "Purples", 
+                                                         "Reds", 
+                                                         "BuGn", 
+                                                         "BuPu", 
+                                                         "GnBu",
+                                                         "OrRd",
+                                                         "PuBuGn", 
+                                                         "PuBu", 
+                                                         "PuRd", 
+                                                         "RdBu",
+                                                         "RdPu", 
+                                                         "YlGnBu", 
+                                                         "YlGn", 
+                                                         "YlOrBr", 
+                                                         "YlOrRd")
+                                 ),
+                                 selectInput(inputId = "colscale_cat_parallel", 
+                                             label = "Colour Scale (Categorical Data):",
+                                             choices = c("Category10", 
+                                                         "Accent", 
+                                                         "Dark2", 
+                                                         "Paired",
+                                                         "Set1")
+                                 )
+                             ),
+                             div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                                 actionButton(inputId = "action_parallel",
+                                              label = "Run Analysis",
+                                              icon = icon("gear"),
+                                              style = 'padding: 4px; font-size: 10px'),
+                                 align = "center")
+                         )
+                     )
+                   )
+              ),
+              column(width = 10,
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100%",
+                         box(title = tags$p("Plot", style = "font-weight: bold;"), 
+                             collapsible = FALSE,
+                             status = "primary",
+                             width = 12,
+                             parallelPlotOutput("parallelplot")
+                         )
+                     )
+              )
+            ),
+    
+    ### Latent Class Analysis  ----------------------------------------------------
+    tabItem(tabName = "tab_lca",
+            column(width = 2,
+                   fluidRow(
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p(span(icon("users-viewfinder"), "Latent Class Analysis Bar Plot"), style = "font-weight: bold; color: #FFFFFF"),
+                             status = "info",
+                             collapsible = TRUE,
+                             width = 12,
+                             solidHeader =TRUE,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 "A Latent Class Analaysis (LCA) Bar Plot is used to show the distribution of categorical variables within each latent class. LCA is a statistical method used to identify unobserved (latent) classes within a population based on observed categorical variables. Each observation is probabilistically assigned to one of the latent classes. The bar plot helps to identify which categories are most prevalent or distinctive within each class."
+                             )
+                         )
+                     ),
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             width = 12,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "scores_lca",
+                                   label = "Scores",
+                                   choices = c("Math", "Reading", "Science"),
+                                   multiple = TRUE,
+                                   options = list(style = "myClass"),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),                                 
+                                   inline = FALSE,
+                                   width = NULL)),
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "vars_lca",
+                                   label = "Variables",
+                                   choices = list(
+                                     `School Environment` = list("School Type" = "SchoolType",
+                                                                 "Loneliness" = "Loneliness",
+                                                                 "Classroom Safety" = "ClassroomSafety",
+                                                                 "Teacher Support" = "TeacherSupport"),
+                                     `Personal` = list("Gender" = "Gender",
+                                                       "Math Homework Time" = "Homework_Math",
+                                                       "Reading Homework Time" = "Homework_Reading",
+                                                       "Science Homework Time" = "Homework_Science",
+                                                       "Preference for Math" = "Preference_Math",
+                                                       "Preference for Reading" = "Preference_Reading",
+                                                       "Preference for Science" = "Preference_Science",
+                                                       "Exercise" = "Exercise"),
+                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                                                            "Immigration" = "Immigration",
+                                                            "Home Language" = "HomeLanguage",
+                                                            "Sibling" = "Sibling",
+                                                            "Aircon" = "Aircon",
+                                                            "Helper" = "Helper",
+                                                            "Vehicle" = "Vehicle",
+                                                            "Books" = "Books",
+                                                            "Own Room" = "OwnRoom",
+                                                            "Family Commitment" = "FamilyCommitment")),
+                                   multiple = TRUE,
+                                   options = list(style = "myClass"),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),                                 
+                                   inline = FALSE,
+                                   width = NULL)),
+                             div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                                 actionButton(inputId = "action_lca_vars",
+                                              label = "Confirm Selection",
+                                              icon = icon("filter"),
+                                              style = 'padding: 4px; font-size: 10px'),
+                                 align = "center")
+                         ),
+                         box(title = tags$p("Step 2: Clustering Parameters", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             collapsed = TRUE,
+                             width = 12,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 sliderInput(inputId = "numclusters_lca", 
+                                             label = "No. of Clusters:",
+                                             min = 1, 
+                                             max = 15, 
+                                             value = 5,
+                                             step = 1),
+                                 sliderInput(inputId = "numrep_lca", 
+                                             label = "No. of Repetitions:",
+                                             min = 1, 
+                                             max = 5, 
+                                             value = 3,
+                                             step = 1)
+                             )
+                         ),
+                         box(title = tags$p("Step 3: Variable Distribution by Class", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             collapsed = TRUE,
+                             width = 12,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 selectInput(inputId = "groupby_lca", 
+                                             label = "Variable to Plot",
+                                             choices = " ")),
+                             div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                                 actionButton(inputId = "action_lca",
+                                              label = "Run Analysis",
+                                              icon = icon("gear"),
+                                              style = 'padding: 4px; font-size: 10px'),
+                                 align = "center")
+                         )
+                         )
+                     )
+              ),
+              column(width = 10,
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100%",
+                         box(title = tags$p("Latent Class Analysis", style = "font-weight: bold;"), 
+                             collapsible = FALSE,
+                             status = "primary",
+                             width = 12,
+                             plotlyOutput("lca")
+                         )
+                     )
+              )
+            ),
+    
     ### Decision Tree  ----------------------------------------------------
     tabItem(tabName = "tab_dt",
             
@@ -582,7 +1228,7 @@ body <- dashboardBody(
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
                          box(title = tags$p(span(icon("tree"), "Decision Tree"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
-                             collapsible = FALSE,
+                             collapsible = TRUE,
                              width = 12,
                              solidHeader =TRUE,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
@@ -765,7 +1411,12 @@ body <- dashboardBody(
                          plotOutput("dt_cp_plot_",
                                     width = "100%",
                                     height = "30vh"),
-                         valueBoxOutput("dt_showcp_", width =12)
+                         div(style = "padding = 0em; margin-top: 1em; margin-left: 0em;",
+                             flipBox(id = "dt_cp_info",
+                                     width = 12,
+                                     front = valueBoxOutput("dt_showcp_", width =12),
+                                     back = tags$p("Complexity Parameter is used to control the size of the decision tree and to select the optimal tree size. The tree will stop dividing nodes when the reduction in relative error is less than a certain value.")
+                             ))
                          )
                      )
                      )
@@ -799,7 +1450,7 @@ body <- dashboardBody(
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
                          box(title = tags$p(span(icon("tree"), "Random Forest"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
-                             collapsible = FALSE,
+                             collapsible = TRUE,
                              width = 12,
                              solidHeader =TRUE,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
@@ -1051,7 +1702,7 @@ body <- dashboardBody(
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
                          box(title = tags$p(span(icon("tree"), "Gradient Boosting"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
-                             collapsible = FALSE,
+                             collapsible = TRUE,
                              width = 12,
                              solidHeader =TRUE,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
@@ -1531,7 +2182,443 @@ server <- function(input, output) {
       )
   })
   
-  # DT Data Manipulation  ----------------------------------------------------
+  ### Cluster Heatmap  ----------------------------------------------------
+  
+  # Combine Selected Variables and SchoolID
+  selected_variables_heatmap <- eventReactive(
+    input$action_heatmap_vars, {
+      c('SchoolID', 
+        input$scores_heatmap,
+        input$vars_heatmap)
+    }
+  )
+  
+  # Combine Selected Variables (excl. Scores) and SchoolID
+  selected_variables_heatmap_less <- eventReactive(
+    input$action_heatmap_vars, {
+      c('SchoolID', 
+        input$vars_heatmap)
+    }
+  )
+  
+  # Update "group_by" Option with Selected Variables
+  vars_names <- c("SchoolID" = "School ID",
+                  "SchoolType" = "School Type",
+                  "ClassroomSafety" = "Classroom Safety",
+                  "TeacherSupport" = "Teacher Support",
+                  "Homework_Math" = "Math Homework Time",
+                  "Homework_Reading" = "Reading Homework Time",
+                  "Homework_Science" = "Science Homework Time",
+                  "Preference_Math" = "Preference for Math",
+                  "Preference_Reading" = "Preference for Reading",
+                  "Preference_Science" = "Preference for Science",
+                  "ParentsEducation" = "Parents' Education",
+                  "HomeLanguage" = "Home Language",
+                  "OwnRoom" = "Own Room",
+                  "FamilyCommitment" = "Family Commitment",
+                  "Math" = "Math",
+                  "Reading" ="Reading",
+                  "Science" = "Science",
+                  "Gender" = "Gender",
+                  "Exercise" = "Exercise",
+                  "Immigration" = "Immigration",
+                  "Sibling" = "Sibling",
+                  "Aircon" = "Aircon",
+                  "Helper" = "Helper",
+                  "Vehicle" = "Vehicle",
+                  "Books" = "Books")
+  
+  observeEvent(input$action_heatmap_vars, {
+    choices_original <- selected_variables_heatmap_less()
+    choices_display <- choices_original
+    
+    for (var in names(vars_names)) {
+      index <- which(choices_original == var)
+      if (length(index) > 0) {
+        choices_display[index] <- vars_names[var]
+      }
+    }
+    
+    updateSelectInput(
+      session = getDefaultReactiveDomain(), 
+      inputId = "groupby_heatmap", 
+      choices = setNames(choices_original, choices_display)
+    )
+  })
+  
+  # Filter Dataset using Selected Variables
+  data_filtered_heatmap <- eventReactive(
+    input$action_heatmap_vars, {
+      data_filtered_heatmap <- stu %>% 
+        dplyr::select(all_of(selected_variables_heatmap()))})
+  
+  # Data Sampling
+  data_sample_heatmap <- eventReactive(
+    input$action_heatmap, {
+      set.seed(input$seed_heatmap)
+      data_filtered_heatmap() %>%
+        dplyr::group_by_at(vars(input$groupby_heatmap)) %>% 
+        slice_sample(prop = input$prop_heatmap, 
+                     replace = (if (input$replace_heatmap == "False") {FALSE} 
+                                else {TRUE})) %>%
+        dplyr::ungroup()
+    }
+  )
+  
+  # Convert Sampled Dataset to Matrix
+  heatmap_data <- eventReactive(
+    input$action_heatmap, {
+      data.matrix(data_sample_heatmap())
+    }
+  )
+  
+  # Generate Plot: Cluster Heatmap
+  heatmap_plot <- eventReactive(
+    input$action_heatmap, {
+      if (input$data_transformation_heatmap == "Scale by Column") {
+        heatmaply(heatmap_data(),
+                  scale = "column",
+                  dist_method = input$dist_method_heatmap,
+                  hclust_method = input$hclust_heatmap,
+                  k_row = (if (input$clusters_heatmap == "Auto") {NA}
+                           else {input$numclusters_heatmap}),
+                  seriate = input$seriation_heatmap)
+      } 
+      else if (input$data_transformation_heatmap == "Scale by Row") {
+        heatmaply(heatmap_data(),
+                  scale = "row",
+                  dist_method = input$dist_method_heatmap,
+                  hclust_method = input$hclust_heatmap,
+                  k_row = (if (input$clusters_heatmap == "Auto") {NA}
+                           else {input$numclusters_heatmap}),
+                  seriate = input$seriation_heatmap)
+      } 
+      else if (input$data_transformation_heatmap == "Normalise") {
+        heatmaply(normalize(heatmap_data()),
+                  scale = "none",
+                  dist_method = input$dist_method_heatmap,
+                  hclust_method = input$hclust_heatmap,
+                  k_row = (if (input$clusters_heatmap == "Auto") {NA} 
+                           else {input$numclusters_heatmap}),
+                  seriate = input$seriation_heatmap) 
+      } 
+      else if (input$data_transformation_heatmap == "Percentise") {
+        heatmaply(percentize(heatmap_data()),
+                  scale = "none",
+                  dist_method = input$dist_method_heatmap,
+                  hclust_method = input$hclust_heatmap,
+                  k_row = (if (input$clusters_heatmap == "Auto") {NA} 
+                           else {input$numclusters_heatmap}),
+                  seriate = input$seriation_heatmap)
+      }
+    }
+  )
+  
+  # Function to Render Cluster Heatmap
+  cluster_heatmap = function(modeltype){
+    output$cluster_heatmap = renderPlotly(modeltype)}
+  
+  observeEvent(input$action_heatmap, cluster_heatmap(heatmap_plot()))
+  
+  # FlipBox: Heatmap Supplementary Visualisation 1
+  output$active_heatmap <- renderUI({
+    side <- if (input$fb_heatmap_supp1) " " else " "})
+  
+  # Heatmap Supplementary Visualisation 1
+  heatmap_supp1_plot <- eventReactive(
+    input$action_heatmap, {
+      heatmap_data <- heatmap_data()
+      if (input$data_transformation_heatmap == "Scale by Column") {
+        dplyr::select(dend_expend(dist(heatmap_data),
+                                  scale = "column",
+                                  method = input$dist_method_heatmap)[[3]], 2:3) 
+      } 
+      else if (input$data_transformation_heatmap == "Scale by Row") {
+        dplyr::select(dend_expend(dist(heatmap_data),
+                                  scale = "row",
+                                  method = input$dist_method_heatmap)[[3]], 2:3)
+      } 
+      else if (input$data_transformation_heatmap == "Normalise") {
+        dplyr::select(dend_expend(dist(normalize(heatmap_data)),
+                                  method = input$dist_method_heatmap)[[3]], 2:3)
+      } 
+      else if (input$data_transformation_heatmap == "Percentise") {
+        dplyr::select(dend_expend(dist(percentize(heatmap_data)),
+                                  method = input$dist_method_heatmap)[[3]], 2:3)
+      }
+    }
+  )
+  
+  # Function to Render Heatmap Supplementary Visualisation 1
+  cluster_supp1 = function(modeltype){
+    output$cluster_supp1 = renderTable(modeltype)}
+  
+  observeEvent(input$action_heatmap, cluster_supp1(heatmap_supp1_plot()))
+  
+  # FlipBox: Heatmap Supplementary Visualisation 2
+  output$active_heatmap <- renderUI({
+    side <- if (input$fb_heatmap_supp2) " " else " "})
+  
+  # Heatmap Supplementary Visualisation 2
+  heatmap_supp2_plot <- eventReactive(
+    input$action_heatmap, {
+      heatmap_data <- heatmap_data()
+      if (input$data_transformation_heatmap == "Scale by Column") {
+        plot(find_k(hclust(dist((heatmap_data),
+                                method = input$dist_method_heatmap),
+                           method = input$hclust_heatmap)))
+      } 
+      else if (input$data_transformation_heatmap == "Scale by Row") {
+        plot(find_k(hclust(dist((heatmap_data),
+                                method = input$dist_method_heatmap),
+                           method = input$hclust_heatmap)))
+      } 
+      else if (input$data_transformation_heatmap == "Normalise") {
+        plot(find_k(hclust(dist(normalize(heatmap_data),
+                                method = input$dist_method_heatmap),
+                           method = input$hclust_heatmap)))
+      } 
+      else if (input$data_transformation_heatmap == "Percentise") {
+        plot(find_k(hclust(dist(percentize(heatmap_data),
+                                method = input$dist_method_heatmap),
+                           method = input$hclust_heatmap)))
+      }
+    }
+  )
+  
+  # Function to Render Heatmap Supplementary Visualisation 2
+  cluster_supp2 = function(modeltype){
+    output$cluster_supp2 = renderPlot(modeltype)}
+  
+  observeEvent(input$action_heatmap, cluster_supp2(heatmap_supp2_plot()))
+  
+  ### Parallel Plot  ----------------------------------------------------
+  
+  # Combine Selected Variables and SchoolID
+  selected_variables_parallel1 <- eventReactive(
+    input$action_parallel_vars, {
+      c('SchoolID', 
+        input$scores_parallel,
+        input$vars_parallel)
+    }
+  )
+  
+  # Combine Selected Variables (excl. Scores) and SchoolID
+  selected_variables_parallel1_less <- eventReactive(
+    input$action_parallel_vars, {
+      c('SchoolID', 
+        input$vars_parallel)
+    }
+  )
+  
+  # Define Selected Variables (without SchoolID)
+  selected_variables_parallel2 <- eventReactive(
+    input$action_parallel_vars, {
+      c(input$scores_parallel,
+        input$vars_parallel)
+    }
+  )
+  
+  # Update "group_by" Option with Selected Variables
+  observeEvent(input$action_parallel_vars, {
+    choices_original <- selected_variables_parallel1_less()
+    choices_display <- choices_original
+    
+    for (var in names(vars_names)) {
+      index <- which(choices_original == var)
+      if (length(index) > 0) {
+        choices_display[index] <- vars_names[var]
+      }
+    }
+    
+    updateSelectInput(
+      session = getDefaultReactiveDomain(), 
+      inputId = "groupby_parallel", 
+      choices = setNames(choices_original, choices_display)
+    )
+  }
+  )
+  
+  # Update "Reference Column" Option with Selected Variables
+  observeEvent(input$action_parallel_vars, {
+    choices_original <- selected_variables_parallel2()
+    choices_display <- choices_original
+    
+    for (var in names(vars_names)) {
+      index <- which(choices_original == var)
+      if (length(index) > 0) {
+        choices_display[index] <- vars_names[var]
+      }
+    }
+    
+    updateSelectInput(
+      session = getDefaultReactiveDomain(), 
+      inputId = "ref_col_parallel", 
+      choices = setNames(choices_original, choices_display)
+    )
+  }
+  )
+  
+  # Filter Dataset using Selected Variables
+  data_filtered_parallel <- eventReactive(
+    input$action_parallel_vars, {
+      data_filtered_parallel <- stu %>% 
+        dplyr::select(all_of(selected_variables_parallel1()))
+    }
+  )
+  
+  # Data Sampling
+  data_sample_parallel <- eventReactive(
+    input$action_parallel, {
+      set.seed(input$seed_parallel)
+      data_filtered_parallel() %>%
+        dplyr::group_by_at(vars(input$groupby_parallel)) %>% 
+        slice_sample(prop = input$prop_parallel, 
+                     replace = (if (input$replace_parallel == "False") {FALSE} 
+                                else {TRUE})) %>%
+        dplyr::ungroup() %>%
+        dplyr::select(-"SchoolID")
+    }
+  )
+  
+  # Create List of Lists of Selected Variables from "cat" List 
+  lst <- eventReactive(
+    input$action_parallel, {
+      cols <- colnames(data_sample_parallel())
+      lst <- lapply(cols, function(col_name) {
+        if (col_name %in% names(cat)) {
+          cat[[col_name]]
+        } 
+        else {
+          NULL
+        }
+      }
+      )
+    }
+  )
+  
+  # Generate Plot: Parallel Plot
+  parallelplot_plot <- eventReactive(
+    input$action_parallel, {
+      parallelPlot(data_sample_parallel(),
+                   categorical = lst(),
+                   rotateTitle = TRUE,
+                   refColumnDim = input$ref_col_parallel,
+                   continuousCS = input$colscale_cont_parallel,
+                   categoricalCS = input$colscale_cat_parallel)
+    }
+  )
+  
+  # Function to Render Parallel Plot
+  cluster_parallelplot = function(modeltype){
+    output$parallelplot = renderParallelPlot(modeltype)}
+  
+  observeEvent(input$action_parallel, cluster_parallelplot(parallelplot_plot()))
+  
+  ### Latent Class Analysis  ----------------------------------------------------
+  
+  # Define Selected Variables
+  selected_variables_lca <- eventReactive(
+    input$action_lca_vars, {
+      c(input$scores_lca,
+        input$vars_lca)
+    }
+  )
+  
+  # Update "group_by" Option with Selected Variables
+  observeEvent(input$action_lca_vars, {
+    choices_original <- selected_variables_lca()
+    choices_display <- choices_original
+    
+    for (var in names(vars_names)) {
+      index <- which(choices_original == var)
+      if (length(index) > 0) {
+        choices_display[index] <- vars_names[var]
+      }
+    }
+    
+    updateSelectInput(
+      session = getDefaultReactiveDomain(), 
+      inputId = "groupby_lca", 
+      choices = setNames(choices_original, choices_display)
+    )
+  }
+  )
+  
+  # Filter Dataset using Selected Variables
+  data_filtered_lca <- eventReactive(
+    input$action_lca_vars, {
+      data_filtered_lca <- stu_lca %>%
+        dplyr::select(all_of(selected_variables_lca()))
+    }
+  )
+  
+  # Create Formula for LCA
+  model_lca <- eventReactive(
+    input$action_lca, {
+      formula_string <- paste(selected_variables_lca(), collapse = ", ")
+      f <- as.formula(paste("cbind(", formula_string, ") ~ 1"))
+      model_lca <- poLCA(f, data_filtered_lca(), nclass=7, nrep=5, maxiter=5000)
+      bic_lca <- model_lca$bic
+      aic_lca <- model_lca$aic
+      entropy <- function(p) sum(-p*log(p))
+      error_prior <- entropy(model_lca$P)
+      error_post <- mean(apply(model_lca$posterior, c(1,2), entropy), na.rm=T)
+      entropy_lca <- (error_prior - error_post) / error_prior
+      return(model_lca)
+    }
+  )
+  
+  
+  #bic_lca <- model_lca$bic
+  #aic_lca <- model_lca$aic
+  #entropy <- function(p) sum(-p*log(p))
+  #error_prior <- entropy(model_lca$P)
+  #error_post <- mean(apply(model_lca$posterior, c(1,2), entropy), na.rm=T)
+  #entropy_lca <- (error_prior - error_post) / error_prior
+  
+  # Generate Plot Parallel Plot
+  lca_plot <- eventReactive(
+    input$action_lca, {
+      model_lca <- model_lca()
+      data_filtered_lca_plot <- data_filtered_lca()
+      data_filtered_lca_plot$class <- model_lca$predclass
+      data_filtered_lca_plot$class <- factor(data_filtered_lca_plot$class)
+      
+      selected_var <- as.symbol(input$groupby_lca)
+      
+      plot_table <- data_filtered_lca_plot %>%
+        dplyr::group_by(!!selected_var, class) %>% 
+        summarise(counts = n()) %>% 
+        dplyr::ungroup()
+      
+      p <- ggplot(plot_table, 
+                  aes(fill = !!selected_var, 
+                      y = counts, 
+                      x = class)) +
+        geom_bar(position = "fill", stat = "identity") +
+        labs(y = "Proportion", x = "Class")+ 
+        theme_minimal()+
+        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              axis.line.y = element_blank(),
+              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+              plot.title = element_text(size=12, face="bold"),
+              axis.title = element_text(face="bold"),
+              axis.text = element_text(face="bold")) 
+      
+      ggplotly(p)
+    }
+  )
+  
+  ### Function to Plot Cluster Heatmap
+  cluster_lca = function(modeltype){
+    output$lca = renderPlotly(modeltype)}
+  
+  observeEvent(input$action_lca, cluster_lca(lca_plot()))
+  
+  
+  # Regression Analysis ----------------------------------------------------
+    # DT Data Manipulation  ----------------------------------------------------
 
   # Combine Selected Variables
   dt_selected_variables <- reactive({
@@ -1541,7 +2628,7 @@ server <- function(input, output) {
   
   dt_data <- reactive({
       stu_mb %>%
-        select(all_of(dt_selected_variables()))
+        dplyr::select(all_of(dt_selected_variables()))
     }
   )
   
@@ -1949,9 +3036,8 @@ server <- function(input, output) {
     output$dt_showcp_ = renderValueBox(
       valueBox(
         value = tags$p(modeltype, style = "font-size: 60%;"), 
-        subtitle = tags$p("Complexity Parameter:  Used to control the size of the decision tree and to select the optimal tree size. The tree will stop dividing nodes when the reduction in relative error is less than a certain value.", 
-                          style = "font-size: 100%;"), 
-        icon = tags$i(icon("trophy"), style="font-size: 80%"),
+        subtitle = tags$p("Best Complexity Parameter (Click for more)", style = "font-style: italic; font-size: 80%"),
+        icon = tags$i(icon("trophy"), style="font-size: 70%"),
         color = "yellow"
       )
     )
@@ -1971,7 +3057,7 @@ server <- function(input, output) {
   
   rf_data <- reactive({
     stu_mb %>%
-      select(all_of(rf_selected_variables()))
+      dplyr::select(all_of(rf_selected_variables()))
   }
   )
   
@@ -2248,7 +3334,7 @@ server <- function(input, output) {
   
   gb_data <- reactive({
     stu_mb %>%
-      select(all_of(gb_selected_variables()))
+      dplyr::select(all_of(gb_selected_variables()))
   }
   )
   
@@ -2269,7 +3355,7 @@ server <- function(input, output) {
       gb_data()[-gb_index(),]
     })
   
-  # RF Sidebar Toggles  ----------------------------------------------------
+  # GB Sidebar Toggles  ----------------------------------------------------
   ## Model Tuning Parameters 
   
   # ### Display Selection depending on resampling method
