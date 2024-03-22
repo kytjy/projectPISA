@@ -2231,13 +2231,6 @@ server <- function(input, output) {
                jitter = TRUE,
                aesthetics = list(color = "grey40"))
     }
-    else {
-      vip::vip(rfmodel(), 
-               num_features = 10, 
-               geom = "col",
-               jitter = TRUE,
-               aesthetics = list(color = "grey40"))      
-    }
   )  
   
   output$rf_varimp_plot_ <-
@@ -2603,13 +2596,6 @@ server <- function(input, output) {
                geom = "col",
                jitter = TRUE,
                aesthetics = list(color = "grey40"))
-    }
-    else {
-      vip::vip(gbmodel(), 
-               num_features = 10, 
-               geom = "col",
-               jitter = TRUE,
-               aesthetics = list(color = "grey40"))      
     }
   )  
   
