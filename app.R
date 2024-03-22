@@ -408,7 +408,7 @@ body <- dashboardBody(
                                                                    "Family Commitment" = "FamilyCommitment")),
                                           selected = "SchoolType",
                                           multiple = FALSE,
-                                          options = list(style = "myClass"),
+                                          options = list(style = "myClass", `actions-box` = TRUE),
                                           choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                           inline = TRUE,
                                           width = NULL
@@ -462,7 +462,7 @@ body <- dashboardBody(
                                                                    "Family Commitment" = "FamilyCommitment")),
                                           selected = "SchoolType",
                                           multiple = FALSE,
-                                          options = list(style = "myClass"),
+                                          options = list(style = "myClass", `actions-box` = TRUE),
                                           choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                           inline = TRUE,
                                           width = NULL
@@ -550,7 +550,7 @@ body <- dashboardBody(
                                                             "Family Commitment" = "FamilyCommitment")),
                                    selected = colnames(stu_mb[1:24]),
                                    multiple = FALSE,
-                                   options = list(style = "myClass"),
+                                   options = list(style = "myClass", `actions-box` = TRUE),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
                                    width = NULL
@@ -638,7 +638,7 @@ body <- dashboardBody(
                                                             "Family Commitment" = "FamilyCommitment")),
                                    selected = colnames(stu_mb[1:24]),
                                    multiple = TRUE,
-                                   options = list(style = "myClass"),
+                                   options = list(style = "myClass", `actions-box` = TRUE),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
                                    width = NULL
@@ -695,10 +695,11 @@ body <- dashboardBody(
                                                                   step = 1,
                                                                   value = 3)
                                                      ),
-                                                 div(style = "padding = 0em; margin-top: -0.8em",
-                                                     checkboxInput(inputId = "dt_bestcp",
+                                                 div(style = "padding = 0em; margin-top: 0em",
+                                                     materialSwitch(inputId = "dt_bestcp",
                                                                   label = "Model with the best complexity parameter  ",
-                                                                  value = TRUE)
+                                                                  value = TRUE,
+                                                                  status = "warning")
                                                  ),
                                                  hidden(
                                                    div(id = "dt_cp_opts",
@@ -854,7 +855,7 @@ body <- dashboardBody(
                                                             "Family Commitment" = "FamilyCommitment")),
                                    selected = colnames(stu_mb[1:24]),
                                    multiple = TRUE,
-                                   options = list(style = "myClass"),
+                                   options = list(style = "myClass", `actions-box` = TRUE),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
                                    width = NULL)
@@ -1012,12 +1013,31 @@ body <- dashboardBody(
                        ),
 
                      div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
-                         box(title = tags$p("Variable Importance (Top 40)", style = "font-weight: bold;"),
+                         box(title = tags$p("Variable Importance", style = "font-weight: bold;"),
                              closable = FALSE,
                              width = 12,
                              status = "primary",
-                             plotOutput("rf_varimp_plot_",
-                                        width = "100%")
+                             div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                               dropdownButton(
+                                 numericInput(
+                                     inputId = "rf_varimp_varcount",
+                                     label = "Number of variables to display (limited to the number of available responses):",
+                                     min = 5,
+                                     max = 120,
+                                     value = 10,
+                                     width = "290px",
+                                     step = 1),
+                                 circle = FALSE,
+                                 right = TRUE,
+                                 status = "default",
+                                 icon = icon("gear"), 
+                                 width = "300px"
+                                 #tooltip = tooltipOptions(title = "Click for more options")
+                                     ),
+                               align = "right"),
+                             div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                                 plotOutput("rf_varimp_plot_",
+                                            width = "100%"))
                              )
                          )
                      )
@@ -1087,7 +1107,7 @@ body <- dashboardBody(
                                                             "Family Commitment" = "FamilyCommitment")),
                                    selected = colnames(stu_mb[1:24]),
                                    multiple = TRUE,
-                                   options = list(style = "myClass"),
+                                   options = list(style = "myClass", `actions-box` = TRUE),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
                                    width = NULL
@@ -1288,8 +1308,28 @@ body <- dashboardBody(
                             collapsible = FALSE,
                             width = 12,
                             solidHeader =FALSE,
-                            plotOutput("gb_varimp_plot_",
-                                       width = "100%"))
+                            div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                                dropdownButton(
+                                  numericInput(
+                                    inputId = "gb_varimp_varcount",
+                                    label = "Number of variables to display (limited to the number of available responses):",
+                                    min = 5,
+                                    max = 120,
+                                    value = 10,
+                                    width = "290px",
+                                    step = 1),
+                                  circle = FALSE,
+                                  right = TRUE,
+                                  status = "default",
+                                  icon = icon("gear"), 
+                                  width = "300px"
+                                  #tooltip = tooltipOptions(title = "Click for more options")
+                                ),
+                                align = "right"),
+                            div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                                plotOutput("gb_varimp_plot_",
+                                           width = "100%"))
+                            )
                     ),
                     hidden(div(id = "gb_besttuneplottab", 
                                style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
@@ -1903,13 +1943,7 @@ server <- function(input, output) {
     }
   )  
   
-  
-  # dt_showcp_prune <- eventReactive(
-  #   input$dt_tunemodel_, {
-  #     round(dtmodel_prune()$bestTune,5)
-  #   }
-  # )
-  # 
+
  
   dt_showcpbox = function(modeltype){
     output$dt_showcp_ = renderValueBox(
@@ -2189,9 +2223,20 @@ server <- function(input, output) {
   })
   
   ## Random Forest - Variable Importance
-  rf_varimp_plot <- eventReactive(
-    input$rf_action_, {
-      vip::vip(rfmodel(), num_features = 40, bar = FALSE)
+  rf_varimp_plot <- reactive(
+    if(input$rf_action_) {
+      vip::vip(rfmodel(), 
+               num_features = input$rf_varimp_varcount, 
+               geom = "col",
+               jitter = TRUE,
+               aesthetics = list(color = "grey40"))
+    }
+    else {
+      vip::vip(rfmodel(), 
+               num_features = 10, 
+               geom = "col",
+               jitter = TRUE,
+               aesthetics = list(color = "grey40"))      
     }
   )  
   
@@ -2551,11 +2596,20 @@ server <- function(input, output) {
   })
   
   #### Variable Importance
-  gb_varimp_plot <- eventReactive(
-    input$gb_action_, {
+  gb_varimp_plot <- reactive(
+    if(input$gb_action_) {
       vip::vip(gbmodel(), 
-               num_features = 40, 
-               geom = "point")
+               num_features = input$gb_varimp_varcount, 
+               geom = "col",
+               jitter = TRUE,
+               aesthetics = list(color = "grey40"))
+    }
+    else {
+      vip::vip(gbmodel(), 
+               num_features = 10, 
+               geom = "col",
+               jitter = TRUE,
+               aesthetics = list(color = "grey40"))      
     }
   )  
   
