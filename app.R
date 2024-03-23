@@ -12,8 +12,8 @@
 #==============================#
 
 pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinythemes", "shinyjs", "waiter",
-               "tidyverse", "DT", "kableExtra", "plotly", "scales", "gt",
-               "ggstatsplot",
+               "tidyverse", "DT", "kableExtra", "plotly", "scales", "gt", "ggpubr",
+               "ggstatsplot", "nortest",
                "ranger", "vip", "rpart.plot", "caret", "tidymodels", "gbm",
                "dendextend", "heatmaply",
                "parallelPlot", "poLCA", "rlang"
@@ -259,8 +259,12 @@ sidebar <- dashboardSidebar(
   sidebarMenu(
     id = "tabs",
     menuItem("Home", tabName = "tab_home", icon = icon("house")),
-    menuItem("Data Analysis", tabName = "tab_eda", 
-             icon = icon("magnifying-glass-chart")
+    menuItem("Data Analysis", tabName = "tab_cda", 
+             icon = icon("magnifying-glass-chart"),
+             startExpanded = TRUE,
+             menuSubItem("Analysis of Scores", tabName = "tab_cdascores"),
+             menuSubItem("Analysis of Predictors", tabName = "tab_cdapredictor"),
+             menuSubItem("Association between Predictors", tabName = "tab_cdaassoc")
              ),
     
     menuItem("Cluster Analysis", tabName = "tab_cluster", 
@@ -631,32 +635,31 @@ body <- dashboardBody(
             ),
     
     ### Data Analysis **ARIEL**   ----------------------------------------------------
-    tabItem(tabName = "tab_eda",
+    tabItem(tabName = "tab_cdascores",
             
             #### CDA Tab's Side Toggles ----------------------------------------------------
             column(width = 2,
                    fluidRow(
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                         box(title = tags$p(span(icon("magnifying-glass"), "Data Analysis"), style = "font-weight: bold; color: #FFFFFF"),
+                         box(title = tags$p(span(icon("magnifying-glass"), "Analysis of Scores"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsible = FALSE,
                              width = 12,
                              solidHeader =TRUE,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 "Confirmatory data analysis rigorously tests pre-existing hypotheses using statistical methods.
-                                 This section wll conduct normality test, association test, ANOVA test to verify our hypothesis "                             )
+                                 ""
+                                 )
                          )
                      ),
                      
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                         box(title = tags$p("Variable Selection", style = "font-weight: bold;"),
+                         box(title = tags$p("Step 1: Subject Selection & Test Score", style = "font-weight: bold;"),
                              status = "primary",
-                             collapsible = TRUE,
                              collapsed = FALSE,
                              width = 12,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                  pickerInput(
-                                   inputId = "cda_Subject", ## ARIEL CAN CHANGE THIS NAME
+                                   inputId = "cda_testscorehist_subject",
                                    label = "Subject",
                                    choices = c("Math", "Reading", "Science"), 
                                    selected = "Math",
@@ -667,223 +670,118 @@ body <- dashboardBody(
                                    width = NULL
                                  )),
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 pickerInput(
-                                   inputId = "cda_Variables", ## ARIEL CAN CHANGE THIS NAME
-                                   label = "Select First Variable",
-                                   choices = list(
-                                     `School Environment` = list("School Type" = "SchoolType",
-                                                                 "Loneliness" = "Loneliness",
-                                                                 "Classroom Safety" = "ClassroomSafety",
-                                                                 "Teacher Support" = "TeacherSupport"),
-                                     `Personal` = list("Gender" = "Gender",
-                                                       "Math Homework Time" = "Homework_Math",
-                                                       "Reading Homework Time" = "Homework_Reading",
-                                                       "Science Homework Time" = "Homework_Science",
-                                                       "Preference for Math" = "Preference_Math",
-                                                       "Preference for Reading" = "Preference_Reading",
-                                                       "Preference for Science" = "Preference_Science",
-                                                       "Exercise" = "Exercise"),
-                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
-                                                            "Immigration" = "Immigration",
-                                                            "Home Language" = "HomeLanguage",
-                                                            "Sibling" = "Sibling",
-                                                            "Aircon" = "Aircon",
-                                                            "Helper" = "Helper",
-                                                            "Vehicle" = "Vehicle",
-                                                            "Books" = "Books",
-                                                            "Own Room" = "OwnRoom",
-                                                            "Family Commitment" = "FamilyCommitment")),
-                                   selected = colnames(stu_mb[1:24]),
-                                   multiple = FALSE,
-                                   options = list(style = "myClass", `actions-box` = TRUE),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 pickerInput(
-                                   inputId = "cda_Variables_2", ## ARIEL CAN CHANGE THIS NAME
-                                   label = "Select Second Variable",
-                                   choices = list(
-                                     `School Environment` = list("School Type" = "SchoolType",
-                                                                 "Loneliness" = "Loneliness",
-                                                                 "Classroom Safety" = "ClassroomSafety",
-                                                                 "Teacher Support" = "TeacherSupport"),
-                                     `Personal` = list("Gender" = "Gender",
-                                                       "Math Homework Time" = "Homework_Math",
-                                                       "Reading Homework Time" = "Homework_Reading",
-                                                       "Science Homework Time" = "Homework_Science",
-                                                       "Preference for Math" = "Preference_Math",
-                                                       "Preference for Reading" = "Preference_Reading",
-                                                       "Preference for Science" = "Preference_Science",
-                                                       "Exercise" = "Exercise"),
-                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
-                                                            "Immigration" = "Immigration",
-                                                            "Home Language" = "HomeLanguage",
-                                                            "Sibling" = "Sibling",
-                                                            "Aircon" = "Aircon",
-                                                            "Helper" = "Helper",
-                                                            "Vehicle" = "Vehicle",
-                                                            "Books" = "Books",
-                                                            "Own Room" = "OwnRoom",
-                                                            "Family Commitment" = "FamilyCommitment")),
-                                   selected = colnames(stu_mb[1:24]),
-                                   multiple = FALSE,
-                                   options = list(style = "myClass"),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
-                                   inline = FALSE,
-                                   width = NULL)
+                                 numericInput(
+                                   inputId = "cda_testscorehist_ts",
+                                   label = "Test Score:",
+                                   value = "550",
+                                   min ="100",
+                                   max = "900",
+                                   step = "1") 
+
                                  )
                              )
                          ),
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
                        box(title = tags$p("Step 2: Configure Options", style = "font-weight: bold;"),
-                           collapsible = TRUE,
                            collapsed = TRUE,
+                           collapsible =TRUE,
                            width = 12,
                            status = "primary",
                            solidHeader = FALSE,  
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               numericInput(
+                                 inputId = "cda_testscorehist_cl", 
+                                 label = "Confidence Level",
+                                 min = 0,
+                                 max = 1,
+                                 step = 0.01,
+                                 value = 0.95,
+                                 width = NULL
+                               )),
                          div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 
-                                 ## ARIEL YOUR SIDE BAR TOGGLES CAN PUT HERE
                                  sliderInput(
-                                   inputId = "cda_slider_bin", ## ARIEL CAN CHANGE THIS NAME
-                                   label = "Number of Bins",
+                                   inputId = "cda_testscorehist_binwidth",
+                                   label = "Bin Width",
                                    min = 1,
                                    max = 50,
                                    value =20,
                                    width = NULL
                                  )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 
-                                 ## ARIEL YOUR SIDE BAR TOGGLES CAN PUT HERE
-                                 pickerInput(
-                                   inputId = "cda_effsize.type", ## ARIEL CAN CHANGE THIS NAME
-                                   label = "Effect Size",
-                                   choices = c("d", "g"), 
-                                   selected = "d",
-                                   multiple = FALSE,
-                                   options = list(style = "myClass"), #list(`actions-box` = TRUE),
-                                   #choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 
-                                 ## ARIEL YOUR SIDE BAR TOGGLES CAN PUT HERE
-                                 pickerInput(
-                                   inputId = "cda_Normal.curve", ## ARIEL CAN CHANGE THIS NAME
-                                   label = "Show distribution curve?",
-                                   choices = c(TRUE, FALSE), 
-                                   selected = 'TRUE',
-                                   multiple = FALSE,
-                                   #options = list(style = "myClass"), #list(`actions-box` = TRUE),
-                                   #choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 
-                                 ## ARIEL YOUR SIDE BAR TOGGLES CAN PUT HERE
-                                 pickerInput(
-                                   inputId = "cda_Centrality.plotting", ## ARIEL CAN CHANGE THIS NAME
-                                   label = "Show central tendency measure",
-                                   choices = c(TRUE, FALSE), 
-                                   selected = 'TRUE',
-                                   multiple = FALSE,
-                                   options = list(style = "myClass"), #list(`actions-box` = TRUE),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 
-                                 ## ARIEL YOUR SIDE BAR TOGGLES CAN PUT HERE
-                                 pickerInput(
-                                   inputId = "cda_test_type", ## ARIEL CAN CHANGE THIS NAME
-                                   label = "Test Type",
-                                   choices = c("parametric", "Non-parametric", "robust", "Bayes Factor"), 
-                                   selected = 'parametric',
-                                   multiple = FALSE,
-                                   options = list(style = "myClass"), #list(`actions-box` = TRUE),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 
-                                 ## ARIEL YOUR SIDE BAR TOGGLES CAN PUT HERE
-                                 sliderInput(
-                                   inputId = "cda_slider", ## ARIEL CAN CHANGE THIS NAME
-                                   label = "Confidence Level",
-                                   min = 0,
-                                   max = 1,
-                                   value =0.95,
-                                   width = NULL
-                                 )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 
-                                 ## ARIEL YOUR SIDE BAR TOGGLES CAN PUT HERE
-                                 pickerInput(
-                                   inputId = "cda_Pairwise_Comparsions", ## ARIEL CAN CHANGE THIS NAME
-                                   label = "Show Pairwise Comparsions",
-                                   choices = c("TRUE", "FALSE"), 
-                                   selected = 'TRUE',
-                                   multiple = FALSE,
-                                   options = list(style = "myClass"), #list(`actions-box` = TRUE),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 
-                                 ## ARIEL YOUR SIDE BAR TOGGLES CAN PUT HERE
-                                 pickerInput(
-                                   inputId = "cda_Pairwise_Display", ## ARIEL CAN CHANGE THIS NAME
-                                   label = "Show Pairwise Display",
-                                   choices = c("significant", "non-significant", "all"), 
-                                   selected = 'significant',
-                                   multiple = FALSE,
-                                   options = list(style = "myClass"), #list(`actions-box` = TRUE),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 
-                                 ## ARIEL YOUR SIDE BAR TOGGLES CAN PUT HERE
-                                 pickerInput(
-                                   inputId = "cda_P.adjust_method", ## ARIEL CAN CHANGE THIS NAME
-                                   label = "Choose P.Adjust Method",
-                                   choices = c("fdr", "BY"), 
-                                   selected = 'fdr',
-                                   multiple = FALSE,
-                                   options = list(style = "myClass"), #list(`actions-box` = TRUE),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 ))
+                         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                             pickerInput(
+                               inputId = "cda_testscorehist_testtype", 
+                               label = "Test Type",
+                               choices = list("Parametric" = "p", 
+                                              "Non-parametric" = "np", 
+                                              "Robust" = "robust", 
+                                              "Bayes Factor" = "bf"), 
+                               selected = "p",
+                               multiple = FALSE,
+                               options = list(style = "myClass"), #list(`actions-box` = TRUE),
+                               choicesOpt = list(style = rep_len("font-size: 10px;", 4)),
+                               inline = FALSE,
+                               width = NULL
+                             )),
+                         hidden(
+                           div(
+                             id = "cda_testscorehist_ifparametric",
+                             style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                             pickerInput(
+                               inputId = "cda_effsizetype",
+                               label = "Type of effect size",
+                               choices = list("Cohen's d" = "d", 
+                                              "Hedge's g" = "g"), 
+                               selected = "g",
+                               multiple = FALSE,
+                               options = list(style = "myClass"),
+                               choicesOpt = list(style = rep_len("font-size: 10px;", 2)),
+                               inline = FALSE,
+                               width = NULL)
+                           )
+                         ),
+                         div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                             actionButton(inputId = "action_cda_testscorehist",
+                                          label = "Run Analysis",
+                                          icon = icon("gear"),
+                                          style = 'padding: 4px; font-size: 10px'),
+                             align = "center")
                        )
                    )
             )
     ),
-            column(width = 10,
-                   fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                         box(title = tags$p("Variable Selection", style = "font-weight: bold;"),
-                             status = "primary",
-                             collapsible = TRUE,
-                             collapsed = FALSE,
-                             width = 12, # ARIEL ADD COMMA HERE 
-                             plotOutput("EDA_Plot1"),
-                             plotOutput("EDA_Plot2"),
-                             plotOutput("CDA_Plot1")## ARIEL YOUR PLOTS CAN PUT HERE
-                             ))
-                   )
-                   )
-            
-            ),
+    column(width = 10,
+             fluidRow(div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                 box(title = tags$p("Results", style = "font-weight: bold;"),
+                     status = "primary",
+                     collapsed = FALSE,
+                     width = 12,
+                     plotOutput("cda_testscorehist_",
+                                height = "35vh",
+                                width = "90%")
+                     )
+                 )
+                 ),
+           fluidRow(
+                    div(style = "padding = 0em; margin-left: 0em; margin-top: 1em; height: 100% ",
+                        box(title = tags$p("Test for Normality", style = "font-weight: bold;"),
+                            status = "primary",
+                            collapsed = FALSE,
+                            width = 12,
+                            box(title = tags$p("QQ Plot", style = "font-weight: bold"),
+                                width = 6,
+                                plotOutput("cda_testscoreqqplot_",
+                                           height = "25vh")),
+                            box(title = tags$p("Anderson-Darling Test", style = "font-weight: bold;"),
+                                width = 6,
+                                valueBoxOutput("cda_adtest_stat", width = 12),
+                                valueBoxOutput("cda_adtest_pvalue", width = 12)
+                                )
+                            )
+                        )
+                    )
+           )
+    ),
     ### Cluster Heatmap  ----------------------------------------------------
     tabItem(tabName = "tab_heatmap",
             column(width = 2,
@@ -2178,7 +2076,7 @@ server <- function(input, output) {
   observeEvent(input$tabs, {
     header <- switch(input$tabs,
                      tab_home = "Home",
-                     tab_eda = "Exploratory & Confirmatory Data Analysis",
+                     tab_cda = "Exploratory & Confirmatory Data Analysis",
                      tab_cluster = "Cluster Analysis",
                      tab_heatmap = "Country Comparison",
                      tab_cluster = "Cluster Heatmap",
@@ -2346,32 +2244,124 @@ server <- function(input, output) {
       )
   })
   
-  ### EDA/CDA  ----------------------------------------------------
+  # EDA/CDA  ----------------------------------------------------
   
-    output$EDA_Plot1 <- renderPlot({
-      selected_subject <- input$cda_Subject
-      
-      dataset <- stu %>%
-        dplyr::select(c(selected_subject)) %>%
-        rename(var1= selected_subject)
+  ## Test Score Histogram Reactive Sidebar Toggles
+  observeEvent(input$cda_testscorehist_testtype, {
+    if (input$cda_testscorehist_testtype == "p") {
+      shinyjs::show("cda_testscorehist_ifparametric")
+    }
+    else {shinyjs::hide("cda_testscorehist_ifparametric")
+    }
+  })  
+  
+  ## One-Sample Test - gghistostats
+  
+  cda_testscorehist <- eventReactive(
+    input$action_cda_testscorehist, {
+      if(input$cda_testscorehist_testtype == "p") {
       
       set.seed(1234)
       
       gghistostats(
-        data= dataset,
-        x = var1,
-        mean.ci = input$`cda_slider`,
-        xlab =  paste0("Acdemic performance of", input$cda_Subject),
-        centrality.type = input$`cda_test_type`,
-        binwidth = input$`cda_slider_bin`,
-        normal.curve = input$`cda_Normal.curve`,
-        effsize.type = input$`cda_effsize.type`,
-        centrality.plotting = input$`cda_Centrality.plotting`
+        data= stu,
+        x = !!sym(input$cda_testscorehist_subject),
+        test.value = as.numeric(input$cda_testscorehist_ts),
+        type = "p",
+        centrality.plotting = TRUE,
+        conf.level = as.numeric(input$cda_testscorehist_cl),
+        centrality.line.args = list(color = "#20948b", linetype = "dashed", linewidth = 1),
+        binwidth = as.numeric(input$cda_testscorehist_binwidth),
+        bin.args = list(color = "white", fill = "grey40", alpha = 0.5),
+        effsize.type = input$cda_effsizetype, #if parametric
+        normal.curve = TRUE,
+        normal.curve.args = list(color = "#dfb2e9", linewidth = 1.5),
+        ggplot.component = list(theme(text = element_text(size = 15),
+                                      axis.title = element_text(size = 14)))
+      )}
+    else {
+      set.seed(1234)
+      
+      gghistostats(
+        data= stu,
+        x = !!sym(input$cda_testscorehist_subject),
+        test.value = as.numeric(input$cda_testscorehist_ts),
+        type = input$cda_testscorehist_testtype,
+        centrality.plotting = TRUE,
+        conf.level = as.numeric(input$cda_testscorehist_cl),
+        centrality.line.args = list(color = "#20948b", linetype = "dashed", linewidth = 1),
+        binwidth = as.numeric(input$cda_testscorehist_binwidth),
+        bin.args = list(color = "white", fill = "grey40", alpha = 0.5),
+        normal.curve = TRUE,
+        normal.curve.args = list(color = "#dfb2e9", linewidth = 1.5),
+        ggplot.component = list(theme(text = element_text(size = 15),
+                                      axis.title = element_text(size = 14, face="bold"),
+                                      axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+                                      axis.line.y = element_blank(),
+                                      axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+                                      plot.title = element_text(size=12, face="bold")
+                                      )
+                                )
+      )
+      }
+    }
+  )
+  
+    output$cda_testscorehist_ <- renderPlot({
+      cda_testscorehist()
+  })
+    
+    
+    #QQ-Plot
+    
+    cda_testscoreqqplot <- eventReactive(
+      input$action_cda_testscorehist, {
+        
+        ggqqplot(stu,
+                 x = input$cda_testscorehist_subject,
+                 color = "grey40") +
+          labs(x = "Theoretical Quantiles",
+               y = input$cda_testscorehist_subject) +
+          theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+                axis.line.y = element_blank(),
+                axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+                plot.title = element_text(size=12, face="bold"),
+                axis.title = element_text(face="bold"))
+                #axis.text = element_text(face="bold")
+      })
+    
+    output$cda_testscoreqqplot_ <- renderPlot({
+      cda_testscoreqqplot()
+    })
+
+    
+    ## Normality test
+    
+    cda_testscore_adtest <- eventReactive(
+      input$action_cda_testscorehist, {
+        nortest::ad.test(stu[[input$cda_testscorehist_subject]])
+      })
+    
+    output$cda_adtest_stat <- renderValueBox(
+        valueBox(
+          value = tags$p(round(cda_testscore_adtest()$statistic,3), style = "font-size: 60%;"), 
+          subtitle = tags$p("Anderson-Darling statistic", style = "font-style: italic; font-size: 80%"),
+          icon = tags$i(icon("calculator"), style="font-size: 70%"),
+          color = "yellow"
+        )
+      )
+    
+    output$cda_adtest_pvalue = renderValueBox(
+      valueBox(
+        value = tags$p(cda_testscore_adtest()$p.value, style = "font-size: 60%;"), 
+        subtitle = tags$p("p-Value of Anderson-Darling Statistic", style = "font-style: italic; font-size: 80%"),
+        icon = tags$i(icon("calculator"), style="font-size: 70%"),
+        color = "yellow"
+      )
     )
     
     
-  })
-  
+
   output$EDA_Plot2 <- renderPlot({
     ggbarstats(
       stu, 
@@ -2386,7 +2376,7 @@ server <- function(input, output) {
   output$CDA_Plot1 <- renderPlot({
 
     var <- input$cda_Variables
-    subject <- input$cda_Subject
+    subject <- input$cda_subject
     
     dataset <- stu %>%
       dplyr::select(c(var,subject)) %>%
@@ -2787,8 +2777,8 @@ server <- function(input, output) {
       f <- as.formula(paste("cbind(", formula_string, ") ~ 1"))
       model_lca <- poLCA(f, 
                          data_filtered_lca(), 
-                         nclass=input$numclusters_lca, 
-                         nrep= input$numrep_lca, 
+                         nclass = input$numclusters_lca, 
+                         nrep = input$numrep_lca, 
                          maxiter=5000)
       bic_lca <- model_lca$bic
       aic_lca <- model_lca$aic
