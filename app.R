@@ -34,6 +34,29 @@ Science <- round(summary(stu$Science),1)
 
 db_summarystats <- as.data.frame(rbind(Math, Reading, Science))
 
+# CDA - Association Test
+assoctest_var <- c("School Type" = "SchoolType",
+                   "Loneliness" = "Loneliness",
+                   "Classroom Safety" = "ClassroomSafety",
+                   "Teacher Support" = "TeacherSupport",
+                   "Gender" = "Gender",
+                   "Math Homework Time" = "Homework_Math",
+                   "Reading Homework Time" = "Homework_Reading",
+                   "Science Homework Time" = "Homework_Science",
+                   "Preference for Math" = "Preference_Math",
+                   "Preference for Reading" = "Preference_Reading",
+                   "Preference for Science" = "Preference_Science",
+                   "Exercise" = "Exercise",
+                   "Parents' Education" = "ParentsEducation",
+                   "Immigration" = "Immigration",
+                   "Home Language" = "HomeLanguage",
+                   "Sibling" = "Sibling",
+                   "Aircon" = "Aircon",
+                   "Helper" = "Helper",
+                   "Vehicle" = "Vehicle",
+                   "Books" = "Books",
+                   "Own Room" = "OwnRoom",
+                   "Family Commitment" = "FamilyCommitment")
 
 # Regression Model - Data Selection
 stu_mb <- stu %>% 
@@ -380,12 +403,9 @@ body <- dashboardBody(
                           font-size: 10px;
         }
         
-        # .selectize-input.focus {
-        # border-color: #DDAFA1;
-        # outline: 0;
-        # -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
-        # box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(221, 175, 161, 1);
-        # }
+        .selectize-input { font-size: 10px;}
+        .selectize-dropdown { font-size: 10px;}
+      
         
         .box {font-size: 10px;}
         
@@ -830,7 +850,7 @@ body <- dashboardBody(
                                                             "Family Commitment" = "FamilyCommitment")),
                                    selected = "SchoolType",
                                    multiple = FALSE,
-                                   options = list(style = "myClass", `actions-box` = TRUE),
+                                   options = list(style = "myClass"),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
                                    width = NULL
@@ -932,6 +952,129 @@ body <- dashboardBody(
                    )
             )
     ),
+    ### Data Analysis - Association Test ----------------------------------------------------
+    tabItem(tabName = "tab_cdaassoc",
+            column(width = 2,
+                   fluidRow(
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p(span(icon("magnifying-glass"), "Association Between Predictors"), style = "font-weight: bold; color: #FFFFFF"),
+                             status = "info",
+                             collapsible = TRUE,
+                             width = 12,
+                             solidHeader =TRUE,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 "A test of association is a hypothesis test designed to establish and quantify the relationship between two distinct factors. 
+                                 It can also be utilized to determine whether the observed difference in any two categorical variables within our dataset is due to chance or indicates an actual relationship between them.",
+                                 tags$br(), tags$br(),
+                                 "When dealing with categorical variables, multicollinearity can be identified using the chi-square test. This test evaluates the association between two categorical variables. 
+                                 If the chi-square test reveals a significant association between two nominal predictors, it may indicate the presence of multicollinearity. 
+                                 Multicollinearity can result in less reliable statistical inferences and may lead to skewed or misleading results."
+                             )
+                         )
+                     ),
+                     
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                         box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
+                             status = "primary",
+                             collapsible = TRUE,
+                             collapsed = FALSE,
+                             width = 12,
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 selectizeInput(
+                                   inputId = "cda_assoc_var1",
+                                   label = "Select y-axis Variable ",
+                                   choices = assoctest_var,
+                                   selected = NULL,
+                                   multiple = FALSE,
+                                   options = list(maxItems = 1),
+                                   width = NULL
+                                 )),
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 selectizeInput(
+                                   inputId = "cda_assoc_var2",
+                                   label = "Select x-axis Variable",
+                                   choices = NULL,
+                                   selected = NULL,
+                                   multiple = FALSE,
+                                   options = list(maxItems = 1),
+                                   width = NULL
+                                 ))
+                             
+                         )
+                     ),
+                     div(
+                       style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                       box(title = tags$p("Step 2: Configurations", style = "font-weight: bold;"),
+                           collapsed = TRUE,
+                           collapsible =TRUE,
+                           width = 12,
+                           status = "primary",
+                           solidHeader = FALSE,  
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               numericInput(
+                                 inputId = "cda_assoc_cl", 
+                                 label = "Confidence Level",
+                                 min = 0.01,
+                                 max = 0.99,
+                                 step = 0.01,
+                                 value = 0.95,
+                                 width = NULL
+                               )),
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               pickerInput(
+                                 inputId = "cda_assoc_testtype", 
+                                 label = "Test Type",
+                                 choices = list("Parametric" = "p", 
+                                                "Non-parametric" = "np", 
+                                                "Robust" = "robust", 
+                                                "Bayes Factor" = "bf"), 
+                                 selected = "p",
+                                 multiple = FALSE,
+                                 options = list(style = "myClass"),
+                                 choicesOpt = list(style = rep_len("font-size: 10px;", 4)),
+                                 inline = FALSE,
+                                 width = NULL
+                               )),
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               pickerInput(
+                                 inputId = "cda_assoc_labeltype", 
+                                 label = "Label Type Displayed",
+                                 choices = list("Percentage" = "percentage", 
+                                                "Count" = "counts", 
+                                                "Both" = "both"), 
+                                 selected = "percentage",
+                                 multiple = FALSE,
+                                 options = list(style = "myClass"),
+                                 choicesOpt = list(style = rep_len("font-size: 10px;", 4)),
+                                 inline = FALSE,
+                                 width = NULL
+                               )),
+                           div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                               actionButton(inputId = "action_cda_assoc",
+                                            label = "Run Analysis",
+                                            icon = icon("gear"),
+                                            style = 'padding: 4px; font-size: 10px'),
+                               align = "center")
+                       )
+                     )
+                   )
+            ),
+            column(width = 10,
+                   fluidRow(div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                                box(title = tags$p("Results", style = "font-weight: bold;"),
+                                    status = "primary",
+                                    collapsed = FALSE,
+                                    width = 12,
+                                    div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                        plotOutput("cda_assoc_plot",
+                                                   height = "70vh",
+                                                   width = "90%"),
+                                        align = "center")
+                                )
+                   )
+                   )
+            )
+    ),    
     
     ### Cluster Heatmap  ----------------------------------------------------
     tabItem(tabName = "tab_heatmap",
@@ -2400,16 +2543,16 @@ server <- function(input, output) {
   
   # EDA/CDA  ----------------------------------------------------
   
-  ## Test Score Histogram Reactive Sidebar Toggles
+  ## One-Sample Test - gghistostats   ----------------------------------------------------
+  
+  ### Test Score Histogram Reactive Sidebar Toggles
   observeEvent(input$cda_testscorehist_testtype, {
     if (input$cda_testscorehist_testtype == "p") {
       shinyjs::show("cda_testscorehist_ifparametric")
     }
     else {shinyjs::hide("cda_testscorehist_ifparametric")
     }
-  })  
-  
-  ## One-Sample Test - gghistostats
+  }) 
   
   cda_testscorehist <- eventReactive(
     input$action_cda_testscorehist, {
@@ -2466,7 +2609,7 @@ server <- function(input, output) {
   })
   
   
-  #QQ-Plot
+  ### QQ-Plot
   
   cda_testscoreqqplot <- eventReactive(
     input$action_cda_testscorehist, {
@@ -2489,7 +2632,7 @@ server <- function(input, output) {
   })
   
   
-  ## Normality test
+  ### Normality test
   
   cda_testscore_adtest <- eventReactive(
     input$action_cda_testscorehist, {
@@ -2514,7 +2657,7 @@ server <- function(input, output) {
     )
   )
   
-  ## 2-Sample Test/ANOVA
+  ## 2-Sample Test/ANOVA   ----------------------------------------------------
   ## Reactive Sidebar Toggles
   observeEvent(input$cda_anova_pwcompare, {
     if (input$cda_anova_pwcompare == TRUE) {
@@ -2606,16 +2749,102 @@ server <- function(input, output) {
     cda_anova_()
   })
   
-  output$EDA_Plot2 <- renderPlot({
-    ggbarstats(
-      stu, 
-      x = !!sym(input$cda_Variables), ## HOW TO ENSURE USERS DONT CLICK BOTH SAME VARIABLE
-      y = !!sym(input$cda_Variables_2)
-    )
-    
-    
-  })
   
+  ## Association Test   ----------------------------------------------------
+  
+  ## Reactive Sidebar Toggles  
+
+observeEvent(input$cda_assoc_var1, {
+  updateSelectizeInput(session = getDefaultReactiveDomain(),
+                      inputId = "cda_assoc_var2",
+                      choices = assoctest_var[!(assoctest_var %in% input$cda_assoc_var1)],
+                      selected = NULL)
+})
+  
+  assoc_var_xlabels <- reactive(
+    {switch(input$cda_assoc_var1,
+            "SchoolType" = "School Type",
+            "Loneliness" = "Loneliness",
+            "ClassroomSafety" = "Classroom Safety",
+            "TeacherSupport" = "Teacher Support",
+            "Gender" = "Gender",
+            "Homework_Math" = "Math Homework Time",
+            "Homework_Reading" = "Reading Homework Time",
+            "Homework_Science" = "Science Homework Time",
+            "Preference_Math" = "Preference for Math",
+            "Preference_Reading" = "Preference for Reading",
+            "Preference_Science" = "Preference for Science",
+            "Exercise" = "Exercise",
+            "ParentsEducation" = "Parents' Education",
+            "Immigration" = "Immigration",
+            "HomeLanguage" = "Home Language",
+            "Sibling" = "Sibling",
+            "Aircon" = "Aircon",
+            "Helper" = "Helper",
+            "Vehicle" = "Vehicle",
+            "Books" = "Books",
+            "OwnRoom" = "Own Room",
+            "FamilyCommitment" = "Family Commitment")}
+  )
+  
+  assoc_var_ylabels <- reactive(
+    {switch(input$cda_assoc_var2,
+            "SchoolType" = "School Type",
+            "Loneliness" = "Loneliness",
+            "ClassroomSafety" = "Classroom Safety",
+            "TeacherSupport" = "Teacher Support",
+            "Gender" = "Gender",
+            "Homework_Math" = "Math Homework Time",
+            "Homework_Reading" = "Reading Homework Time",
+            "Homework_Science" = "Science Homework Time",
+            "Preference_Math" = "Preference for Math",
+            "Preference_Reading" = "Preference for Reading",
+            "Preference_Science" = "Preference for Science",
+            "Exercise" = "Exercise",
+            "ParentsEducation" = "Parents' Education",
+            "Immigration" = "Immigration",
+            "HomeLanguage" = "Home Language",
+            "Sibling" = "Sibling",
+            "Aircon" = "Aircon",
+            "Helper" = "Helper",
+            "Vehicle" = "Vehicle",
+            "Books" = "Books",
+            "OwnRoom" = "Own Room",
+            "FamilyCommitment" = "Family Commitment")}
+  )
+
+  
+  cda_assoc_ <- eventReactive(
+    input$action_cda_assoc, {
+      ggbarstats(
+        stu, 
+        x = !!sym(input$cda_assoc_var1), 
+        y = !!sym(input$cda_assoc_var2),
+        type = input$cda_assoc_testtype,
+        conf.level = as.numeric(input$cda_assoc_cl),
+        label = input$cda_assoc_labeltype,
+        label.args = list(size =5, alpha = 1, fill = "white"),
+        legend.title =assoc_var_xlabels(),
+        ylab = assoc_var_xlabels(), 
+        xlab = assoc_var_ylabels(),
+        ggplot.component = list(theme(text = element_text(size = 15),
+                                      plot.subtitle = element_text(size = 15),
+                                      legend.title = element_text(size = 15),
+                                      legend.text = element_text(size = 14),
+                                      axis.title = element_text(size = 14, face="bold"),
+                                      axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+                                      axis.line.y = element_blank(),
+                                      axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+                                      plot.title = element_text(size=16, face="bold"))
+                                )
+        
+      )
+    }
+  )
+
+  output$cda_assoc_plot <- renderPlot({
+    cda_assoc_()
+  })
   
   
   ### Cluster Heatmap  ----------------------------------------------------
