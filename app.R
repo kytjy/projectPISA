@@ -1401,10 +1401,10 @@ body <- dashboardBody(
                    column(width = 10,
                         fluidRow(
                           div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100%",
-                              tabBox(title = tags$p("Latent Class Analysis", style = "font-weight: bold;"), 
+                              tabBox(title = tags$p("Latent Class Analysis", style = "color: #7C6D62; font-weight: bold; font-size: 12px;"), 
                                   width = 12,
                                   height = "60vh",
-                                  tabPanel(title = tags$p("By Variable", style = "font-weight: bold"),
+                                  tabPanel(title = tags$p("Variable View", style = "font-weight: bold"),
                                            div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
                                                plotlyOutput("lca",
                                                         width = "90%",
