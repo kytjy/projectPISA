@@ -12,9 +12,9 @@
 #==============================#
 
 pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinythemes", "shinyjs", "waiter",
-               "tidyverse", "DT", "kableExtra", "plotly", "scales", "gt", "ggpubr",
+               "tidyverse", "DT", "kableExtra", "plotly", "scales", "gt", "ggpubr", "treemap",
                "ggstatsplot", "nortest",
-               "ranger", "vip", "rpart.plot", "caret", "tidymodels", "gbm",
+               "rpart", "vip", "visNetwork", "caret", "tidymodels", "gbm",
                "dendextend", "heatmaply",
                "parallelPlot", "poLCA", "rlang"
 )
@@ -26,6 +26,7 @@ pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyW
 # Loading files
 stu <- read_rds("data/stu_SG_rcd.rds")
 varlist <- read_csv("data/var.csv")
+lcalabels <- read_csv("data/lcalabels.csv")
 
 # Dashboard - Summary Statistics
 Math <- round(summary(stu$Math),1)
@@ -64,114 +65,25 @@ stu_mb <- stu %>%
   na.omit()
 
 # Cluster Analysis - Data Manipulation
-stu_ca_less <- stu %>% 
+stu_ca <- stu
+
+stu_ca_less <- stu_ca %>% 
   dplyr::select(2:26) %>% 
   na.omit()
 
-cat <- list(Math = NULL, Reading = NULL, Science = NULL, 
-            SchoolType = c("Public",
-                           "Private"),
-            Loneliness = c("Strongly Agree",
-                           "Agree",
-                           "Disagree",
-                           "Strongly Disagree"),
-            ClassroomSafety = c("Strongly Disagree",
-                                "Disagree",
-                                "Agree",
-                                "Strongly Agree"),
-            TeacherSupport = c("Never or almost never",
-                               "Some lessons",
-                               "Most lesson",
-                               "Every lesson"),
-            Gender = c("Female",
-                       "Male"),
-            Homework_Math = c("≤ 0.5hr",
-                              "0.5hr - 1hr",
-                              "1hr - 2hr",
-                              "2hr - 3hr",
-                              "3 - 4 hr",
-                              "> 4hr"),
-            Homework_Reading = c("≤ 0.5hr",
-                                 "0.5hr - 1hr",
-                                 "1hr - 2hr",
-                                 "2hr - 3hr",
-                                 "3 - 4 hr",
-                                 "> 4hr"),
-            Homework_Science = c("≤ 0.5hr",
-                                 "0.5hr - 1hr",
-                                 "1hr - 2hr",
-                                 "2hr - 3hr",
-                                 "3 - 4 hr",
-                                 "> 4hr"),
-            Preference_Math = c("Strongly Disagree",
-                                "Disagree",
-                                "Agree",
-                                "Strongly Agree"),
-            Preference_Reading = c("Strongly Disagree",
-                                   "Disagree",
-                                   "Agree",
-                                   "Strongly Agree"),
-            Preference_Science = c("Strongly Disagree",
-                                   "Disagree",
-                                   "Agree",
-                                   "Strongly Agree"),
-            Exercise = c("0",
-                         "1", 
-                         "2",
-                         "3",
-                         "4",
-                         "5",
-                         "6",
-                         "7",
-                         "8",
-                         "9",
-                         "10"),
-            ParentsEducation = c("Pre-Primary",
-                                 "Primary", 
-                                 "Secondary",
-                                 "Post-Secondary",
-                                 "Tertiary"),
-            Immigration = c("Native",
-                            "2nd Generation",
-                            "3rd Generation"),
-            HomeLanguage = c("English",
-                             "Others"),
-            Sibling = c("0",
-                        "1",
-                        "2",
-                        "≥3"),
-            Books = c("0",
-                      "1 - 10",
-                      "11 - 25",
-                      "26 - 100",
-                      "101 - 200",
-                      "201-500",
-                      ">500"),
-            Aircon = c("No", "Yes"),
-            Helper = c("No", "Yes"),
-            Vehicle = c("0",
-                        "1",
-                        "2",
-                        "≥3"),
-            OwnRoom = c("No", 
-                        "Yes"),
-            FamilyCommitment = c("0",
-                                 "1", 
-                                 "2",
-                                 "3",
-                                 "4",
-                                 "5",
-                                 "6",
-                                 "7",
-                                 "8",
-                                 "9",
-                                 "10"))
-
-
-# Recode for LCA
+# Preparation for Sankey Plot
 median_math <- median(stu_ca_less$Math)
 median_reading <- median(stu_ca_less$Reading)
 median_science <- median(stu_ca_less$Science)
+
+stu_sankey <- stu_ca %>%
+  mutate(Math = ifelse(Math >= median_math, "Median and Above", "Below Median")) %>%
+  mutate(Reading = ifelse(Reading >= median_reading, "Median and Above", "Below Median")) %>%
+  mutate(Science = ifelse(Science >= median_science, "Median and Above", "Below Median"))
+
+stu_sankey[-1] <- lapply(stu_sankey[-1], factor)
+
+# Recode for LCA
 
 stu_lca <- stu_ca_less %>%
   mutate(Sibling = recode(Sibling,
@@ -218,6 +130,9 @@ stu_lca[-1] <- lapply(stu_lca[-1], factor)
 #~~~~~ Theme ~~~~~#
 #========================#
 
+mycolours <-  c("#b1bdb5", "#C7C2D0","#D7AB77", "#E3C2CB", "#98B0B6", "#D69992", "#8D7374", "#ABA58D",  "#7a8387", "#7983A6", "#ABC8CE")
+
+
 # Create dashboard theme with bootstrap/fresh ----------------------------------------------------
 mytheme <- create_theme(
   theme = "default",
@@ -225,7 +140,7 @@ mytheme <- create_theme(
     light_blue = "#2A2A21",
     purple = "#B2ABB4",
     green = "#b1bdb5",
-    yellow = "#d6ac5e",
+    yellow = "#EFE095",
     blue = "#4E7880",
     aqua = "#4E7880",
     red = "#b3907A"
@@ -299,13 +214,13 @@ sidebar <- dashboardSidebar(
              menuSubItem("Latent Class Analysis", tabName = "tab_lca")
     ),
     
-    menuItem("Regression", tabName = "tab_mod", 
+    menuItem("Regression Analysis", tabName = "tab_mod", 
              icon = icon("tree"),
              startExpanded = TRUE,
-             menuSubItem("Decision Tree", tabName = "tab_dt"),             
+             menuSubItem("Regression Tree", tabName = "tab_dt"),             
              menuSubItem("Random Forest", tabName = "tab_rf"),
              menuSubItem("Gradient Boosting", tabName = "tab_gb")
-    )
+             )
   )
 )
 
@@ -565,7 +480,7 @@ body <- dashboardBody(
                                             align = "center"
                                         ),
                                         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                            plotlyOutput("db_bar",
+                                            plotOutput("db_treemap",
                                                          height = "40vh",
                                                          width = "90%"),
                                             align = "center")
@@ -1100,10 +1015,10 @@ body <- dashboardBody(
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                  pickerInput(
                                    inputId = "scores_heatmap",
-                                   label = "Subject",
+                                   label = "Scores",
                                    choices = c("Math", "Reading", "Science"),
                                    multiple = TRUE,
-                                   options = list(style = "myClass"), #list(`actions-box` = TRUE),
+                                   options = list(style = "myClass", `actions-box` = TRUE),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
                                    inline = FALSE,
                                    width = NULL)
@@ -1136,7 +1051,7 @@ body <- dashboardBody(
                                                             "Own Room" = "OwnRoom",
                                                             "Family Commitment" = "FamilyCommitment")),
                                    multiple = TRUE,
-                                   options = list(style = "myClass"),
+                                   options = list(style = "myClass", `actions-box` = TRUE),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
                                    width = NULL)
@@ -1242,51 +1157,51 @@ body <- dashboardBody(
                          )
                      )
                    )
-            ),
-            column(width = 10,
-                   div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100%",
-                       box(title = tags$p("Plot", style = "font-weight: bold;"), 
-                           collapsible = FALSE,
-                           status = "primary",
-                           width = 12,
-                           plotlyOutput("cluster_heatmap", height = "800px"),
-                           box(title = tags$p("Supplementary Information", style = "font-weight: bold"), 
-                               collapsible = TRUE,
-                               collapsed = TRUE,
-                               width = 12,
-                               fluidRow(
-                                 column(width = 4, 
-                                        uiOutput("active_heatmap_supp1"),
-                                        flipBox(id = "fb_heatmap_supp1",
-                                                width = 12,
-                                                front = wellPanel(
-                                                  style = "background: white",
-                                                  h5(strong("Best Clustering Method"), 
-                                                     align = "center"),
-                                                  h6("Click for More Information"),
-                                                  tableOutput("cluster_supp1")),
-                                                back = wellPanel(
-                                                  p("The dend_expend() function in the dendextend package is used to determine the recommended clustering method to be used. The method with the highest optimum value is recommended.")))),
-                                 column(width = 8, 
-                                        uiOutput("active_heatmap_supp2"),
-                                        flipBox(id = "fb_heatmap_supp2",
-                                                width = 12,
-                                                front = wellPanel(
-                                                  style = "background: white",
-                                                  h5(strong("Optimal No. of Clusters"),
-                                                     align = "center"),
-                                                  h6("Click for More Information"),
-                                                  plotOutput("cluster_supp2")),
-                                                back = wellPanel(
-                                                  p("The find_k() function in the dendextend package is used to determine the optimal number of clusters. Note that there could be discrepancy between the default number of clusters decided by the heatmaply() function used to plot the heatmap and the optimal number of clusters found by the find_k() function because different methods are used for determining the number of clusters. The heatmaply() function uses its internal algorithm, while the find_k function involves silhouette analysis.")
-                                                )
+                   ),
+                   column(width = 10,
+                          div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100%",
+                              box(title = tags$p("Plot", style = "font-weight: bold;"), 
+                                  collapsible = FALSE,
+                                  status = "primary",
+                                  width = 12,
+                                  plotlyOutput("cluster_heatmap", height = "800px"),
+                                  box(title = tags$p("Supplementary Information", style = "font-weight: bold"), 
+                                      collapsible = TRUE,
+                                      collapsed = TRUE,
+                                      width = 12,
+                                      fluidRow(
+                                        column(width = 4, 
+                                               uiOutput("active_heatmap_supp1"),
+                                               flipBox(id = "fb_heatmap_supp1",
+                                                       width = 12,
+                                                       front = wellPanel(
+                                                         style = "background: white",
+                                                         h5(strong("Best Clustering Method"), 
+                                                            align = "center"),
+                                                         h6("Click for More Information"),
+                                                         tableOutput("cluster_supp1")),
+                                                       back = wellPanel(
+                                                         p("The dend_expend() function in the dendextend package is used to determine the recommended clustering method to be used. The method with the highest optimum value is recommended.")))),
+                                        column(width = 8, 
+                                               uiOutput("active_heatmap_supp2"),
+                                               flipBox(id = "fb_heatmap_supp2",
+                                                       width = 12,
+                                                       front = wellPanel(
+                                                         style = "background: white",
+                                                         h5(strong("Optimal No. of Clusters"),
+                                                            align = "center"),
+                                                         h6("Click for More Information"),
+                                                         plotOutput("cluster_supp2")),
+                                                       back = wellPanel(
+                                                         p("The find_k() function in the dendextend package is used to determine the optimal number of clusters. Note that there could be discrepancy between the default number of clusters decided by the heatmaply() function used to plot the heatmap and the optimal number of clusters found by the find_k() function because different methods are used for determining the number of clusters. The heatmaply() function uses its internal algorithm, while the find_k function involves silhouette analysis.")
+                                                       )
+                                               )
                                         )
-                                 )
-                               )
-                           )
-                       )
+                                      )
+                                  )
+                              )
+                          )
                    )
-            )
     ),
     
     ### Parallel Plot  ----------------------------------------------------
@@ -1294,27 +1209,27 @@ body <- dashboardBody(
             column(width = 2,
                    fluidRow(
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                         box(title = tags$p(span(icon("users-viewfinder"), "Parallel Coordinates Plot"), style = "font-weight: bold; color: #FFFFFF"),
+                         box(title = tags$p(span(icon("users-viewfinder"), "Sankey Diagram"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsible = TRUE,
                              width = 12,
-                             solidHeader =TRUE,
+                             solidHeader = TRUE,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 "A Parallel Coordinates Plot is used to explore and understand clusters identified by the k-means algorithm, showing the similarities and differences within and between clusters."
+                                 "A Sankey Diagram is used to illustrate the flow of data between different categories or clusters, with the line thickness corresponding to the frequencies of the flows."
                              )
                          )
                      ),
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                         box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
+                         box(title = tags$p("Variable Selection", style = "font-weight: bold;"),
                              status = "primary",
                              collapsible = TRUE,
                              width = 12,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                  pickerInput(
-                                   inputId = "scores_parallel",
-                                   label = "Subject",
+                                   inputId = "scores_sankey",
+                                   label = "Scores",
                                    choices = c("Math", "Reading", "Science"),
-                                   multiple = TRUE,
+                                   multiple = FALSE,
                                    options = list(style = "myClass"),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
                                    inline = FALSE,
@@ -1322,8 +1237,8 @@ body <- dashboardBody(
                              ),
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                  pickerInput(
-                                   inputId = "vars_parallel",
-                                   label = "Variables",
+                                   inputId = "vars_sankey",
+                                   label = "Variables (Choose 4)",
                                    choices = list(
                                      `School Environment` = list("School Type" = "SchoolType",
                                                                  "Loneliness" = "Loneliness",
@@ -1348,111 +1263,31 @@ body <- dashboardBody(
                                                             "Own Room" = "OwnRoom",
                                                             "Family Commitment" = "FamilyCommitment")),
                                    multiple = TRUE,
-                                   options = list(style = "myClass"),
+                                   options = list(style = "myClass", "max-options" = 4),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
                                    width = NULL)
                              ),
                              div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
-                                 actionButton(inputId = "action_parallel_vars",
+                                 actionButton(inputId = "action_sankey_vars",
                                               label = "Confirm Selection",
                                               icon = icon("filter"),
-                                              style = 'padding: 4px; font-size: 10px'),
-                                 align = "center")
-                         ),
-                         box(title = tags$p("Step 2: Data Sampling", style = "font-weight: bold;"),
-                             status = "primary",
-                             collapsible = TRUE,
-                             collapsed = TRUE,
-                             width = 12,
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 numericInput(inputId = "seed_parallel", 
-                                              label = "Seed:", 
-                                              value = 123,
-                                              step = 1),
-                                 selectInput(inputId = "groupby_parallel", 
-                                             label = "Group by:", 
-                                             choices = " "),
-                                 sliderInput(inputId = "prop_parallel", 
-                                             label = "Proportion:",
-                                             min = 0.1, 
-                                             max = 1.0, 
-                                             value = 0.1, 
-                                             step = 0.1),
-                                 selectInput(inputId = "replace_parallel", 
-                                             label = "Replace?",
-                                             choices = c("False", "True")
-                                 )
-                             )
-                         ),
-                         box(title = tags$p("Step 3: Aesthetics", style = "font-weight: bold;"),
-                             status = "primary",
-                             collapsible = TRUE,
-                             collapsed = TRUE,
-                             width = 12,
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 selectInput(inputId = "ref_col_parallel", 
-                                             label = "Reference Column:",
-                                             choices = " "),
-                                 selectInput(inputId = "colscale_cont_parallel", 
-                                             label = "Colour Scale (Continuous Data):",
-                                             choices = c("Viridis", 
-                                                         "Inferno", 
-                                                         "Magma", 
-                                                         "Plasma", 
-                                                         "Warm", 
-                                                         "Cool", 
-                                                         "Rainbow", 
-                                                         "CubehelixDefault",
-                                                         "Blues", 
-                                                         "Greens", 
-                                                         "Greys", 
-                                                         "Oranges",
-                                                         "Purples", 
-                                                         "Reds", 
-                                                         "BuGn", 
-                                                         "BuPu", 
-                                                         "GnBu",
-                                                         "OrRd",
-                                                         "PuBuGn", 
-                                                         "PuBu", 
-                                                         "PuRd", 
-                                                         "RdBu",
-                                                         "RdPu", 
-                                                         "YlGnBu", 
-                                                         "YlGn", 
-                                                         "YlOrBr", 
-                                                         "YlOrRd")
-                                 ),
-                                 selectInput(inputId = "colscale_cat_parallel", 
-                                             label = "Colour Scale (Categorical Data):",
-                                             choices = c("Category10", 
-                                                         "Accent", 
-                                                         "Dark2", 
-                                                         "Paired",
-                                                         "Set1")
-                                 )
-                             ),
-                             div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
-                                 actionButton(inputId = "action_parallel",
-                                              label = "Run Analysis",
-                                              icon = icon("gear"),
                                               style = 'padding: 4px; font-size: 10px'),
                                  align = "center")
                          )
                      )
                    )
-            ),
-            column(width = 10,
-                   div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100%",
-                       box(title = tags$p("Plot", style = "font-weight: bold;"), 
-                           collapsible = FALSE,
-                           status = "primary",
-                           width = 12,
-                           parallelPlotOutput("parallelplot")
-                       )
+                   ),
+                   column(width = 10,
+                          div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100%",
+                              box(title = tags$p("Plot", style = "font-weight: bold;"), 
+                                  collapsible = FALSE,
+                                  status = "primary",
+                                  width = 12,
+                                  plotlyOutput("sankey")
+                              )
+                          )
                    )
-            )
     ),
     
     ### Latent Class Analysis  ----------------------------------------------------
@@ -1477,11 +1312,11 @@ body <- dashboardBody(
                              width = 12,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                  pickerInput(
-                                   inputId = "Subject_lca",
-                                   label = "Subject",
+                                   inputId = "scores_lca",
+                                   label = "Scores",
                                    choices = c("Math", "Reading", "Science"),
                                    multiple = TRUE,
-                                   options = list(style = "myClass"),
+                                   options = list(style = "myClass", `actions-box` = TRUE),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 3)),                                 
                                    inline = FALSE,
                                    width = NULL)),
@@ -1513,7 +1348,7 @@ body <- dashboardBody(
                                                             "Own Room" = "OwnRoom",
                                                             "Family Commitment" = "FamilyCommitment")),
                                    multiple = TRUE,
-                                   options = list(style = "myClass"),
+                                   options = list(style = "myClass", `actions-box` = TRUE),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),                                 
                                    inline = FALSE,
                                    width = NULL)),
@@ -1562,33 +1397,90 @@ body <- dashboardBody(
                          )
                      )
                    )
-            ),
-            column(width = 10,
-                   div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100%",
-                       box(title = tags$p("Latent Class Analysis", style = "font-weight: bold;"), 
-                           collapsible = FALSE,
-                           status = "primary",
-                           width = 12,
-                           plotlyOutput("lca")
-                       )
+                   ),
+                   column(width = 10,
+                        fluidRow(
+                          div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100%",
+                              tabBox(title = tags$p("Latent Class Analysis", style = "font-weight: bold;"), 
+                                  width = 12,
+                                  height = "60vh",
+                                  tabPanel(title = tags$p("By Variable", style = "font-weight: bold"),
+                                           div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                                               plotlyOutput("lca",
+                                                        width = "90%",
+                                                        height = "50vh"),
+                                               align = "center")
+                                           ),
+                                  tabPanel(title = tags$p("Summary View", style = "font-weight: bold"),
+                                           div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                                               plotlyOutput("lca_plotsummary_",
+                                                        width = "90%",
+                                                        height = "50vh"),
+                                               align = "center")
+                                           )
+                                  )
+                              ),
+                          div(style = "padding = 0em; margin-left: 0em; margin-top: 0.5em; height: 100%",
+                              box(title = tags$p("Supplementary Information", style = "font-weight: bold"), 
+                                      collapsible = TRUE,
+                                      collapsed = TRUE,
+                                      width = 12,
+                                      fluidRow(
+                                        column(width = 6, 
+                                               uiOutput("active_lca_supp1"),
+                                               flipBox(id = "fb_lca_supp1",
+                                                       width = 12,
+                                                       front = div(h6("Click for More Information", align = "center"),
+                                                                   valueBoxOutput("lca_supp1", width =12)),
+                                                       back = wellPanel(
+                                                         p("Akaike Information Criterion (AIC) is a measure of the relative quality of a statistical model for a given set of data. It balances the goodness of fit of the model with the complexity of the model, penalising models that are overly complex. Lower AIC values indicate a better balance between model fit and complexity, suggesting a more optimal model for explaining the data.")))),
+                                        column(width = 6, 
+                                               uiOutput("active_lca_supp2"),
+                                               flipBox(id = "fb_lca_supp2",
+                                                       width = 12,
+                                                       front = div(h6("Click for More Information", align = "center"),
+                                                                   valueBoxOutput("lca_supp2", width =12)),
+                                                       back = wellPanel(
+                                                         p("Bayesian Information Criterion (BIC) is similar to AIC but places a stronger penalty on models with more parameters, making it more conservative in selecting models. Like AIC, lower BIC values indicate better model fit, but BIC tends to favor simpler models more strongly than AIC."))))),
+                                      fluidRow(
+                                        column(width = 6, 
+                                               uiOutput("active_lca_supp3"),
+                                               flipBox(id = "fb_lca_supp3",
+                                                       width = 12,
+                                                       front = div(h6("Click for More Information", align = "center"),
+                                                                   valueBoxOutput("lca_supp3", width =12)),
+                                                       back = wellPanel(
+                                                         p("Likelihood Ratio/Deviance Statistic (Gsq) is a measure of the goodness of fit of the model. It compares the fit of the model to a model with perfect fit by assessing the difference in deviance between the two models. Lower values indicate better model fit, with values close to zero suggesting that the model fits the data well.")))),
+                                        column(width = 6, 
+                                               uiOutput("active_lca_supp4"),
+                                               flipBox(id = "fb_lca_supp4",
+                                                       width = 12,
+                                                       front = div(h6("Click for More Information", align = "center"),
+                                                                   valueBoxOutput("lca_supp4", width =12)),
+                                                       back = wellPanel(
+                                                         p("Entropy quantifies the uncertainty or randomness in the distribution of observations across different classes. A high entropy indicates greater uncertainty, while low entropy suggests more predictability or orderliness.Higher entropy values indicate less distinct class separation, while lower entropy values suggest clearer class distinctions."))))
+                                        
+                                      )
+                                  )
+                              )
+                          )
                    )
-            )
     ),
     
-    ### Decision Tree  ----------------------------------------------------
+    ### Regression tree  ----------------------------------------------------
     tabItem(tabName = "tab_dt",
             
-            #### Decision Tree Toggle Column  ----------------------------------------------------
+            #### Regression tree Toggle Column  ----------------------------------------------------
             column(width = 2,
                    fluidRow(
                      div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                         box(title = tags$p(span(icon("tree"), "Decision Tree"), style = "font-weight: bold; color: #FFFFFF"),
+                         box(title = tags$p(span(icon("tree"), "Regression Tree"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsible = TRUE,
                              width = 12,
                              solidHeader =TRUE,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 "A Decision Tree is a machine learning algorithm that partitions the data into subsets. The partitioning process starts with a binary split and continues until no further splits can be made. Various branches of variable length are formed. The goal of a decision tree is to encapsulate the training data in the smallest possible tree, i.e. simplest possible explanation for the variation in scores."
+                                 "A Regression Tree is a machine learning algorithm that partitions the data into subsets. The partitioning process starts with a binary split and continues until no further splits can be made. Various branches of variable length are formed. The goal of a regression tree is to encapsulate the training data in the smallest possible tree, i.e. simplest possible explanation for the variation in scores."
                              )
                          )
                      ),
@@ -1674,7 +1566,7 @@ body <- dashboardBody(
                      ),
                      
                      # Box Sidebar for Model Tuning Parameters
-                     hidden(div(id = "dt_kfold_group",
+                     hidden(div(id = "dt_modeltune_group",
                                 style = "padding = 0em; margin-right: -0.5em; margin-top: -1em",
                                 box(
                                   title = tags$p("Step 3: Tuning Parameters", style = "font-weight: bold;"),
@@ -1683,19 +1575,19 @@ body <- dashboardBody(
                                   collapsed = FALSE,
                                   width = 12,
                                   div(style = "padding = 0em; margin-top: -0.5em",
-                                      numericInput(inputId = "dt_rkfold_number",
-                                                   label = "K-Fold:",
-                                                   min = 2,
-                                                   max = 50,
+                                      sliderInput(inputId = "dt_minsplit",
+                                                   label = "Minimum Split:",
+                                                   min = 5,
+                                                   max = 20,
                                                    step = 1,
-                                                   value = 10),
+                                                   value = 5),
                                       div(style = "padding = 0em; margin-top: -0.8em",
-                                          numericInput(inputId = "dt_rkfold_repeat",
-                                                       label = "Repeat Count:",
-                                                       min = 1,
-                                                       max = 10,
+                                          sliderInput(inputId = "dt_maxdepth",
+                                                       label = "Maximum Depth:",
+                                                       min = 5,
+                                                       max = 20,
                                                        step = 1,
-                                                       value = 3)
+                                                       value = 10)
                                       ),
                                       div(style = "padding = 0em; margin-top: 0em",
                                           materialSwitch(inputId = "dt_bestcp",
@@ -1711,7 +1603,7 @@ body <- dashboardBody(
                                                          min = 0.00001,
                                                          max = 1,
                                                          step = 0.00001,
-                                                         value = 0.02)
+                                                         value = 0.001)
                                         )
                                       ),
                                       div(style = "padding = 0em; margin-top: 2em; font-size: 10px;",
@@ -1730,7 +1622,7 @@ body <- dashboardBody(
                    )
             ),
             
-            #### Decision Tree Results Column 1 ----------------------------------------------------
+            #### Regression Tree Results Column 1 ----------------------------------------------------
             
             column(width = 5,
                    fluidRow(
@@ -1741,14 +1633,14 @@ body <- dashboardBody(
                            width = 12,
                            status = "primary",
                            
-                           #### Decision Tree - Actual vs Predicted ----------------------------------------------------
+                           #### Regression Tree - Actual vs Predicted ----------------------------------------------------
                            column(width = 6, 
                                   plotOutput("dt_plot_predvsactual_",
                                              width = "100%",
                                              height = "30vh")),
                            
                            
-                           #### Decision Tree - Actual vs Residuals ----------------------------------------------------
+                           #### Regression Tree - Actual vs Residuals ----------------------------------------------------
                            column(width = 6, 
                                   plotOutput("dt_plot_residvsactual_",
                                              width = "100%",
@@ -1760,19 +1652,33 @@ body <- dashboardBody(
                    ,
                    fluidRow(div(
                      style = "padding = 0em; margin-left: 0em; margin-top: 0.5em; height: 100% ",
-                     box(title = tags$p("Best Tune", style = "font-weight: bold;"),
-                         closable = FALSE,
+                     tabBox(title = tags$p("Best Tune", style = "color: #7C6D62; font-weight: bold; font-size: 12px;"),
                          width = 12,
-                         status = "primary",
-                         plotOutput("dt_cp_plot_",
-                                    width = "100%",
-                                    height = "30vh"),
-                         div(style = "padding = 0em; margin-top: 1em; margin-left: 0em;",
-                             flipBox(id = "dt_cp_info",
-                                     width = 12,
-                                     front = valueBoxOutput("dt_showcp_", width =12),
-                                     back = tags$p("Complexity Parameter is used to control the size of the decision tree and to select the optimal tree size. The tree will stop dividing nodes when the reduction in relative error is less than a certain value.")
-                             ))
+                         height = "100%",
+                         tabPanel(title = "CP Plot",
+                                  height = "100%",
+                                  fluidRow(
+                                    div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                      plotOutput("dt_cp_plot_",
+                                                 width = "90%",
+                                                 height = "30vh"),
+                                      align = "center"),
+                                    div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                          flipBox(id = "dt_cp_info",
+                                                  width = 12,
+                                                  front = valueBoxOutput("dt_showcp_", width = 12),
+                                                  back = tags$p("Complexity Parameter is used to control the size of the regression tree and to select the optimal tree size. The tree will stop dividing nodes when the reduction in relative error is less than a certain value.")
+                                                  )
+                                      )
+                                    )
+                                  ),
+                         tabPanel(title = "CP Table",
+                                  height = "100%",
+                                  div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                      DT::dataTableOutput("dt_cptable_")
+                                      )
+                                  )
+                         
                      )
                    )
                    )
@@ -1787,11 +1693,13 @@ body <- dashboardBody(
                      )
                    ),
                    div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
-                       box(title = tags$p("Decision Tree", style = "font-weight: bold;"),
+                       box(title = tags$p("Regression Tree", style = "font-weight: bold;"),
                            closable = FALSE,
                            width = 12,
                            status = "primary",
-                           plotOutput("dt_rpartplot_")
+                           visNetworkOutput("dt_rpartplot_",
+                                            width = "100%",
+                                            height = "70vh")
                        )
                    )
             )
@@ -2378,7 +2286,7 @@ server <- function(input, output) {
                      tab_heatmap = "Country Comparison",
                      tab_cluster = "Cluster Heatmap",
                      tab_parallelplot = "Parallel Plot",
-                     tab_dt = "Decision Tree",
+                     tab_dt = "Regression Tree",
                      tab_rf = "Random Forest",
                      tab_gb = "Gradient Boosting"
     )
@@ -2400,7 +2308,7 @@ server <- function(input, output) {
   output$home_schnum_ <- renderValueBox({
     valueBox(
       value = tags$p(n_distinct(stu$SchoolID), style = "font-size: 60%;"), 
-      subtitle = tags$p("Participanting Schools", style = "font-size: 80%;"), 
+      subtitle = tags$p("Participating Schools", style = "font-size: 80%;"), 
       icon = tags$i(icon("building-columns"), style="font-size: 60%"),
       color = "yellow"
     )
@@ -2413,8 +2321,7 @@ server <- function(input, output) {
   
   output$db_summarystats_ <- DT::renderDataTable({
     datatable(summarystatstable(),
-              options = list(dom = 't'),
-              class = "compact")
+              options = list(dom = 't'))
   })
   
   
@@ -2525,21 +2432,60 @@ server <- function(input, output) {
       )
   })
   
-  output$db_bar <- renderPlotly({
-    plot_ly(stu, 
-            x = ~ get(input$db_bar_var)
-    ) %>% 
-      add_histogram(
-        textposition = 'auto',
-        color = I('#caced8'),
-        textfont = list(size =10, 
-                        color = 'rgb(158,202,225)'
-        )
-      ) %>% 
-      layout(yaxis = list(title = "No. of Students"),
-             xaxis = list(title = input$db_bar_var)
+  db_bar_varlabel <- reactive(
+    {switch(input$db_bar_var,
+            "SchoolType" = "School Type",
+            "Loneliness" = "Loneliness",
+            "ClassroomSafety" = "Classroom Safety",
+            "TeacherSupport" = "Teacher Support",
+            "Gender" = "Gender",
+            "Homework_Math" = "Math Homework Time",
+            "Homework_Reading" = "Reading Homework Time",
+            "Homework_Science" = "Science Homework Time",
+            "Preference_Math" = "Preference for Math",
+            "Preference_Reading" = "Preference for Reading",
+            "Preference_Science" = "Preference for Science",
+            "Exercise" = "Exercise",
+            "ParentsEducation" = "Parents' Education",
+            "Immigration" = "Immigration",
+            "HomeLanguage" = "Home Language",
+            "Sibling" = "Sibling",
+            "Aircon" = "Aircon",
+            "Helper" = "Helper",
+            "Vehicle" = "Vehicle",
+            "Books" = "Books",
+            "OwnRoom" = "Own Room",
+            "FamilyCommitment" = "Family Commitment")}
+  )
+  
+  output$db_treemap <- renderPlot({
+    stu %>%
+      count(.[[input$db_bar_var]]) %>%
+      mutate( pct = paste0(round(n/nrow(stu)*100,2),"%"),
+              label = paste(.[['.[[input$db_bar_var]]']], n, pct, sep = "\n")) %>%
+      
+      treemap(index = "label",  # Categorical variable
+              vSize = "n",   # Dependent variable
+              title = paste0("Frequency of ",db_bar_varlabel()),
+              fontsize.title = 14
       )
   })
+  
+  # output$db_bar <- renderPlotly({
+  #   plot_ly(stu, 
+  #           x = ~ get(input$db_bar_var)
+  #   ) %>% 
+  #     add_histogram(
+  #       textposition = 'auto',
+  #       color = I('#caced8'),
+  #       textfont = list(size =10, 
+  #                       color = 'rgb(158,202,225)'
+  #       )
+  #     ) %>% 
+  #     layout(yaxis = list(title = "No. of Students"),
+  #            xaxis = list(title = input$db_bar_var)
+  #     )
+  # })
   
   # EDA/CDA  ----------------------------------------------------
   
@@ -2714,9 +2660,9 @@ server <- function(input, output) {
                                         axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
                                         axis.line.y = element_blank(),
                                         axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
-                                        plot.title = element_text(size=16, face="bold"))
+                                        plot.title = element_text(size=16, face="bold")),
+                                  scale_color_manual(values = mycolours))
           )
-        )
       }
       else {
         ggbetweenstats(
@@ -2738,9 +2684,10 @@ server <- function(input, output) {
                                         axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
                                         axis.line.y = element_blank(),
                                         axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
-                                        plot.title = element_text(size=16, face="bold"))
+                                        plot.title = element_text(size=16, face="bold")),
+                                    scale_color_manual(values = mycolours))
+                                  
           )
-        )
       }
       
     })
@@ -2835,7 +2782,8 @@ observeEvent(input$cda_assoc_var1, {
                                       axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
                                       axis.line.y = element_blank(),
                                       axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
-                                      plot.title = element_text(size=16, face="bold"))
+                                      plot.title = element_text(size=16, face="bold")),
+                                scale_fill_manual(values = mycolours)
                                 )
         
       )
@@ -2867,54 +2815,57 @@ observeEvent(input$cda_assoc_var1, {
   )
   
   # Update "group_by" Option with Selected Variables
-  vars_names <- c("SchoolID" = "School ID",
-                  "SchoolType" = "School Type",
-                  "ClassroomSafety" = "Classroom Safety",
-                  "TeacherSupport" = "Teacher Support",
-                  "Homework_Math" = "Math Homework Time",
-                  "Homework_Reading" = "Reading Homework Time",
-                  "Homework_Science" = "Science Homework Time",
-                  "Preference_Math" = "Preference for Math",
-                  "Preference_Reading" = "Preference for Reading",
-                  "Preference_Science" = "Preference for Science",
-                  "ParentsEducation" = "Parents' Education",
-                  "HomeLanguage" = "Home Language",
-                  "OwnRoom" = "Own Room",
-                  "FamilyCommitment" = "Family Commitment",
-                  "Math" = "Math",
-                  "Reading" ="Reading",
-                  "Science" = "Science",
-                  "Gender" = "Gender",
-                  "Exercise" = "Exercise",
-                  "Immigration" = "Immigration",
-                  "Sibling" = "Sibling",
-                  "Aircon" = "Aircon",
-                  "Helper" = "Helper",
-                  "Vehicle" = "Vehicle",
-                  "Books" = "Books")
+  vars_names_heatmap <- c("SchoolID" = "School ID",
+                          "SchoolType" = "School Type",
+                          "ClassroomSafety" = "Classroom Safety",
+                          "TeacherSupport" = "Teacher Support",
+                          "Homework_Math" = "Math Homework Time",
+                          "Homework_Reading" = "Reading Homework Time",
+                          "Homework_Science" = "Science Homework Time",
+                          "Preference_Math" = "Preference for Math",
+                          "Preference_Reading" = "Preference for Reading",
+                          "Preference_Science" = "Preference for Science",
+                          "ParentsEducation" = "Parents' Education",
+                          "HomeLanguage" = "Home Language",
+                          "OwnRoom" = "Own Room",
+                          "FamilyCommitment" = "Family Commitment",
+                          "Math" = "Math",
+                          "Reading" ="Reading",
+                          "Science" = "Science",
+                          "Gender" = "Gender",
+                          "Exercise" = "Exercise",
+                          "Immigration" = "Immigration",
+                          "Sibling" = "Sibling",
+                          "Aircon" = "Aircon",
+                          "Helper" = "Helper",
+                          "Vehicle" = "Vehicle",
+                          "Books" = "Books")
+  
+  vars_names_lca <- vars_names_heatmap
+  vars_names_sankey <- vars_names_heatmap
   
   observeEvent(input$action_heatmap_vars, {
-    choices_original <- selected_variables_heatmap_less()
-    choices_display <- choices_original
+    choices_original_heatmap <- selected_variables_heatmap_less()
+    choices_display_heatmap <- choices_original_heatmap
     
-    for (var in names(vars_names)) {
-      index <- which(choices_original == var)
-      if (length(index) > 0) {
-        choices_display[index] <- vars_names[var]
+    for (var in names(vars_names_heatmap)) {
+      index_heatmap <- which(choices_original_heatmap == var)
+      if (length(index_heatmap) > 0) {
+        choices_display_heatmap[index_heatmap] <- vars_names_heatmap[var]
       }
     }
     
     updateSelectInput(
       session = getDefaultReactiveDomain(), 
       inputId = "groupby_heatmap", 
-      choices = setNames(choices_original, choices_display)
+      choices = setNames(choices_original_heatmap, choices_display_heatmap)
     )
   })
   
   # Filter Dataset using Selected Variables
   data_filtered_heatmap <- eventReactive(
     input$action_heatmap_vars, {
-      data_filtered_heatmap <- stu %>% 
+      data_filtered_heatmap <- stu_ca %>% 
         dplyr::select(all_of(selected_variables_heatmap()))})
   
   # Data Sampling
@@ -3057,128 +3008,102 @@ observeEvent(input$cda_assoc_var1, {
   
   observeEvent(input$action_heatmap, cluster_supp2(heatmap_supp2_plot()))
   
-  ### Parallel Plot  ----------------------------------------------------
+  
+  
+  ### Sankey Diagram  ----------------------------------------------------
   
   # Combine Selected Variables and SchoolID
-  selected_variables_parallel1 <- eventReactive(
-    input$action_parallel_vars, {
-      c('SchoolID', 
-        input$scores_parallel,
-        input$vars_parallel)
+  selected_variables_sankey <- eventReactive(
+    input$action_sankey_vars, {
+      c(input$scores_sankey,
+        input$vars_sankey)
     }
-  )
-  
-  # Combine Selected Variables (excl. Scores) and SchoolID
-  selected_variables_parallel1_less <- eventReactive(
-    input$action_parallel_vars, {
-      c('SchoolID', 
-        input$vars_parallel)
-    }
-  )
-  
-  # Define Selected Variables (without SchoolID)
-  selected_variables_parallel2 <- eventReactive(
-    input$action_parallel_vars, {
-      c(input$scores_parallel,
-        input$vars_parallel)
-    }
-  )
-  
-  # Update "group_by" Option with Selected Variables
-  observeEvent(input$action_parallel_vars, {
-    choices_original <- selected_variables_parallel1_less()
-    choices_display <- choices_original
-    
-    for (var in names(vars_names)) {
-      index <- which(choices_original == var)
-      if (length(index) > 0) {
-        choices_display[index] <- vars_names[var]
-      }
-    }
-    
-    updateSelectInput(
-      session = getDefaultReactiveDomain(), 
-      inputId = "groupby_parallel", 
-      choices = setNames(choices_original, choices_display)
-    )
-  }
-  )
-  
-  # Update "Reference Column" Option with Selected Variables
-  observeEvent(input$action_parallel_vars, {
-    choices_original <- selected_variables_parallel2()
-    choices_display <- choices_original
-    
-    for (var in names(vars_names)) {
-      index <- which(choices_original == var)
-      if (length(index) > 0) {
-        choices_display[index] <- vars_names[var]
-      }
-    }
-    
-    updateSelectInput(
-      session = getDefaultReactiveDomain(), 
-      inputId = "ref_col_parallel", 
-      choices = setNames(choices_original, choices_display)
-    )
-  }
   )
   
   # Filter Dataset using Selected Variables
-  data_filtered_parallel <- eventReactive(
-    input$action_parallel_vars, {
-      data_filtered_parallel <- stu %>% 
-        dplyr::select(all_of(selected_variables_parallel1()))
+  data_filtered_sankey <- eventReactive(
+    input$action_sankey_vars, {
+      data_filtered_sankey <- stu_sankey %>% 
+        dplyr::select(all_of(selected_variables_sankey()))
     }
   )
   
-  # Data Sampling
-  data_sample_parallel <- eventReactive(
-    input$action_parallel, {
-      set.seed(input$seed_parallel)
-      data_filtered_parallel() %>%
-        dplyr::group_by_at(vars(input$groupby_parallel)) %>% 
-        slice_sample(prop = input$prop_parallel, 
-                     replace = (if (input$replace_parallel == "False") {FALSE} 
-                                else {TRUE})) %>%
-        dplyr::ungroup() %>%
-        dplyr::select(-"SchoolID")
+  # Sankey Table of Proportions
+  freq_table_sankey <- eventReactive(
+    input$action_sankey_vars, {
+      data_filtered_sankey() %>% 
+        dplyr::group_by_at(vars(selected_variables_sankey())) %>% 
+        summarise(n = n())
+    })
+  
+  nodes_sankey <- eventReactive(
+    input$action_sankey_vars, {
+      nodes_sankey <- data.frame(name = unique(c(as.character(unlist(freq_table_sankey()[,1])),
+                                                 as.character(unlist(freq_table_sankey()[,2])),
+                                                 as.character(unlist(freq_table_sankey()[,3])),
+                                                 as.character(unlist(freq_table_sankey()[,4])),
+                                                 as.character(unlist(freq_table_sankey()[,5]))
+      )))
+    })
+  
+  # Create Links for Sankey
+  links_sankey <- eventReactive(
+    input$action_sankey_vars, {
+      links_sankey <- data.frame(source = numeric(0), target = numeric(0), value = numeric(0))
+      for (i in 1:(ncol(freq_table_sankey()) - 1)) {
+        source_col <- unlist(freq_table_sankey()[, i])
+        target_col <- unlist(freq_table_sankey()[, i + 1])
+        value_col <- freq_table_sankey()$n
+        links_sankey <- rbind(links_sankey, data.frame(source = match(source_col, nodes_sankey()$name) - 1,
+                                                       target = match(target_col, nodes_sankey()$name) - 1,
+                                                       value = value_col,
+                                                       stringsAsFactors = FALSE))
+      }
+      links_sankey
     }
   )
   
-  # Create List of Lists of Selected Variables from "cat" List 
-  lst <- eventReactive(
-    input$action_parallel, {
-      cols <- colnames(data_sample_parallel())
-      lst <- lapply(cols, function(col_name) {
-        if (col_name %in% names(cat)) {
-          cat[[col_name]]
-        } 
-        else {
-          NULL
+  # Generate Sankey Diagram
+  title_names_sankey <- eventReactive(
+    input$action_sankey_vars, {
+      choices_original_sankey <- selected_variables_sankey()
+      choices_display_sankey <- choices_original_sankey
+      
+      for (var in names(vars_names_sankey)) {
+        index_sankey <- which(choices_original_sankey == var)
+        if (length(index_sankey) > 0) {
+          choices_display_sankey[index_sankey] <- vars_names_sankey[var]
         }
       }
-      )
-    }
-  )
+      
+      return(choices_display_sankey)
+    })
   
-  # Generate Plot: Parallel Plot
-  parallelplot_plot <- eventReactive(
-    input$action_parallel, {
-      parallelPlot(data_sample_parallel(),
-                   categorical = lst(),
-                   rotateTitle = TRUE,
-                   refColumnDim = input$ref_col_parallel,
-                   continuousCS = input$colscale_cont_parallel,
-                   categoricalCS = input$colscale_cat_parallel)
-    }
-  )
+  sankey_plot <- eventReactive(
+    input$action_sankey_vars, {
+      plot_ly(
+        type = "sankey",
+        orientation = "h",
+        node = list(pad = 15,
+                    thickness = 20,
+                    line = list(color = "black", width = 0.5),
+                    label = nodes_sankey()$name),
+        link = list(source = links_sankey()$source,
+                    target = links_sankey()$target,
+                    value = links_sankey()$value)) %>%
+        layout(
+          title = paste("Sankey Diagram for", paste(title_names_sankey(), collapse = ", "))
+          #paste("Sankey Diagram:", paste(colnames(freq_table_sankey()[1:5]), collapse = ", "))
+        )
+    })
   
-  # Function to Render Parallel Plot
-  cluster_parallelplot = function(modeltype){
-    output$parallelplot = renderParallelPlot(modeltype)}
+  # Function to Render Sankey Diagram
+  cluster_sankey = function(modeltype){
+    output$sankey = renderPlotly(modeltype)}
   
-  observeEvent(input$action_parallel, cluster_parallelplot(parallelplot_plot()))
+  observeEvent(input$action_sankey_vars, cluster_sankey(sankey_plot()))
+  
+  
   
   ### Latent Class Analysis  ----------------------------------------------------
   
@@ -3192,20 +3117,20 @@ observeEvent(input$cda_assoc_var1, {
   
   # Update "group_by" Option with Selected Variables
   observeEvent(input$action_lca_vars, {
-    choices_original <- selected_variables_lca()
-    choices_display <- choices_original
+    choices_original_lca <- selected_variables_lca()
+    choices_display_lca <- choices_original_lca
     
-    for (var in names(vars_names)) {
-      index <- which(choices_original == var)
-      if (length(index) > 0) {
-        choices_display[index] <- vars_names[var]
+    for (var in names(vars_names_lca)) {
+      index_lca <- which(choices_original_lca == var)
+      if (length(index_lca) > 0) {
+        choices_display_lca[index_lca] <- vars_names_lca[var]
       }
     }
     
     updateSelectInput(
       session = getDefaultReactiveDomain(), 
       inputId = "groupby_lca", 
-      choices = setNames(choices_original, choices_display)
+      choices = setNames(choices_original_lca, choices_display_lca)
     )
   }
   )
@@ -3223,30 +3148,142 @@ observeEvent(input$cda_assoc_var1, {
     input$action_lca, {
       formula_string <- paste(selected_variables_lca(), collapse = ", ")
       f <- as.formula(paste("cbind(", formula_string, ") ~ 1"))
-      model_lca <- poLCA(f, 
-                         data_filtered_lca(), 
-                         nclass = input$numclusters_lca, 
+      model_lca <- poLCA(f, data_filtered_lca(), 
+                         nclass= input$numclusters_lca, 
                          nrep = input$numrep_lca, 
-                         maxiter=5000)
-      bic_lca <- model_lca$bic
-      aic_lca <- model_lca$aic
-      entropy <- function(p) sum(-p*log(p))
-      error_prior <- entropy(model_lca$P)
-      error_post <- mean(apply(model_lca$posterior, c(1,2), entropy), na.rm=T)
-      entropy_lca <- (error_prior - error_post) / error_prior
-      return(model_lca)
+                         maxiter=5000)    }
+  )
+  
+  model_lcaprobs <- eventReactive(
+    input$action_lca, {
+      reshape2::melt(model_lca()$probs) %>% 
+        rename(Class = Var1,
+               Factor_Level = Var2,
+               Prop = value,
+               Category = L1) %>%
+        mutate(Prop = round(Prop*100,2))
+        
+    })
+  
+  model_lcawlabels <- eventReactive(
+    input$action_lca, {
+      left_join(model_lcaprobs(), lcalabels,
+                by = c("Factor_Level" = "Factor_Level",
+                       "Category" = "Category"))
+      
+    })
+  
+  ## LCA Summary Plot
+  lca_plotsummary <- eventReactive(
+    input$action_lca, {
+      ggplot(model_lcawlabels(),
+             aes(x = Class, y = Prop, group = desc(Factor_Level))) + 
+        geom_bar(stat = "identity", position = "stack", 
+                 aes(fill = Factor_Level,
+                     text = paste0("Proportion: ", Prop,"%","\n",
+                                   "Category: ", Category, "\n",
+                                   "Level: ", Factor_Level))) + 
+        facet_wrap(~ Category) + 
+        coord_flip() +
+        labs(fill = "Factor Level") +
+        scale_y_continuous("Proportion", expand = c(0, 0)) + 
+        theme_minimal()+
+        scale_fill_manual(values = mycolours)
+    })
+  
+  output$lca_plotsummary_ <- renderPlotly({
+    ggplotly(lca_plotsummary(), tooltip = c("text", "x")) 
+    # %>%
+    #   layout(legend = list(orientation = 'h',
+    #                        xanchor = "center",
+    #                        x = 0.5,
+    #                        yanchor = "top",
+    #                        y = 1.15)) 
+  })
+  
+  
+  aic_lca <- eventReactive(
+    input$action_lca, {
+      return(model_lca()$aic)
     }
   )
   
+  aic_lca_display = function(){
+    output$lca_supp1 = renderValueBox(
+      valueBox(
+        value = tags$p(scales::comma(round(aic_lca(),2)), style = "font-size: 50%;"), 
+        subtitle = tags$p("AIC", style = "font-size: 150%;"), 
+        icon = tags$i(icon("calculator"), style = "font-size: 80%;"), 
+        width = 12,
+        color = "yellow"
+      )
+    )
+  }
   
-  #bic_lca <- model_lca$bic
-  #aic_lca <- model_lca$aic
-  #entropy <- function(p) sum(-p*log(p))
-  #error_prior <- entropy(model_lca$P)
-  #error_post <- mean(apply(model_lca$posterior, c(1,2), entropy), na.rm=T)
-  #entropy_lca <- (error_prior - error_post) / error_prior
+  observeEvent(input$action_lca, aic_lca_display())
   
-  # Generate Plot Parallel Plot
+  
+  bic_lca <- eventReactive(
+    input$action_lca, {
+      return(model_lca()$bic)
+    }
+  )
+  
+  bic_lca_display = function(){
+    output$lca_supp2 = renderValueBox(
+      valueBox(
+        value = tags$p(scales::comma(round(bic_lca(),2)), style = "font-size: 50%;"), 
+        subtitle = tags$p("BIC", style = "font-size: 150%;"), 
+        icon = tags$i(icon("calculator"), style = "font-size: 80%;"), 
+        width = 12,
+        color = "yellow"
+      )
+    )
+  }
+  
+  observeEvent(input$action_lca, bic_lca_display())
+  
+  gsq_lca <- eventReactive(
+    input$action_lca, {
+      return(model_lca()$Gsq)
+    }
+  )
+  
+  gsq_lca_display = function(){
+    output$lca_supp3 = renderValueBox(
+      valueBox(
+        value = tags$p(scales::comma(round(gsq_lca(),2)), style = "font-size: 50%;"), 
+        subtitle = tags$p("Likelihood Ratio", style = "font-size: 150%;"), 
+        icon = tags$i(icon("calculator"), style = "font-size: 80%;"), 
+        width = 12,
+        color = "yellow"
+      )
+    )
+  }
+  
+  observeEvent(input$action_lca, gsq_lca_display())
+  
+  ent_lca <- eventReactive(
+    input$action_lca, {
+      return(poLCA.entropy(model_lca()))
+    }
+  )
+  
+  ent_lca_display = function(){
+    output$lca_supp4 = renderValueBox(
+      valueBox(
+        value = tags$p(scales::comma(round(ent_lca(),2)), style = "font-size: 50%;"), 
+        subtitle = tags$p("Entropy", style = "font-size: 150%;"), 
+        icon = tags$i(icon("calculator"), style = "font-size: 80%;"), 
+        width = 12,
+        color = "yellow"
+      )
+    )
+  }
+  
+  observeEvent(input$action_lca, ent_lca_display()) 
+  
+  # Generate LCA Bar Plot
   lca_plot <- eventReactive(
     input$action_lca, {
       model_lca <- model_lca()
@@ -3258,28 +3295,31 @@ observeEvent(input$cda_assoc_var1, {
       
       plot_table <- data_filtered_lca_plot %>%
         dplyr::group_by(!!selected_var, class) %>% 
-        summarise(counts = n()) %>% 
+        summarise(proportion = n()) %>% 
         dplyr::ungroup()
       
       p <- ggplot(plot_table, 
                   aes(fill = !!selected_var, 
-                      y = counts, 
+                      y = proportion, 
                       x = class)) +
-        geom_bar(position = "fill", stat = "identity") +
-        labs(y = "Proportion", x = "Class")+ 
+        geom_bar(position = "fill", stat = "identity")+
         theme_minimal()+
-        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
-              axis.line.y = element_blank(),
-              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
-              plot.title = element_text(size=12, face="bold"),
-              axis.title = element_text(face="bold"),
-              axis.text = element_text(face="bold")) 
+        labs(x = "Class",
+             y = "Proportion") +
+        coord_flip() +
+        scale_y_continuous("Proportion", expand = c(0, 0)) + 
+        scale_fill_manual(values = mycolours)
       
       ggplotly(p)
     }
   )
   
-  ### Function to Plot Cluster Heatmap
+  # Function to Plot LCA Bar Plot
+  cluster_lca = function(modeltype){
+    output$lca = renderPlotly(modeltype)}
+  
+  observeEvent(input$action_lca, cluster_lca(lca_plot()))
+  
   cluster_lca = function(modeltype){
     output$lca = renderPlotly(modeltype)}
   
@@ -3323,7 +3363,7 @@ observeEvent(input$cda_assoc_var1, {
   
   ### Display Selection after first model run
   observeEvent(input$dt_action_, {
-    shinyjs::show("dt_kfold_group")
+    shinyjs::show("dt_modeltune_group")
   })
   
   ## Hide Complexity Parameter when box is checked, ie, model with best CP to be plotted
@@ -3341,110 +3381,123 @@ observeEvent(input$cda_assoc_var1, {
       if (input$dt_target_ == "Math") {
         set.seed(1234)
         
-        train(
-          form = Math ~ .,
-          data = dt_traindata(),
-          method = "rpart",
-          trControl = trainControl(method = "repeatedcv",
-                                   number = 5,
-                                   repeats = 2)
-          #   if(input$dt_resamplingmethod_ == "dt_bootstrap") 
-          #   {dt_bs_resample()}
-          # else if (input$dt_resamplingmethod_ == "dt_cvkfold") 
-          # {dt_cvkfold_resample()}
-          # else {dt_cvrepeatkfold_resample()}
+        rpart(formula = Math ~.,
+              data = dt_traindata(),
+              method = "anova",
+              control = rpart.control(minsplit = 5, cp = 0.001, maxdepth = 10)
         )}
       
       else if (input$dt_target_ == "Reading") {
         set.seed(1234)
         
-        train(
-          form = Reading ~ .,
-          data = dt_traindata(),
-          method = "rpart",
-          trControl = trainControl(method = "repeatedcv",
-                                   number = 5,
-                                   repeats = 2)
+        rpart(formula = Reading ~.,
+              data = dt_traindata(),
+              method = "anova",
+              control = rpart.control(minsplit = 5, cp = 0.001, maxdepth = 10)
         )}
       
       else {
         set.seed(1234)
         
-        train(
-          form = Science ~ .,
-          data = dt_traindata(),
-          method = "rpart",
-          trControl = trainControl(method = "repeatedcv",
-                                   number = 5,
-                                   repeats = 2)
+        rpart(formula = Science ~.,
+              data = dt_traindata(),
+              method = "anova",
+              control = rpart.control(minsplit = 5, cp = 0.001, maxdepth = 10)
         )}
     })
   
   dtmodel_prune <- eventReactive(
     input$dt_tunemodel_, {
       if (input$dt_target_ == "Math") {
+        if (input$dt_bestcp == TRUE) {
+          set.seed(1234)
+          
+          rpart(formula = Math ~.,
+                data = dt_traindata(),
+                method = "anova",
+                control = rpart.control(minsplit = input$dt_minsplit, 
+                                        maxdepth = input$dt_maxdepth,
+                                        cp = dt_bestcp()))
+                }
+                else {
+                  set.seed(1234)
+                  
+                  rpart(formula = Math ~.,
+                        data = dt_traindata(),
+                        method = "anova",
+                        control = rpart.control(minsplit = input$dt_minsplit, 
+                                                maxdepth = input$dt_maxdepth,
+                                                cp = input$dt_cp))
+                } }
+    
+    else if (input$dt_target_ == "Reading") {
+      if (input$dt_bestcp == TRUE) {
         set.seed(1234)
         
-        train(
-          form = Math ~ .,
-          data = dt_traindata(),
-          method = "rpart",
-          tuneGrid = expand.grid(cp = if(input$dt_bestcp == TRUE) {dtmodel()$bestTune}
-                                 else {input$dt_cp}
-          ),
-          trControl = trainControl(method = "repeatedcv",
-                                   number = input$dt_rkfold_number,
-                                   repeats = input$dt_rkfold_repeat)
-        )}
-      
-      else if (input$dt_target_ == "Reading") {
-        set.seed(1234)
-        
-        train(
-          form = Reading ~ .,
-          data = dt_traindata(),
-          method = "rpart",
-          tuneGrid = expand.grid(cp = input$dt_cp),
-          trControl = trainControl(method = "repeatedcv",
-                                   number = input$dt_rkfold_number,
-                                   repeats = input$dt_rkfold_repeat)
-        )}
-      
+        rpart(formula = Reading ~.,
+              data = dt_traindata(),
+              method = "anova",
+              control = rpart.control(minsplit = input$dt_minsplit, 
+                                      maxdepth = input$dt_maxdepth,
+                                      cp = dt_bestcp()))
+      }
       else {
         set.seed(1234)
         
-        train(
-          form = Science ~ .,
-          data = dt_traindata(),
-          method = "rpart",
-          tuneGrid = expand.grid(cp = input$dt_cp),
-          trControl = trainControl(method = "repeatedcv",
-                                   number = input$dt_rkfold_number,
-                                   repeats = input$dt_rkfold_repeat)
-        )}
-    })  
+        rpart(formula = Reading ~.,
+              data = dt_traindata(),
+              method = "anova",
+              control = rpart.control(minsplit = input$dt_minsplit, 
+                                      maxdepth = input$dt_maxdepth,
+                                      cp = input$dt_cp))
+      }
+    }
+    
+    else {
+      if (input$dt_bestcp == TRUE) {
+        set.seed(1234)
+        
+        rpart(formula = Science ~.,
+              data = dt_traindata(),
+              method = "anova",
+              control = rpart.control(minsplit = input$dt_minsplit, 
+                                      maxdepth = input$dt_maxdepth,
+                                      cp = dt_bestcp()))
+      }
+      else {
+        set.seed(1234)
+        
+        rpart(formula = Science ~.,
+              data = dt_traindata(),
+              method = "anova",
+              control = rpart.control(minsplit = input$dt_minsplit, 
+                                      maxdepth = input$dt_maxdepth,
+                                      cp = input$dt_cp))
+        }
+      }
+      })
+                                        
+ 
   
   dt_rpartplot <- eventReactive(
     input$dt_action_, {
-      rpart.plot(dtmodel()$finalModel,
-                 box.palette="GnBu",
-                 branch.lty=3, 
-                 shadow.col="gray", 
-                 nn=TRUE)
+        visTree(dtmodel(), 
+                edgesFontSize = 12, 
+                nodesFontSize = 14,
+                legendWidth = 0.3)
     })
   
   dt_rpartplot_prune <- eventReactive(
     input$dt_tunemodel_, {
-      rpart.plot(dtmodel_prune()$finalModel,
-                 box.palette="GnBu",
-                 branch.lty=3, 
-                 shadow.col="gray", 
-                 nn=TRUE)
+        visTree(dtmodel_prune(), 
+                edgesFontSize = 12, 
+                nodesFontSize = 14,
+                legendWidth = 0.3)
     })
   
-  ### Function to plot decision tree
+  ### Function to plot regression tree
   dt_plotrpart = function(modeltype){
-    output$dt_rpartplot_ = renderPlot(modeltype)
+    output$dt_rpartplot_ = renderVisNetwork(modeltype)
   }
   
   observeEvent(input$dt_action_, dt_plotrpart(dt_rpartplot()))
@@ -3665,37 +3718,10 @@ observeEvent(input$cda_assoc_var1, {
   
   
   ### CP
-  #### CP ValueBox
-  dt_cp_plot <- eventReactive(
-    input$dt_action_, {
-      ggplot(dtmodel()) +
-        geom_point(alpha = 0.2, color = "grey40")+
-        theme_minimal()+
-        labs(y = "RMSE")+
-        theme(axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
-              axis.line.y = element_blank(),
-              axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
-              plot.title = element_text(size=12, face="bold"),
-              axis.title = element_text(face="bold"),
-              axis.text = element_text(face="bold")) 
-    }
-  )  
-  
-  
-  
-  ### Function to plot Residuals vs Actual
-  dt_plotcpplot = function(modeltype){
-    output$dt_cp_plot_ = renderPlot(modeltype)
-  }
-  
-  observeEvent(input$dt_action_, dt_plotcpplot(dt_cp_plot()))
-  # observeEvent(input$dt_tunemodel_, dt_plotcpplot(dt_cp_plot_prune()))
-  
-  
   #### CP Plot
-  dt_showcp <- eventReactive(
+  dt_bestcp <- eventReactive(
     input$dt_action_, {
-      round(dtmodel()$bestTune,5)
+      round(dtmodel()$cptable[which.min(dtmodel()$cptable[,"xerror"]),"CP"],5)
     }
   )  
   
@@ -3705,16 +3731,54 @@ observeEvent(input$cda_assoc_var1, {
     output$dt_showcp_ = renderValueBox(
       valueBox(
         value = tags$p(modeltype, style = "font-size: 60%;"), 
-        subtitle = tags$p("Best Complexity Parameter (Click for more)", style = "font-style: italic; font-size: 80%"),
+        subtitle = tags$p("Best Complexity Parameter (Click for more)", style = "font-size: 100%"),
         icon = tags$i(icon("trophy"), style="font-size: 70%"),
         color = "yellow"
       )
     )
   }
   
-  observeEvent(input$dt_action_, dt_showcpbox(dt_showcp()))
+  observeEvent(input$dt_action_, dt_showcpbox(dt_bestcp()))
   # observeEvent(input$dt_tunemodel_, dt_showcpbox(dt_showcp_prune()))
   
+  #### CP ValueBox
+  dt_cp_plot <- eventReactive(
+    input$dt_action_, {
+      plotcp(dtmodel(), upper = "splits")
+    }
+  )  
+  
+  
+  
+  #### Function to plot Residuals vs Actual
+  dt_plotcpplot = function(modeltype){
+    output$dt_cp_plot_ = renderPlot(modeltype)
+  }
+  
+  observeEvent(input$dt_action_, dt_plotcpplot(dt_cp_plot()))
+  # observeEvent(input$dt_tunemodel_, dt_plotcpplot(dt_cp_plot_prune()))
+  
+  #### CP Table
+  dt_cptable <- eventReactive(
+    input$dt_action_, {
+      dtmodel()$cptable %>%
+        data.frame() %>%
+        mutate(
+          min_idx = which.min(dtmodel()$cptable[, "xerror"]),
+          rownum = row_number(),
+          xerror_cap = dtmodel()$cptable[min_idx, "xerror"] + 
+            dtmodel()$cptable[min_idx, "xstd"],
+          eval = case_when(rownum == min_idx ~ "Min. xerror",
+                           xerror < xerror_cap ~ "Under cap",
+                           TRUE ~ "")) %>%
+        dplyr::select(-rownum, -min_idx) 
+    })
+  
+  output$dt_cptable_ <- DT::renderDataTable({
+    datatable(dt_cptable(),
+              options = list(dom = 't',
+                             autoWidth = TRUE))
+    })
   
   # RF Data Manipulation  ----------------------------------------------------
   

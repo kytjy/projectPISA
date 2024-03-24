@@ -1,0 +1,84 @@
+Factor_Level,Category,Level
+Pr(1),Loneliness,Strongly Disagree
+Pr(2),Loneliness,Disagree
+Pr(3),Loneliness,Agree
+Pr(4),Loneliness,Strongly Agree
+Pr(1),ClassroomSafety,Strongly Disagree
+Pr(2),ClassroomSafety,Disagree
+Pr(3),ClassroomSafety,Agree
+Pr(4),ClassroomSafety,Strongly Agree
+Pr(1),TeacherSupport,Never or almost never
+Pr(2),TeacherSupport,Some lessons
+Pr(3),TeacherSupport,Most lesson
+Pr(4),TeacherSupport,Every lesson
+Pr(1),Gender,Female
+Pr(2),Gender,Male
+Pr(1),Homework_Math,≤ 0.5hr
+Pr(2),Homework_Math,0.5hr - 1hr
+Pr(3),Homework_Math,1hr - 2hr
+Pr(4),Homework_Math,2hr - 3hr
+Pr(5),Homework_Math,3 - 4 hr
+Pr(6),Homework_Math,> 4hr
+Pr(1),Homework_Reading,≤ 0.5hr
+Pr(2),Homework_Reading,0.5hr - 1hr
+Pr(3),Homework_Reading,1hr - 2hr
+Pr(4),Homework_Reading,2hr - 3hr
+Pr(5),Homework_Reading,3 - 4 hr
+Pr(6),Homework_Reading,> 4hr
+Pr(1),Homework_Science,≤ 0.5hr
+Pr(2),Homework_Science,0.5hr - 1hr
+Pr(3),Homework_Science,1hr - 2hr
+Pr(4),Homework_Science,2hr - 3hr
+Pr(5),Homework_Science,3 - 4 hr
+Pr(6),Homework_Science,> 4hr
+Pr(1),SchoolType,Private
+Pr(2),SchoolType,Public
+Pr(1),ParentsEducation,Pre-Primary
+Pr(2),ParentsEducation,Primary
+Pr(3),ParentsEducation,Secondary
+Pr(4),ParentsEducation,Post-Secondary
+Pr(5),ParentsEducation,Tertiary
+Pr(1),Immigration,Native
+Pr(2),Immigration,2nd Generation
+Pr(3),Immigration,3rd Generation
+Pr(1),HomeLanguage,English
+Pr(2),HomeLanguage,Others
+Pr(1),Sibling,No
+Pr(2),Sibling,Yes
+Pr(1),Aircon,No
+Pr(2),Aircon,Yes
+Pr(1),Helper,No
+Pr(2),Helper,Yes
+Pr(1),Vehicle,No
+Pr(2),Vehicle,Yes
+Pr(1),Books,0
+Pr(2),Books,01-Oct
+Pr(3),Books,Nov-25
+Pr(4),Books,26 - 100
+Pr(5),Books,101 - 200
+Pr(6),Books,201-500
+Pr(7),Books,>500
+Pr(1),Exercise,No
+Pr(2),Exercise,Yes
+Pr(1),OwnRoom,No
+Pr(2),OwnRoom,Yes
+Pr(1),FamilyCommitment,No
+Pr(2),FamilyCommitment,Yes
+Pr(1),Preference_Math,Strongly Disagree
+Pr(2),Preference_Math,Disagree
+Pr(3),Preference_Math,Agree
+Pr(4),Preference_Math,Strongly Agree
+Pr(1),Preference_Reading,Strongly Disagree
+Pr(2),Preference_Reading,Disagree
+Pr(3),Preference_Reading,Agree
+Pr(4),Preference_Reading,Strongly Agree
+Pr(1),Preference_Science,Strongly Disagree
+Pr(2),Preference_Science,Disagree
+Pr(3),Preference_Science,Agree
+Pr(4),Preference_Science,Strongly Agree
+Pr(1),Math,Below Median
+Pr(2),Math,Median and Above
+Pr(1),Reading,Below Median
+Pr(2),Reading,Median and Above
+Pr(1),Science,Below Median
+Pr(2),Science,Median and Above
