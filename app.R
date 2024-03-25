@@ -14,7 +14,8 @@
 pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinythemes", "shinyjs", "waiter",
                "tidyverse", "DT", "kableExtra", "plotly", "scales", "gt", "ggpubr", "treemap",
                "ggstatsplot", "nortest",
-               "rpart", "vip", "visNetwork", "caret", "tidymodels", "gbm",
+               "ranger", "rpart", "vip", "visNetwork", "sparkline",
+               "caret", "tidymodels", "gbm",
                "dendextend", "heatmaply",
                "parallelPlot", "poLCA", "rlang"
 )
@@ -1904,7 +1905,7 @@ body <- dashboardBody(
                      )
                    ),
                    
-                   fluidRow(
+                   fluidRow(column(width = 5,
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
                        box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
@@ -1913,51 +1914,50 @@ body <- dashboardBody(
                            status = "primary",
                            
                            #### Random Forest - Actual vs Predicted ----------------------------------------------------
-                           column(width = 6, 
                                   plotOutput("rf_plotpredvsactual_",
                                              width = "100%",
-                                             height = "30vh")),
-                           
+                                             height = "32vh"),
                            
                            #### Random Forest - Actual vs Residuals ----------------------------------------------------
-                           column(width = 6, 
                                   plotOutput("rf_plotresidvsactual_",
                                              width = "100%",
-                                             height = "30vh"))
+                                             height = "32vh")
+                           )
                        )
                      ),
                      
-                     div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
-                         box(title = tags$p("Variable Importance", style = "font-weight: bold;"),
-                             closable = FALSE,
-                             width = 12,
-                             status = "primary",
-                             div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
-                                 dropdownButton(
-                                   numericInput(
-                                     inputId = "rf_varimp_varcount",
-                                     label = "Configure number of variables to display (limited to the number of available responses):",
-                                     min = 5,
-                                     max = 120,
-                                     value = 10,
-                                     width = "290px",
-                                     step = 1),
-                                   circle = FALSE,
-                                   right = TRUE,
-                                   status = "default",
-                                   icon = icon("gear"), 
-                                   width = "300px"
-                                   #tooltip = tooltipOptions(title = "Click for more options")
-                                 ),
-                                 align = "right"),
-                             div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
-                                 plotOutput("rf_varimp_plot_",
-                                            width = "100%"))
-                         )
+                     column(width = 7,
+                            div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                                box(title = tags$p("Variable Importance", style = "font-weight: bold;"),
+                                    closable = FALSE,
+                                    width = 12,
+                                    status = "primary",
+                                    div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                                        dropdownButton(
+                                          numericInput(
+                                            inputId = "rf_varimp_varcount",
+                                            label = "Configure number of variables to display (limited to the number of available responses):",
+                                            min = 5,
+                                            max = 120,
+                                            value = 10,
+                                            width = "290px",
+                                            step = 1),
+                                          circle = FALSE,
+                                          right = TRUE,
+                                          status = "default",
+                                          icon = icon("gear"), 
+                                          width = "300px"),
+                                        align = "right"),
+                                    div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                                        plotOutput("rf_varimp_plot_",
+                                                   height = "62vh",
+                                                   width = "100%"))
+                                    )
+                                )
+                            )
                      )
                    )
-            )
-    ),
+            ),
     tabItem(tabName = "tab_gb",
             
             #### Gradient Boosting Toggle Column  ----------------------------------------------------
@@ -2171,52 +2171,48 @@ body <- dashboardBody(
                      )
                    )
             ),
-            
-            (column(width = 5,
-                    div(style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                        box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
-                            status = "info",
-                            collapsible = FALSE,
-                            width = 12,
-                            solidHeader =FALSE,
-                            
-                            #### Gradient Boosting Actual vs Predicted ----------------------------------------------------
-                            column(width = 6, 
-                                   plotOutput("gb_plotpredvsactual_",
-                                              width = "100%",
-                                              height = "30vh")),
-                            
-                            
-                            #### Gradient Boosting - Actual vs Residuals ----------------------------------------------------
-                            column(width = 6, 
-                                   plotOutput("gb_plotresidvsactual_",
-                                              width = "100%",
-                                              height = "30vh"))
-                        )),
-                    hidden(div(id = "gb_modelplottab",
-                               style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
-                               box(title = tags$p("Resampling Profile", style = "font-weight: bold;"),
-                                   status = "info",
-                                   collapsible = FALSE,
-                                   width = 12,
-                                   solidHeader =FALSE,
-                                   plotOutput("gb_modelplot_",
-                                              width = "100%",
-                                              height = "30vh"))
-                    )
-                    )
-            )
-            
-            ),
-            (column(width = 5,
+            (column(width = 10,
                     fluidRow(
                       style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
                       div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
                           valueBoxOutput("gb_display_R2_", width = 4),
                           valueBoxOutput("gb_display_RMSE_", width = 4),
                           valueBoxOutput("gb_display_MAE_", width = 4)
-                      )
-                    ),
+                          )
+                      ),
+                    fluidRow(
+                      column(width = 5,
+                             div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                                 box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
+                                     status = "info",
+                                     collapsible = FALSE,
+                                     width = 12,
+                                     solidHeader =FALSE,
+                            
+                            #### Gradient Boosting Actual vs Predicted ----------------------------------------------------
+
+                                   plotOutput("gb_plotpredvsactual_",
+                                              width = "100%",
+                                              height = "32vh"),
+                            
+                            
+                                   plotOutput("gb_plotresidvsactual_",
+                                              width = "100%",
+                                              height = "32vh")
+                            )
+                            ),
+                            hidden(div(id = "gb_besttuneplottab", 
+                                       style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                                       box(title = tags$p("Best Tune", style = "font-weight: bold;"),
+                                           status = "info",
+                                           collapsible = FALSE,
+                                           width = 12,
+                                           solidHeader =FALSE,
+                                           tableOutput("gb_besttune_"))
+                            )
+                            )
+                            ),
+            (column(width = 7,
                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
                         box(title = tags$p("Variable Importance", style = "font-weight: bold;"),
                             status = "info",
@@ -2237,25 +2233,29 @@ body <- dashboardBody(
                                   right = TRUE,
                                   status = "default",
                                   icon = icon("gear"), 
-                                  width = "300px"
-                                  #tooltip = tooltipOptions(title = "Click for more options")
-                                ),
+                                  width = "300px"),
                                 align = "right"),
                             div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
                                 plotOutput("gb_varimp_plot_",
+                                           height = "45vh",
                                            width = "100%"))
                         )
                     ),
-                    hidden(div(id = "gb_besttuneplottab", 
-                               style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
-                               box(title = tags$p("Best Tune", style = "font-weight: bold;"),
+                    hidden(div(id = "gb_modelplottab",
+                               style = "padding = 0em; margin-left: 0em; margin-top: 3em; height: 100% ",
+                               box(title = tags$p("Resampling Profile", style = "font-weight: bold;"),
                                    status = "info",
                                    collapsible = FALSE,
                                    width = 12,
                                    solidHeader =FALSE,
-                                   tableOutput("dt_besttune_"))
+                                   plotOutput("gb_modelplot_",
+                                              width = "100%",
+                                              height = "25vh"))
+                               )
+                           )
                     )
-                    )
+             )
+             )
             )
             )
     )          
@@ -4360,7 +4360,7 @@ observeEvent(input$cda_assoc_var1, {
   
   
   #### Best Tune Results
-  dt_besttune <- eventReactive(
+  gb_besttune <- eventReactive(
     input$gb_action_, {
       gbmodel()$bestTune %>% 
         knitr::kable(col.names = c("Number of Trees",
@@ -4373,8 +4373,8 @@ observeEvent(input$cda_assoc_var1, {
   ) 
   
   
-  output$dt_besttune_ <- renderText({
-    dt_besttune()
+  output$gb_besttune_ <- renderText({
+    gb_besttune()
   })
   
   
