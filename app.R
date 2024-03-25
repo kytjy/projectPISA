@@ -2248,9 +2248,9 @@ body <- dashboardBody(
                                    collapsible = FALSE,
                                    width = 12,
                                    solidHeader =FALSE,
-                                   plotOutput("gb_modelplot_",
-                                              width = "100%",
-                                              height = "25vh"))
+                                   plotOutput("gb_modelplot_"
+                                              #height = "100%"
+                                              ))
                                )
                            )
                     )
