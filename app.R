@@ -1,9 +1,7 @@
 ##########################################################################################
-
 # projectPISA App
 # ISSS608 G2
 # App File
-
 ###########################################################################################
 
 
@@ -11,7 +9,7 @@
 #~~~~~ Importing Packages~~~~~#
 #==============================#
 
-pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinythemes", "shinyjs", "waiter",
+pacman::p_load("shiny", "fresh", "shinydashboard", "shinydashboardPlus", "shinyWidgets", "shinythemes", "shinyjs", "waiter", 
                "tidyverse", "DT", "kableExtra", "plotly", "scales", "gt", "ggpubr", "treemap", "ggridges",
                "ggstatsplot", "nortest",
                "ranger", "rpart", "vip", "visNetwork", "sparkline",
@@ -138,7 +136,9 @@ stu_lca[-1] <- lapply(stu_lca[-1], factor)
 #~~~~~ Theme ~~~~~#
 #========================#
 
-mycolours <-  c("#b1bdb5", "#C7C2D0","#D7AB77", "#E3C2CB", "#98B0B6", "#D69992", "#8D7374", "#ABA58D",  "#7a8387", "#7983A6", "#ABC8CE")
+mycolours <-  c("#C7C2D0","#b8c3c2","#e2d9c5", "#e1bbb0", "#fed8a6","#d8dcce", "#E3C2CB", "#98B0B6", "#e9d7c0", "#ABA58D", 
+                "#ABC8CE", "#EDCFC0", "#FEF3D2", "#E4D5E3", "#C3D3D6", "#FFD4D4","#C6B49D", "#D5DBE4","#D4CBB3", "#FFDECD",
+                "#D6D6D6", "#FCE5C0", "#C8C681")
 
 
 # Create dashboard theme with bootstrap/fresh ----------------------------------------------------
@@ -157,10 +157,10 @@ mytheme <- create_theme(
     width = "180px",
     dark_bg = "#f5f5eb",
     dark_hover_bg = "#DDAFA1",
-    dark_color = "#f5f5eb",
+    dark_color = "#2A2A21",
     dark_hover_color = "#d6ac5e",
     dark_submenu_bg = "#DDAFA1",
-    dark_submenu_color = "#f5f5eb",
+    dark_submenu_color = "#ffffff",
     dark_submenu_hover_color = "#DDAFA1"
   ),
   adminlte_global(
@@ -178,7 +178,8 @@ pplogo <- tags$a(
   tags$img(
     src="Logo2.PNG",
     height = '50'))
-    #width = '70'
+#width = '70'
+
 
 #========================#
 ###### Shiny UI ######
@@ -208,7 +209,7 @@ sidebar <- dashboardSidebar(
     menuItem("Home", tabName = "tab_home", icon = icon("house")),
     menuItem("Data Analysis", tabName = "tab_cda", 
              icon = icon("magnifying-glass-chart"),
-             startExpanded = TRUE,
+             startExpanded = FALSE,
              menuSubItem("Variable Overview", tabName = "tab_cdaoverview"),
              menuSubItem("Sankey Diagram", tabName = "tab_parallelplot"),
              menuSubItem("Analysis of Scores", tabName = "tab_cdascores"),
@@ -217,7 +218,7 @@ sidebar <- dashboardSidebar(
     
     menuItem("Cluster Analysis", tabName = "tab_cluster", 
              icon = icon("users-viewfinder"),
-             startExpanded = TRUE,
+             startExpanded = FALSE,
              menuSubItem("Association between Predictors", tabName = "tab_cdaassoc"),
              #menuSubItem("Hierarchical Clustering", tabName = "tab_heatmap"),
              menuSubItem("Latent Class Analysis", tabName = "tab_lca")
@@ -225,15 +226,78 @@ sidebar <- dashboardSidebar(
     
     menuItem("Regression Analysis", tabName = "tab_mod", 
              icon = icon("tree"),
-             startExpanded = TRUE,
+             startExpanded = FALSE,
              menuSubItem("Regression Tree", tabName = "tab_dt"),             
              menuSubItem("Random Forest", tabName = "tab_rf"),
              menuSubItem("Gradient Boosting", tabName = "tab_gb")
-             )
+    ),
+    br(),
+    conditionalPanel(
+      condition = "input.tabs == 'tab_dt' || input.tabs == 'tab_rf' || input.tabs == 'tab_gb'",
+      div(style = "padding = 0em; margin-left: 1em; margin-right: 0em; height: 100% ",
+          fluidRow(
+            box(
+              title = tags$p(span("Step 1: Model Construction"), style = "font-weight: bold; color: #FFFFFF"),
+              status = "primary",
+              solidHeader = TRUE,
+              width = 12,
+              chooseSliderSkin("Flat"),
+              pickerInput(
+                inputId = "mb_target_",
+                label = "Subject",
+                choices = c("Math", "Reading", "Science"), 
+                selected = "Math",
+                multiple = FALSE,
+                options = list(style = "myClass"), #list(`actions-box` = TRUE),
+                choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                inline = FALSE,
+                width = NULL),
+              pickerInput(
+                inputId = "mb_vars_",
+                label = "Variables",
+                choices = list(
+                  `School Environment` = list("School Type" = "SchoolType",
+                                              "Loneliness" = "Loneliness",
+                                              "Classroom Safety" = "ClassroomSafety",
+                                              "Teacher Support" = "TeacherSupport"),
+                  `Personal` = list("Gender" = "Gender",
+                                    "Math Homework Time" = "Homework_Math",
+                                    "Reading Homework Time" = "Homework_Reading",
+                                    "Science Homework Time" = "Homework_Science",
+                                    "Preference for Math" = "Preference_Math",
+                                    "Preference for Reading" = "Preference_Reading",
+                                    "Preference for Science" = "Preference_Science",
+                                    "Exercise" = "Exercise"),
+                  `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                                         "Immigration" = "Immigration",
+                                         "Home Language" = "HomeLanguage",
+                                         "Sibling" = "Sibling",
+                                         "Aircon" = "Aircon",
+                                         "Helper" = "Helper",
+                                         "Vehicle" = "Vehicle",
+                                         "Books" = "Books",
+                                         "Own Room" = "OwnRoom",
+                                         "Family Commitment" = "FamilyCommitment")),
+                selected = colnames(stu_mb[1:24]),
+                multiple = TRUE,
+                options = list(style = "myClass", `actions-box` = TRUE),
+                choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                inline = FALSE,
+                width = NULL),
+              sliderInput(inputId = "mb_partition_",
+                          label = "Train-Test Partition:",
+                          min = 0.05,
+                          max = 0.95,
+                          value = c(0.8)),
+              div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                  align = "center",
+                  tags$p(span("Continue to Step 2", icon("angles-right")), style = "font-weight: bold; color: #000000;"))
+            )
+          )
+      )
+    )
   )
 )
-
-
 
 # Content Body  ----------------------------------------------------
 
@@ -329,9 +393,10 @@ body <- dashboardBody(
         
         .selectize-input { font-size: 10px;}
         .selectize-dropdown { font-size: 10px;}
-      
         
-        .box {font-size: 10px;}
+        
+        .box {font-size: 10px;
+              color: #000000;}
         
         .dropdown-item:hover {
          color: #000000 ;
@@ -362,7 +427,8 @@ body <- dashboardBody(
         html.shiny-busy .container-fluid {
         cursor: wait;}
         
-                              '))),
+                              '))
+  ),
   
   ## Text Styles  ----------------------------------------------------
   tags$style("h2 { font-family: 'Noto Sans', sans-serif; font-weight: bold; }"),
@@ -432,7 +498,7 @@ body <- dashboardBody(
                            fluidRow(
                              plotOutput("db_hist_static",
                                         width = "100%")
- 
+                             
                            )
                        )
                    )
@@ -572,8 +638,8 @@ body <- dashboardBody(
                          )
                        )
                    )
-                   )
-            ),
+            )
+    ),
     
     ### Data Analysis - One-Sample Test ----------------------------------------------------
     tabItem(tabName = "tab_cdascores",
@@ -890,8 +956,8 @@ body <- dashboardBody(
                                     width = 12,
                                     div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                         plotOutput("cda_anova_plot",
-                                                     height = "80vh",
-                                                     width = "100%"),
+                                                   height = "80vh",
+                                                   width = "100%"),
                                         align = "center")
                                 )
                    )
@@ -1310,17 +1376,17 @@ body <- dashboardBody(
                          )
                      )
                    )
-                   ),
-                   column(width = 10,
-                          div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100%",
-                              box(title = tags$p("Plot", style = "font-weight: bold;"), 
-                                  collapsible = FALSE,
-                                  status = "primary",
-                                  width = 12,
-                                  plotlyOutput("sankey")
-                              )
-                          )
+            ),
+            column(width = 10,
+                   div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100%",
+                       box(title = tags$p("Plot", style = "font-weight: bold;"), 
+                           collapsible = FALSE,
+                           status = "primary",
+                           width = 12,
+                           plotlyOutput("sankey")
+                       )
                    )
+            )
     ),
     
     ### Latent Class Analysis  ----------------------------------------------------
@@ -1431,74 +1497,74 @@ body <- dashboardBody(
                          )
                      )
                    )
-                   ),
-                   column(width = 10,
-                        fluidRow(
-                          div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100%",
-                              tabBox(title = tags$p("Latent Class Analysis", style = "color: #7C6D62; font-weight: bold; font-size: 12px;"), 
-                                  width = 12,
-                                  height = "60vh",
-                                  tabPanel(title = tags$p("Variable View", style = "font-weight: bold"),
-                                           div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
-                                               plotlyOutput("lca",
-                                                        width = "90%",
-                                                        height = "50vh"),
-                                               align = "center")
-                                           ),
-                                  tabPanel(title = tags$p("Summary View", style = "font-weight: bold"),
-                                           div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
-                                               plotlyOutput("lca_plotsummary_",
-                                                        width = "90%",
-                                                        height = "50vh"),
-                                               align = "center")
-                                           )
-                                  )
-                              ),
-                          div(style = "padding = 0em; margin-left: 0em; margin-top: 0.5em; height: 100%",
-                              box(title = tags$p("Supplementary Information", style = "font-weight: bold"), 
-                                      collapsible = TRUE,
-                                      collapsed = TRUE,
-                                      width = 12,
-                                      fluidRow(
-                                        column(width = 6, 
-                                               uiOutput("active_lca_supp1"),
-                                               flipBox(id = "fb_lca_supp1",
-                                                       width = 12,
-                                                       front = div(h6("Click for More Information", align = "center"),
-                                                                   valueBoxOutput("lca_supp1", width =12)),
-                                                       back = wellPanel(
-                                                         p("Akaike Information Criterion (AIC) is a measure of the relative quality of a statistical model for a given set of data. It balances the goodness of fit of the model with the complexity of the model, penalising models that are overly complex. Lower AIC values indicate a better balance between model fit and complexity, suggesting a more optimal model for explaining the data.")))),
-                                        column(width = 6, 
-                                               uiOutput("active_lca_supp2"),
-                                               flipBox(id = "fb_lca_supp2",
-                                                       width = 12,
-                                                       front = div(h6("Click for More Information", align = "center"),
-                                                                   valueBoxOutput("lca_supp2", width =12)),
-                                                       back = wellPanel(
-                                                         p("Bayesian Information Criterion (BIC) is similar to AIC but places a stronger penalty on models with more parameters, making it more conservative in selecting models. Like AIC, lower BIC values indicate better model fit, but BIC tends to favor simpler models more strongly than AIC."))))),
-                                      fluidRow(
-                                        column(width = 6, 
-                                               uiOutput("active_lca_supp3"),
-                                               flipBox(id = "fb_lca_supp3",
-                                                       width = 12,
-                                                       front = div(h6("Click for More Information", align = "center"),
-                                                                   valueBoxOutput("lca_supp3", width =12)),
-                                                       back = wellPanel(
-                                                         p("Likelihood Ratio/Deviance Statistic (Gsq) is a measure of the goodness of fit of the model. It compares the fit of the model to a model with perfect fit by assessing the difference in deviance between the two models. Lower values indicate better model fit, with values close to zero suggesting that the model fits the data well.")))),
-                                        column(width = 6, 
-                                               uiOutput("active_lca_supp4"),
-                                               flipBox(id = "fb_lca_supp4",
-                                                       width = 12,
-                                                       front = div(h6("Click for More Information", align = "center"),
-                                                                   valueBoxOutput("lca_supp4", width =12)),
-                                                       back = wellPanel(
-                                                         p("Entropy quantifies the uncertainty or randomness in the distribution of observations across different classes. A high entropy indicates greater uncertainty, while low entropy suggests more predictability or orderliness.Higher entropy values indicate less distinct class separation, while lower entropy values suggest clearer class distinctions."))))
-                                        
-                                      )
-                                  )
-                              )
-                          )
+            ),
+            column(width = 10,
+                   fluidRow(
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100%",
+                         tabBox(title = tags$p("Latent Class Analysis", style = "color: #7C6D62; font-weight: bold; font-size: 12px;"), 
+                                width = 12,
+                                height = "60vh",
+                                tabPanel(title = tags$p("Variable View", style = "font-weight: bold"),
+                                         div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                                             plotlyOutput("lca",
+                                                          width = "90%",
+                                                          height = "50vh"),
+                                             align = "center")
+                                ),
+                                tabPanel(title = tags$p("Summary View", style = "font-weight: bold"),
+                                         div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                                             plotlyOutput("lca_plotsummary_",
+                                                          width = "90%",
+                                                          height = "50vh"),
+                                             align = "center")
+                                )
+                         )
+                     ),
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0.5em; height: 100%",
+                         box(title = tags$p("Supplementary Information", style = "font-weight: bold"), 
+                             collapsible = TRUE,
+                             collapsed = TRUE,
+                             width = 12,
+                             fluidRow(
+                               column(width = 6, 
+                                      uiOutput("active_lca_supp1"),
+                                      flipBox(id = "fb_lca_supp1",
+                                              width = 12,
+                                              front = div(h6("Click for More Information", align = "center"),
+                                                          valueBoxOutput("lca_supp1", width =12)),
+                                              back = wellPanel(
+                                                p("Akaike Information Criterion (AIC) is a measure of the relative quality of a statistical model for a given set of data. It balances the goodness of fit of the model with the complexity of the model, penalising models that are overly complex. Lower AIC values indicate a better balance between model fit and complexity, suggesting a more optimal model for explaining the data.")))),
+                               column(width = 6, 
+                                      uiOutput("active_lca_supp2"),
+                                      flipBox(id = "fb_lca_supp2",
+                                              width = 12,
+                                              front = div(h6("Click for More Information", align = "center"),
+                                                          valueBoxOutput("lca_supp2", width =12)),
+                                              back = wellPanel(
+                                                p("Bayesian Information Criterion (BIC) is similar to AIC but places a stronger penalty on models with more parameters, making it more conservative in selecting models. Like AIC, lower BIC values indicate better model fit, but BIC tends to favor simpler models more strongly than AIC."))))),
+                             fluidRow(
+                               column(width = 6, 
+                                      uiOutput("active_lca_supp3"),
+                                      flipBox(id = "fb_lca_supp3",
+                                              width = 12,
+                                              front = div(h6("Click for More Information", align = "center"),
+                                                          valueBoxOutput("lca_supp3", width =12)),
+                                              back = wellPanel(
+                                                p("Likelihood Ratio/Deviance Statistic (Gsq) is a measure of the goodness of fit of the model. It compares the fit of the model to a model with perfect fit by assessing the difference in deviance between the two models. Lower values indicate better model fit, with values close to zero suggesting that the model fits the data well.")))),
+                               column(width = 6, 
+                                      uiOutput("active_lca_supp4"),
+                                      flipBox(id = "fb_lca_supp4",
+                                              width = 12,
+                                              front = div(h6("Click for More Information", align = "center"),
+                                                          valueBoxOutput("lca_supp4", width =12)),
+                                              back = wellPanel(
+                                                p("Entropy quantifies the uncertainty or randomness in the distribution of observations across different classes. A high entropy indicates greater uncertainty, while low entropy suggests more predictability or orderliness.Higher entropy values indicate less distinct class separation, while lower entropy values suggest clearer class distinctions."))))
+                               
+                             )
+                         )
+                     )
                    )
+            )
     ),
     
     ### Regression tree  ----------------------------------------------------
@@ -1519,87 +1585,104 @@ body <- dashboardBody(
                              )
                          )
                      ),
-                     
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
-                         box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
-                             status = "primary",
-                             collapsible = TRUE,
-                             collapsed = FALSE,
-                             width = 12,
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 pickerInput(
-                                   inputId = "dt_target_",
-                                   label = "Subject",
-                                   choices = c("Math", "Reading", "Science"), 
-                                   selected = "Math",
-                                   multiple = FALSE,
-                                   options = list(style = "myClass"), #list(`actions-box` = TRUE),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 pickerInput(
-                                   inputId = "dt_vars_",
-                                   label = "Variables",
-                                   choices = list(
-                                     `School Environment` = list("School Type" = "SchoolType",
-                                                                 "Loneliness" = "Loneliness",
-                                                                 "Classroom Safety" = "ClassroomSafety",
-                                                                 "Teacher Support" = "TeacherSupport"),
-                                     `Personal` = list("Gender" = "Gender",
-                                                       "Math Homework Time" = "Homework_Math",
-                                                       "Reading Homework Time" = "Homework_Reading",
-                                                       "Science Homework Time" = "Homework_Science",
-                                                       "Preference for Math" = "Preference_Math",
-                                                       "Preference for Reading" = "Preference_Reading",
-                                                       "Preference for Science" = "Preference_Science",
-                                                       "Exercise" = "Exercise"),
-                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
-                                                            "Immigration" = "Immigration",
-                                                            "Home Language" = "HomeLanguage",
-                                                            "Sibling" = "Sibling",
-                                                            "Aircon" = "Aircon",
-                                                            "Helper" = "Helper",
-                                                            "Vehicle" = "Vehicle",
-                                                            "Books" = "Books",
-                                                            "Own Room" = "OwnRoom",
-                                                            "Family Commitment" = "FamilyCommitment")),
-                                   selected = colnames(stu_mb[1:24]),
-                                   multiple = TRUE,
-                                   options = list(style = "myClass", `actions-box` = TRUE),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 ))
-                         )
-                     ),
+                   
+                     # div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     #     box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
+                     #         status = "primary",
+                     #         collapsible = TRUE,
+                     #         collapsed = FALSE,
+                     #         width = 12,
+                     #         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                     #             pickerInput(
+                     #               inputId = "mb_target_",
+                     #               label = "Subject",
+                     #               choices = c("Math", "Reading", "Science"), 
+                     #               selected = "Math",
+                     #               multiple = FALSE,
+                     #               options = list(style = "myClass"), #list(`actions-box` = TRUE),
+                     #               choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                     #               inline = FALSE,
+                     #               width = NULL
+                     #             )),
+                     #         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                     #             pickerInput(
+                     #               inputId = "mb_vars_",
+                     #               label = "Variables",
+                     #               choices = list(
+                     #                 `School Environment` = list("School Type" = "SchoolType",
+                     #                                             "Loneliness" = "Loneliness",
+                     #                                             "Classroom Safety" = "ClassroomSafety",
+                     #                                             "Teacher Support" = "TeacherSupport"),
+                     #                 `Personal` = list("Gender" = "Gender",
+                     #                                   "Math Homework Time" = "Homework_Math",
+                     #                                   "Reading Homework Time" = "Homework_Reading",
+                     #                                   "Science Homework Time" = "Homework_Science",
+                     #                                   "Preference for Math" = "Preference_Math",
+                     #                                   "Preference for Reading" = "Preference_Reading",
+                     #                                   "Preference for Science" = "Preference_Science",
+                     #                                   "Exercise" = "Exercise"),
+                     #                 `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                     #                                        "Immigration" = "Immigration",
+                     #                                        "Home Language" = "HomeLanguage",
+                     #                                        "Sibling" = "Sibling",
+                     #                                        "Aircon" = "Aircon",
+                     #                                        "Helper" = "Helper",
+                     #                                        "Vehicle" = "Vehicle",
+                     #                                        "Books" = "Books",
+                     #                                        "Own Room" = "OwnRoom",
+                     #                                        "Family Commitment" = "FamilyCommitment")),
+                     #               selected = colnames(stu_mb[1:24]),
+                     #               multiple = TRUE,
+                     #               options = list(style = "myClass", `actions-box` = TRUE),
+                     #               choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                     #               inline = FALSE,
+                     #               width = NULL
+                     #             ))
+                     #     )
+                     # ),
+                     # div(
+                     #   style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                     #   box(title = tags$p("Step 2: Data Splitting", style = "font-weight: bold;"),
+                     #       collapsible = TRUE,
+                     #       collapsed = TRUE,
+                     #       width = 12,
+                     #       status = "primary",
+                     #       solidHeader = FALSE,
+                     #       div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                     #           chooseSliderSkin("Flat"),
+                     #           sliderInput(inputId = "mb_partition_",
+                     #                       label = "Train-Test Partition:",
+                     #                       min = 0.05,
+                     #                       max = 0.95,
+                     #                       value = c(0.8)
+                     #           )),
+                     #       div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                     #           actionButton(inputId = "dt_action_",
+                     #                        label = "Run Analysis",
+                     #                        icon = icon("wrench"),
+                     #                        style = 'padding: 4px; font-size: 10px'),
+                     #           align = "center"
+                     #       )                      
+                     #   )
+                     # ),
+
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                       box(title = tags$p("Step 2: Data Splitting", style = "font-weight: bold;"),
+                       box(title = tags$p("Step 2: Model Initiation", style = "font-weight: bold;"),
                            collapsible = TRUE,
                            collapsed = TRUE,
                            width = 12,
                            status = "primary",
                            solidHeader = FALSE,
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               chooseSliderSkin("Flat"),
-                               sliderInput(inputId = "dt_partition_",
-                                           label = "Train-Test Partition:",
-                                           min = 0.05,
-                                           max = 0.95,
-                                           value = c(0.8)
-                               )),
                            div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
                                actionButton(inputId = "dt_action_",
                                             label = "Run Analysis",
                                             icon = icon("wrench"),
                                             style = 'padding: 4px; font-size: 10px'),
                                align = "center"
-                           )                      
+                           )
                        )
                      ),
-                     
                      # Box Sidebar for Model Tuning Parameters
                      hidden(div(id = "dt_modeltune_group",
                                 style = "padding = 0em; margin-right: -0.5em; margin-top: -1em",
@@ -1611,18 +1694,18 @@ body <- dashboardBody(
                                   width = 12,
                                   div(style = "padding = 0em; margin-top: -0.5em",
                                       sliderInput(inputId = "dt_minsplit",
-                                                   label = "Minimum Split:",
-                                                   min = 5,
-                                                   max = 20,
-                                                   step = 1,
-                                                   value = 5),
+                                                  label = "Minimum Split:",
+                                                  min = 5,
+                                                  max = 20,
+                                                  step = 1,
+                                                  value = 5),
                                       div(style = "padding = 0em; margin-top: -0.8em",
                                           sliderInput(inputId = "dt_maxdepth",
-                                                       label = "Maximum Depth:",
-                                                       min = 5,
-                                                       max = 20,
-                                                       step = 1,
-                                                       value = 10)
+                                                      label = "Maximum Depth:",
+                                                      min = 5,
+                                                      max = 20,
+                                                      step = 1,
+                                                      value = 10)
                                       ),
                                       div(style = "padding = 0em; margin-top: 0em",
                                           materialSwitch(inputId = "dt_bestcp",
@@ -1686,25 +1769,25 @@ body <- dashboardBody(
                    )
                    ,
                    fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0.5em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
                          #height = "100%",
-                           box(title = tags$p("Complexity Parameter", style = "font-weight: bold;"),
-                               closable = FALSE,
-                               width = 12,
-                               status = "primary",    
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               plotOutput("dt_cp_plot_",
-                                          width = "90%",
-                                          height = "30vh"),
-                               align = "center"),
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               flipBox(id = "dt_cp_info",
-                                       width = 12,
-                                       front = valueBoxOutput("dt_showcp_", width = 12),
-                                       back = tags$p("Complexity Parameter is used to control the size of the regression tree and to select the optimal tree size. The tree will stop dividing nodes when the reduction in relative error is less than a certain value.")
-                                                  )
-                                      )
-                                    )
+                         box(title = tags$p("Complexity Parameter", style = "font-weight: bold;"),
+                             closable = FALSE,
+                             width = 12,
+                             status = "primary",    
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 plotOutput("dt_cp_plot_",
+                                            width = "90%",
+                                            height = "30vh"),
+                                 align = "center"),
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 flipBox(id = "dt_cp_info",
+                                         width = 12,
+                                         front = valueBoxOutput("dt_showcp_", width = 12),
+                                         back = tags$p("Complexity Parameter is used to control the size of the regression tree and to select the optimal tree size. The tree will stop dividing nodes when the reduction in relative error is less than a certain value.")
+                                 )
+                             )
+                         )
                          # tabPanel(title = "CP Table",
                          #          height = "100%",
                          #          div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
@@ -1712,7 +1795,7 @@ body <- dashboardBody(
                          #              )
                          #          )
                          
-                     
+                         
                      )
                    )
                    
@@ -1738,28 +1821,28 @@ body <- dashboardBody(
                                             height = "70vh")),
                          tabPanel(
                            title = tags$p("Variable Importance", style = "color: #7C6D62; font-weight: bold; font-size: 12px;"),
-                               div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
-                                   dropdownButton(
-                                     numericInput(
-                                       inputId = "dt_varimp_varcount",
-                                       label = "Configure number of variables to display (limited to the number of available responses):",
-                                       min = 5,
-                                       max = 120,
-                                       value = 10,
-                                       width = "290px",
-                                       step = 1),
-                                     circle = FALSE,
-                                     right = TRUE,
-                                     status = "default",
-                                     icon = icon("gear"), 
-                                     width = "300px"),
-                                   align = "right"),
-                               div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
-                                   plotOutput("dt_varimp_plot_",
-                                              height = "62vh",
-                                              width = "100%")
-                                   )
-                               )
+                           div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                               dropdownButton(
+                                 numericInput(
+                                   inputId = "dt_varimp_varcount",
+                                   label = "Configure number of variables to display (limited to the number of available responses):",
+                                   min = 5,
+                                   max = 120,
+                                   value = 10,
+                                   width = "290px",
+                                   step = 1),
+                                 circle = FALSE,
+                                 right = TRUE,
+                                 status = "default",
+                                 icon = icon("gear"), 
+                                 width = "300px"),
+                               align = "right"),
+                           div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                               plotOutput("dt_varimp_plot_",
+                                          height = "62vh",
+                                          width = "100%")
+                           )
+                         )
                          
                        )
                    )
@@ -1785,76 +1868,77 @@ body <- dashboardBody(
                          )
                      ),
                      
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                         box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
-                             status = "primary",
-                             collapsible = TRUE,
-                             collapsed = FALSE,
-                             width = 12,
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 pickerInput(
-                                   inputId = "rf_target_",
-                                   label = "Subject",
-                                   choices = c("Math", "Reading", "Science"), 
-                                   selected = "Math",
-                                   multiple = FALSE,
-                                   options = list(style = "myClass"),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 pickerInput(
-                                   inputId = "rf_vars_",
-                                   label = "Variables",
-                                   choices = list(
-                                     `School Environment` = list("School Type" = "SchoolType",
-                                                                 "Loneliness" = "Loneliness",
-                                                                 "Classroom Safety" = "ClassroomSafety",
-                                                                 "Teacher Support" = "TeacherSupport"),
-                                     `Personal` = list("Gender" = "Gender",
-                                                       "Math Homework Time" = "Homework_Math",
-                                                       "Reading Homework Time" = "Homework_Reading",
-                                                       "Science Homework Time" = "Homework_Science",
-                                                       "Preference for Math" = "Preference_Math",
-                                                       "Preference for Reading" = "Preference_Reading",
-                                                       "Preference for Science" = "Preference_Science",
-                                                       "Exercise" = "Exercise"),
-                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
-                                                            "Immigration" = "Immigration",
-                                                            "Home Language" = "HomeLanguage",
-                                                            "Sibling" = "Sibling",
-                                                            "Aircon" = "Aircon",
-                                                            "Helper" = "Helper",
-                                                            "Vehicle" = "Vehicle",
-                                                            "Books" = "Books",
-                                                            "Own Room" = "OwnRoom",
-                                                            "Family Commitment" = "FamilyCommitment")),
-                                   selected = colnames(stu_mb[1:24]),
-                                   multiple = TRUE,
-                                   options = list(style = "myClass", `actions-box` = TRUE),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
-                                   inline = FALSE,
-                                   width = NULL)
-                             )
-                         )
-                     ),
+                     # div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                     #     box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
+                     #         status = "primary",
+                     #         collapsible = TRUE,
+                     #         collapsed = FALSE,
+                     #         width = 12,
+                     #         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                     #             pickerInput(
+                     #               inputId = "mb_target_",
+                     #               label = "Subject",
+                     #               choices = c("Math", "Reading", "Science"), 
+                     #               selected = "Math",
+                     #               multiple = FALSE,
+                     #               options = list(style = "myClass"),
+                     #               choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                     #               inline = FALSE,
+                     #               width = NULL
+                     #             )),
+                     #         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                     #             pickerInput(
+                     #               inputId = "mb_vars_",
+                     #               label = "Variables",
+                     #               choices = list(
+                     #                 `School Environment` = list("School Type" = "SchoolType",
+                     #                                             "Loneliness" = "Loneliness",
+                     #                                             "Classroom Safety" = "ClassroomSafety",
+                     #                                             "Teacher Support" = "TeacherSupport"),
+                     #                 `Personal` = list("Gender" = "Gender",
+                     #                                   "Math Homework Time" = "Homework_Math",
+                     #                                   "Reading Homework Time" = "Homework_Reading",
+                     #                                   "Science Homework Time" = "Homework_Science",
+                     #                                   "Preference for Math" = "Preference_Math",
+                     #                                   "Preference for Reading" = "Preference_Reading",
+                     #                                   "Preference for Science" = "Preference_Science",
+                     #                                   "Exercise" = "Exercise"),
+                     #                 `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                     #                                        "Immigration" = "Immigration",
+                     #                                        "Home Language" = "HomeLanguage",
+                     #                                        "Sibling" = "Sibling",
+                     #                                        "Aircon" = "Aircon",
+                     #                                        "Helper" = "Helper",
+                     #                                        "Vehicle" = "Vehicle",
+                     #                                        "Books" = "Books",
+                     #                                        "Own Room" = "OwnRoom",
+                     #                                        "Family Commitment" = "FamilyCommitment")),
+                     #               selected = colnames(stu_mb[1:24]),
+                     #               multiple = TRUE,
+                     #               options = list(style = "myClass", `actions-box` = TRUE),
+                     #               choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                     #               inline = FALSE,
+                     #               width = NULL)
+                     #         )
+                     #     )
+                     # ),
                      div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                       box(title = tags$p("Step 2: Data Splitting", style = "font-weight: bold;"),
-                           collapsible = TRUE,
-                           collapsed = TRUE,
-                           width = 12,
-                           status = "primary",
-                           solidHeader = FALSE,
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               chooseSliderSkin("Flat"),
-                               sliderInput(inputId = "rf_partition_",
-                                           label = "Train-Test Partition:",
-                                           min = 0.05,
-                                           max = 0.95,
-                                           value = c(0.8))
-                           ),
+                         style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                         box(id = "rf_modeltune_group", 
+                             title = tags$p("Step 2: Tuning Parameters", style = "font-weight: bold;"),
+                             collapsible = TRUE,
+                             collapsed = TRUE,
+                             width = 12,
+                             status = "primary",
+                             solidHeader = FALSE,
+                           # div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                           #     chooseSliderSkin("Flat"),
+                           #     sliderInput(inputId = "mb_partition_",
+                           #                 label = "Train-Test Partition:",
+                           #                 min = 0.05,
+                           #                 max = 0.95,
+                           #                 value = c(0.8))
+                           # ),
                            div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                chooseSliderSkin("Flat"),
                                sliderInput(inputId = "rf_treenum_",
@@ -1869,6 +1953,22 @@ body <- dashboardBody(
                                            choices = c("Gini Importance" = "impurity",
                                                        "Permutation Importance" = "permutation"),
                                            selected = "impurity")
+                           ),
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               selectInput(inputId = "rf_splitrule_",
+                                           label = "Split Rule:",
+                                           choices = c("Variance" = "variance",
+                                                       "Extra Trees" = "extratrees",
+                                                       "Max Stat" = "maxstat"),
+                                           selected = "variance")),
+                           
+                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                               chooseSliderSkin("Flat"),
+                               sliderInput(inputId = "rf_minnodesize_",
+                                           label = "Minimum Node Size:",
+                                           min = 2,
+                                           max = 50,
+                                           value = 5)
                            )
                        )
                      ),
@@ -1911,46 +2011,53 @@ body <- dashboardBody(
                                                             max = 10,
                                                             step = 1,
                                                             value = 3)
-                                           )
-                           )
-                           )
-                       )
-                     ),
-                     div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                       box(title = tags$p("Step 4: Tuning Parameters", style = "font-weight: bold;"),
-                           collapsible = TRUE,
-                           collapsed = TRUE,
-                           width = 12,
-                           status = "primary",
-                           solidHeader = FALSE,  
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               selectInput(inputId = "rf_splitrule_",
-                                           label = "Split Rule:",
-                                           choices = c("Variance" = "variance",
-                                                       "Extra Trees" = "extratrees",
-                                                       "Max Stat" = "maxstat"),
-                                           selected = "variance")),
-                           
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               chooseSliderSkin("Flat"),
-                               sliderInput(inputId = "rf_minnodesize_",
-                                           label = "Minimum Node Size:",
-                                           min = 2,
-                                           max = 50,
-                                           value = 5)
+                                           ))
                            ),
-                           
-                           
                            div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
-                               actionButton(inputId = "rf_action_",
-                                            label = "Run Analysis",
-                                            icon = icon("wrench"),
-                                            style = 'padding: 4px; font-size: 10px'),
-                               align = "center"
-                           )
+                                               actionButton(inputId = "rf_action_",
+                                                            label = "Run Analysis",
+                                                            icon = icon("wrench"),
+                                                            style = 'padding: 4px; font-size: 10px'),
+                                               align = "center"
+                                           )
+                           
                        )
                      )
+                     # div(
+                     #   style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                     #   box(title = tags$p("Step 4: Tuning Parameters", style = "font-weight: bold;"),
+                     #       collapsible = TRUE,
+                     #       collapsed = TRUE,
+                     #       width = 12,
+                     #       status = "primary",
+                     #       solidHeader = FALSE,  
+                     #       div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                     #           selectInput(inputId = "rf_splitrule_",
+                     #                       label = "Split Rule:",
+                     #                       choices = c("Variance" = "variance",
+                     #                                   "Extra Trees" = "extratrees",
+                     #                                   "Max Stat" = "maxstat"),
+                     #                       selected = "variance")),
+                     # 
+                     #       div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                     #           chooseSliderSkin("Flat"),
+                     #           sliderInput(inputId = "rf_minnodesize_",
+                     #                       label = "Minimum Node Size:",
+                     #                       min = 2,
+                     #                       max = 50,
+                     #                       value = 5)
+                     #       ),
+                     #       
+                     #       
+                     #       div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
+                     #           actionButton(inputId = "rf_action_",
+                     #                        label = "Run Analysis",
+                     #                        icon = icon("wrench"),
+                     #                        style = 'padding: 4px; font-size: 10px'),
+                     #           align = "center"
+                     #       )
+                     #   )
+                     # )
                    )
             ),
             
@@ -1967,58 +2074,58 @@ body <- dashboardBody(
                    ),
                    
                    fluidRow(column(width = 5,
-                     div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
-                       box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
-                           closable = FALSE,
-                           width = 12,
-                           status = "primary",
-                           
-                           #### Random Forest - Actual vs Predicted ----------------------------------------------------
-                                  plotOutput("rf_plotpredvsactual_",
-                                             width = "100%",
-                                             height = "32vh"),
-                           
-                           #### Random Forest - Actual vs Residuals ----------------------------------------------------
-                                  plotOutput("rf_plotresidvsactual_",
-                                             width = "100%",
-                                             height = "32vh")
-                           )
-                       )
-                     ),
-                     
-                     column(width = 7,
-                            div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
-                                box(title = tags$p("Variable Importance", style = "font-weight: bold;"),
-                                    closable = FALSE,
-                                    width = 12,
-                                    status = "primary",
-                                    div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
-                                        dropdownButton(
-                                          numericInput(
-                                            inputId = "rf_varimp_varcount",
-                                            label = "Configure number of variables to display (limited to the number of available responses):",
-                                            min = 5,
-                                            max = 120,
-                                            value = 10,
-                                            width = "290px",
-                                            step = 1),
-                                          circle = FALSE,
-                                          right = TRUE,
-                                          status = "default",
-                                          icon = icon("gear"), 
-                                          width = "300px"),
-                                        align = "right"),
-                                    div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
-                                        plotOutput("rf_varimp_plot_",
-                                                   height = "62vh",
-                                                   width = "100%"))
-                                    )
-                                )
-                            )
-                     )
+                                   div(
+                                     style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                                     box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
+                                         closable = FALSE,
+                                         width = 12,
+                                         status = "primary",
+                                         
+                                         #### Random Forest - Actual vs Predicted ----------------------------------------------------
+                                         plotOutput("rf_plotpredvsactual_",
+                                                    width = "100%",
+                                                    height = "32vh"),
+                                         
+                                         #### Random Forest - Actual vs Residuals ----------------------------------------------------
+                                         plotOutput("rf_plotresidvsactual_",
+                                                    width = "100%",
+                                                    height = "32vh")
+                                     )
+                                   )
+                   ),
+                   
+                   column(width = 7,
+                          div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                              box(title = tags$p("Variable Importance", style = "font-weight: bold;"),
+                                  closable = FALSE,
+                                  width = 12,
+                                  status = "primary",
+                                  div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                                      dropdownButton(
+                                        numericInput(
+                                          inputId = "rf_varimp_varcount",
+                                          label = "Configure number of variables to display (limited to the number of available responses):",
+                                          min = 5,
+                                          max = 120,
+                                          value = 10,
+                                          width = "290px",
+                                          step = 1),
+                                        circle = FALSE,
+                                        right = TRUE,
+                                        status = "default",
+                                        icon = icon("gear"), 
+                                        width = "300px"),
+                                      align = "right"),
+                                  div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                                      plotOutput("rf_varimp_plot_",
+                                                 height = "62vh",
+                                                 width = "100%"))
+                              )
+                          )
                    )
-            ),
+                   )
+            )
+    ),
     tabItem(tabName = "tab_gb",
             
             #### Gradient Boosting Toggle Column  ----------------------------------------------------
@@ -2037,81 +2144,81 @@ body <- dashboardBody(
                          )
                      ),
                      
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                         box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
-                             status = "primary",
-                             collapsible = TRUE,
-                             collapsed = FALSE,
-                             width = 12,
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 pickerInput(
-                                   inputId = "gb_target_",
-                                   label = "Subject",
-                                   choices = c("Math", "Reading", "Science"), 
-                                   selected = "Math",
-                                   multiple = FALSE,
-                                   options = list(style = "myClass"),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 )),
-                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 pickerInput(
-                                   inputId = "gb_vars_",
-                                   label = "Variables",
-                                   choices = list(
-                                     `School Environment` = list("School Type" = "SchoolType",
-                                                                 "Loneliness" = "Loneliness",
-                                                                 "Classroom Safety" = "ClassroomSafety",
-                                                                 "Teacher Support" = "TeacherSupport"),
-                                     `Personal` = list("Gender" = "Gender",
-                                                       "Math Homework Time" = "Homework_Math",
-                                                       "Reading Homework Time" = "Homework_Reading",
-                                                       "Science Homework Time" = "Homework_Science",
-                                                       "Preference for Math" = "Preference_Math",
-                                                       "Preference for Reading" = "Preference_Reading",
-                                                       "Preference for Science" = "Preference_Science",
-                                                       "Exercise" = "Exercise"),
-                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
-                                                            "Immigration" = "Immigration",
-                                                            "Home Language" = "HomeLanguage",
-                                                            "Sibling" = "Sibling",
-                                                            "Aircon" = "Aircon",
-                                                            "Helper" = "Helper",
-                                                            "Vehicle" = "Vehicle",
-                                                            "Books" = "Books",
-                                                            "Own Room" = "OwnRoom",
-                                                            "Family Commitment" = "FamilyCommitment")),
-                                   selected = colnames(stu_mb[1:24]),
-                                   multiple = TRUE,
-                                   options = list(style = "myClass", `actions-box` = TRUE),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
-                                   inline = FALSE,
-                                   width = NULL
-                                 ))
-                         )
-                     ),
+                     # div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                     #     box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
+                     #         status = "primary",
+                     #         collapsible = TRUE,
+                     #         collapsed = FALSE,
+                     #         width = 12,
+                     #         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                     #             pickerInput(
+                     #               inputId = "mb_target_",
+                     #               label = "Subject",
+                     #               choices = c("Math", "Reading", "Science"), 
+                     #               selected = "Math",
+                     #               multiple = FALSE,
+                     #               options = list(style = "myClass"),
+                     #               choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                     #               inline = FALSE,
+                     #               width = NULL
+                     #             )),
+                     #         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                     #             pickerInput(
+                     #               inputId = "mb_vars_",
+                     #               label = "Variables",
+                     #               choices = list(
+                     #                 `School Environment` = list("School Type" = "SchoolType",
+                     #                                             "Loneliness" = "Loneliness",
+                     #                                             "Classroom Safety" = "ClassroomSafety",
+                     #                                             "Teacher Support" = "TeacherSupport"),
+                     #                 `Personal` = list("Gender" = "Gender",
+                     #                                   "Math Homework Time" = "Homework_Math",
+                     #                                   "Reading Homework Time" = "Homework_Reading",
+                     #                                   "Science Homework Time" = "Homework_Science",
+                     #                                   "Preference for Math" = "Preference_Math",
+                     #                                   "Preference for Reading" = "Preference_Reading",
+                     #                                   "Preference for Science" = "Preference_Science",
+                     #                                   "Exercise" = "Exercise"),
+                     #                 `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
+                     #                                        "Immigration" = "Immigration",
+                     #                                        "Home Language" = "HomeLanguage",
+                     #                                        "Sibling" = "Sibling",
+                     #                                        "Aircon" = "Aircon",
+                     #                                        "Helper" = "Helper",
+                     #                                        "Vehicle" = "Vehicle",
+                     #                                        "Books" = "Books",
+                     #                                        "Own Room" = "OwnRoom",
+                     #                                        "Family Commitment" = "FamilyCommitment")),
+                     #               selected = colnames(stu_mb[1:24]),
+                     #               multiple = TRUE,
+                     #               options = list(style = "myClass", `actions-box` = TRUE),
+                     #               choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                     #               inline = FALSE,
+                     #               width = NULL
+                     #             ))
+                     #     )
+                     # ),
+                     # div(
+                     #   style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                     #   box(title = tags$p("Step 2: Data Splitting", style = "font-weight: bold;"),
+                     #       collapsible = TRUE,
+                     #       collapsed = TRUE,
+                     #       width = 12,
+                     #       status = "primary",
+                     #       solidHeader = FALSE,
+                     #       div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                     #           chooseSliderSkin("Flat"),
+                     #           sliderInput(inputId = "mb_partition_",
+                     #                       label = "Train-Test Partition:",
+                     #                       min = 0.05,
+                     #                       max = 0.95,
+                     #                       value = c(0.8))
+                     #       )
+                     #   )
+                     # ),
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                       box(title = tags$p("Step 2: Data Splitting", style = "font-weight: bold;"),
-                           collapsible = TRUE,
-                           collapsed = TRUE,
-                           width = 12,
-                           status = "primary",
-                           solidHeader = FALSE,
-                           div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                               chooseSliderSkin("Flat"),
-                               sliderInput(inputId = "gb_partition_",
-                                           label = "Train-Test Partition:",
-                                           min = 0.05,
-                                           max = 0.95,
-                                           value = c(0.8))
-                           )
-                       )
-                     ),
-                     div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                       box(title = tags$p("Step 3: Resampling Options", style = "font-weight: bold;"),
+                       box(title = tags$p("Step 2: Resampling Options", style = "font-weight: bold;"),
                            collapsible = TRUE,
                            collapsed = TRUE,
                            width = 12,
@@ -2155,7 +2262,7 @@ body <- dashboardBody(
                      ),
                      div(
                        style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                       box(title = tags$p("Step 4: Tuning Parameters", style = "font-weight: bold;"),
+                       box(title = tags$p("Step 3: Tuning Parameters", style = "font-weight: bold;"),
                            collapsible = TRUE,
                            collapsed = TRUE,
                            width = 12,
@@ -2240,8 +2347,8 @@ body <- dashboardBody(
                           valueBoxOutput("gb_display_R2_", width = 4),
                           valueBoxOutput("gb_display_RMSE_", width = 4),
                           valueBoxOutput("gb_display_MAE_", width = 4)
-                          )
-                      ),
+                      )
+                    ),
                     fluidRow(
                       column(width = 5,
                              div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
@@ -2250,74 +2357,74 @@ body <- dashboardBody(
                                      collapsible = FALSE,
                                      width = 12,
                                      solidHeader =FALSE,
-                            
-                            #### Gradient Boosting Actual vs Predicted ----------------------------------------------------
-
-                                   plotOutput("gb_plotpredvsactual_",
-                                              width = "100%",
-                                              height = "32vh"),
-                            
-                            
-                                   plotOutput("gb_plotresidvsactual_",
-                                              width = "100%",
-                                              height = "32vh")
-                            )
-                            ),
-                            hidden(div(id = "gb_besttuneplottab", 
-                                       style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
-                                       box(title = tags$p("Best Tune", style = "font-weight: bold;"),
-                                           status = "info",
-                                           collapsible = FALSE,
-                                           width = 12,
-                                           solidHeader =FALSE,
-                                           tableOutput("gb_besttune_"))
-                            )
-                            )
-                            ),
-            (column(width = 7,
-                    div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
-                        box(title = tags$p("Variable Importance", style = "font-weight: bold;"),
-                            status = "info",
-                            collapsible = FALSE,
-                            width = 12,
-                            solidHeader =FALSE,
-                            div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
-                                dropdownButton(
-                                  numericInput(
-                                    inputId = "gb_varimp_varcount",
-                                    label = "Configure number of variables to display (limited to the number of available responses):",
-                                    min = 5,
-                                    max = 120,
-                                    value = 10,
-                                    width = "290px",
-                                    step = 1),
-                                  circle = FALSE,
-                                  right = TRUE,
-                                  status = "default",
-                                  icon = icon("gear"), 
-                                  width = "300px"),
-                                align = "right"),
-                            div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
-                                plotOutput("gb_varimp_plot_",
-                                           height = "45vh",
-                                           width = "100%"))
-                        )
-                    ),
-                    hidden(div(id = "gb_modelplottab",
-                               style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                               box(title = tags$p("Resampling Profile", style = "font-weight: bold;"),
-                                   status = "info",
-                                   collapsible = FALSE,
-                                   width = 12,
-                                   solidHeader =FALSE,
-                                   plotOutput("gb_modelplot_"
-                                              #height = "100%"
-                                              ))
-                               )
-                           )
+                                     
+                                     #### Gradient Boosting Actual vs Predicted ----------------------------------------------------
+                                     
+                                     plotOutput("gb_plotpredvsactual_",
+                                                width = "100%",
+                                                height = "32vh"),
+                                     
+                                     
+                                     plotOutput("gb_plotresidvsactual_",
+                                                width = "100%",
+                                                height = "32vh")
+                                 )
+                             ),
+                             hidden(div(id = "gb_besttuneplottab", 
+                                        style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                                        box(title = tags$p("Best Tune", style = "font-weight: bold;"),
+                                            status = "info",
+                                            collapsible = FALSE,
+                                            width = 12,
+                                            solidHeader =FALSE,
+                                            tableOutput("gb_besttune_"))
+                             )
+                             )
+                      ),
+                      (column(width = 7,
+                              div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                                  box(title = tags$p("Variable Importance", style = "font-weight: bold;"),
+                                      status = "info",
+                                      collapsible = FALSE,
+                                      width = 12,
+                                      solidHeader =FALSE,
+                                      div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                                          dropdownButton(
+                                            numericInput(
+                                              inputId = "gb_varimp_varcount",
+                                              label = "Configure number of variables to display (limited to the number of available responses):",
+                                              min = 5,
+                                              max = 120,
+                                              value = 10,
+                                              width = "290px",
+                                              step = 1),
+                                            circle = FALSE,
+                                            right = TRUE,
+                                            status = "default",
+                                            icon = icon("gear"), 
+                                            width = "300px"),
+                                          align = "right"),
+                                      div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                                          plotOutput("gb_varimp_plot_",
+                                                     height = "45vh",
+                                                     width = "100%"))
+                                  )
+                              ),
+                              hidden(div(id = "gb_modelplottab",
+                                         style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                                         box(title = tags$p("Resampling Profile", style = "font-weight: bold;"),
+                                             status = "info",
+                                             collapsible = FALSE,
+                                             width = 12,
+                                             solidHeader =FALSE,
+                                             plotOutput("gb_modelplot_"
+                                                        #height = "100%"
+                                             ))
+                              )
+                              )
+                      )
+                      )
                     )
-             )
-             )
             )
             )
     )          
@@ -2438,7 +2545,7 @@ server <- function(input, output) {
         scale = 1.5,
         rel_min_height = 0.01,
         #bandwidth = 10,
-        fill = "#DDAFA1",
+        fill = "#C7C2D0",
         color = "white"
       ) +
       scale_x_continuous(
@@ -2449,16 +2556,16 @@ server <- function(input, output) {
       labs(title = "Distribution of Subject Scores")+
       theme_ridges() +
       theme(
-            panel.grid.minor = element_blank(),
-            panel.grid.major = element_blank(),
-            axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
-            axis.line.y = element_blank(),
-            axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
-            plot.title = element_text(size=16, face="bold", hjust = 0.5),
-            axis.title = element_text(hjust = 0.5)
-            #axis.text = element_text(face="bold")
-            ) 
-    })
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        axis.line.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+        axis.line.y = element_blank(),
+        axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
+        plot.title = element_text(size=16, face="bold", hjust = 0.5),
+        axis.title = element_text(hjust = 0.5)
+        #axis.text = element_text(face="bold")
+      ) 
+  })
   
   
   
@@ -2790,7 +2897,7 @@ server <- function(input, output) {
                                         axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
                                         plot.title = element_text(size=16, face="bold")),
                                   scale_color_manual(values = mycolours))
-          )
+        )
       }
       else {
         ggbetweenstats(
@@ -2813,9 +2920,9 @@ server <- function(input, output) {
                                         axis.line.y = element_blank(),
                                         axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
                                         plot.title = element_text(size=16, face="bold")),
-                                    scale_color_manual(values = mycolours))
-                                  
-          )
+                                  scale_color_manual(values = mycolours))
+          
+        )
       }
       
     })
@@ -2828,13 +2935,13 @@ server <- function(input, output) {
   ## Association Test   ----------------------------------------------------
   
   ## Reactive Sidebar Toggles  
-
-observeEvent(input$cda_assoc_var1, {
-  updateSelectizeInput(session = getDefaultReactiveDomain(),
-                      inputId = "cda_assoc_var2",
-                      choices = assoctest_var[!(assoctest_var %in% input$cda_assoc_var1)],
-                      selected = NULL)
-})
+  
+  observeEvent(input$cda_assoc_var1, {
+    updateSelectizeInput(session = getDefaultReactiveDomain(),
+                         inputId = "cda_assoc_var2",
+                         choices = assoctest_var[!(assoctest_var %in% input$cda_assoc_var1)],
+                         selected = NULL)
+  })
   
   assoc_var_xlabels <- reactive(
     {switch(input$cda_assoc_var1,
@@ -2887,7 +2994,7 @@ observeEvent(input$cda_assoc_var1, {
             "OwnRoom" = "Own Room",
             "FamilyCommitment" = "Family Commitment")}
   )
-
+  
   
   cda_assoc_ <- eventReactive(
     input$action_cda_assoc, {
@@ -2912,36 +3019,36 @@ observeEvent(input$cda_assoc_var1, {
                                       axis.ticks.x = element_line(colour = "black", size = 0.5, linetype = "solid"),
                                       plot.title = element_text(size=16, face="bold")),
                                 scale_fill_manual(values = mycolours)
-                                )
+        )
         
       )
     }
   )
-
+  
   output$cda_assoc_plot <- renderPlot({
     cda_assoc_()
   })
   
   
-  ### Cluster Heatmap  ----------------------------------------------------
-  
+  # ### Cluster Heatmap  ----------------------------------------------------
+
   # Combine Selected Variables and SchoolID
   selected_variables_heatmap <- eventReactive(
     input$action_heatmap_vars, {
-      c('SchoolID', 
+      c('SchoolID',
         input$scores_heatmap,
         input$vars_heatmap)
     }
   )
-  
+
   # Combine Selected Variables (excl. Scores) and SchoolID
   selected_variables_heatmap_less <- eventReactive(
     input$action_heatmap_vars, {
-      c('SchoolID', 
+      c('SchoolID',
         input$vars_heatmap)
     }
   )
-  
+
   # Update "group_by" Option with Selected Variables
   vars_names_heatmap <- c("SchoolID" = "School ID",
                           "SchoolType" = "School Type",
@@ -2968,54 +3075,54 @@ observeEvent(input$cda_assoc_var1, {
                           "Helper" = "Helper",
                           "Vehicle" = "Vehicle",
                           "Books" = "Books")
-  
+
   vars_names_lca <- vars_names_heatmap
   vars_names_sankey <- vars_names_heatmap
-  
+
   observeEvent(input$action_heatmap_vars, {
     choices_original_heatmap <- selected_variables_heatmap_less()
     choices_display_heatmap <- choices_original_heatmap
-    
+
     for (var in names(vars_names_heatmap)) {
       index_heatmap <- which(choices_original_heatmap == var)
       if (length(index_heatmap) > 0) {
         choices_display_heatmap[index_heatmap] <- vars_names_heatmap[var]
       }
     }
-    
+
     updateSelectInput(
-      session = getDefaultReactiveDomain(), 
-      inputId = "groupby_heatmap", 
+      session = getDefaultReactiveDomain(),
+      inputId = "groupby_heatmap",
       choices = setNames(choices_original_heatmap, choices_display_heatmap)
     )
   })
-  
+
   # Filter Dataset using Selected Variables
   data_filtered_heatmap <- eventReactive(
     input$action_heatmap_vars, {
-      data_filtered_heatmap <- stu_ca %>% 
+      data_filtered_heatmap <- stu_ca %>%
         dplyr::select(all_of(selected_variables_heatmap()))})
-  
+
   # Data Sampling
   data_sample_heatmap <- eventReactive(
     input$action_heatmap, {
       set.seed(input$seed_heatmap)
       data_filtered_heatmap() %>%
-        dplyr::group_by_at(vars(input$groupby_heatmap)) %>% 
-        slice_sample(prop = input$prop_heatmap, 
-                     replace = (if (input$replace_heatmap == "False") {FALSE} 
+        dplyr::group_by_at(vars(input$groupby_heatmap)) %>%
+        slice_sample(prop = input$prop_heatmap,
+                     replace = (if (input$replace_heatmap == "False") {FALSE}
                                 else {TRUE})) %>%
         dplyr::ungroup()
     }
   )
-  
+
   # Convert Sampled Dataset to Matrix
   heatmap_data <- eventReactive(
     input$action_heatmap, {
       data.matrix(data_sample_heatmap())
     }
   )
-  
+
   # Generate Plot: Cluster Heatmap
   heatmap_plot <- eventReactive(
     input$action_heatmap, {
@@ -3027,7 +3134,7 @@ observeEvent(input$cda_assoc_var1, {
                   k_row = (if (input$clusters_heatmap == "Auto") {NA}
                            else {input$numclusters_heatmap}),
                   seriate = input$seriation_heatmap)
-      } 
+      }
       else if (input$data_transformation_heatmap == "Scale by Row") {
         heatmaply(heatmap_data(),
                   scale = "row",
@@ -3036,38 +3143,38 @@ observeEvent(input$cda_assoc_var1, {
                   k_row = (if (input$clusters_heatmap == "Auto") {NA}
                            else {input$numclusters_heatmap}),
                   seriate = input$seriation_heatmap)
-      } 
+      }
       else if (input$data_transformation_heatmap == "Normalise") {
         heatmaply(normalize(heatmap_data()),
                   scale = "none",
                   dist_method = input$dist_method_heatmap,
                   hclust_method = input$hclust_heatmap,
-                  k_row = (if (input$clusters_heatmap == "Auto") {NA} 
+                  k_row = (if (input$clusters_heatmap == "Auto") {NA}
                            else {input$numclusters_heatmap}),
-                  seriate = input$seriation_heatmap) 
-      } 
+                  seriate = input$seriation_heatmap)
+      }
       else if (input$data_transformation_heatmap == "Percentise") {
         heatmaply(percentize(heatmap_data()),
                   scale = "none",
                   dist_method = input$dist_method_heatmap,
                   hclust_method = input$hclust_heatmap,
-                  k_row = (if (input$clusters_heatmap == "Auto") {NA} 
+                  k_row = (if (input$clusters_heatmap == "Auto") {NA}
                            else {input$numclusters_heatmap}),
                   seriate = input$seriation_heatmap)
       }
     }
   )
-  
+
   # Function to Render Cluster Heatmap
   cluster_heatmap = function(modeltype){
     output$cluster_heatmap = renderPlotly(modeltype)}
-  
+
   observeEvent(input$action_heatmap, cluster_heatmap(heatmap_plot()))
-  
+
   # FlipBox: Heatmap Supplementary Visualisation 1
   output$active_heatmap <- renderUI({
     side <- if (input$fb_heatmap_supp1) " " else " "})
-  
+
   # Heatmap Supplementary Visualisation 1
   heatmap_supp1_plot <- eventReactive(
     input$action_heatmap, {
@@ -3075,34 +3182,34 @@ observeEvent(input$cda_assoc_var1, {
       if (input$data_transformation_heatmap == "Scale by Column") {
         dplyr::select(dend_expend(dist(heatmap_data),
                                   scale = "column",
-                                  method = input$dist_method_heatmap)[[3]], 2:3) 
-      } 
+                                  method = input$dist_method_heatmap)[[3]], 2:3)
+      }
       else if (input$data_transformation_heatmap == "Scale by Row") {
         dplyr::select(dend_expend(dist(heatmap_data),
                                   scale = "row",
                                   method = input$dist_method_heatmap)[[3]], 2:3)
-      } 
+      }
       else if (input$data_transformation_heatmap == "Normalise") {
         dplyr::select(dend_expend(dist(normalize(heatmap_data)),
                                   method = input$dist_method_heatmap)[[3]], 2:3)
-      } 
+      }
       else if (input$data_transformation_heatmap == "Percentise") {
         dplyr::select(dend_expend(dist(percentize(heatmap_data)),
                                   method = input$dist_method_heatmap)[[3]], 2:3)
       }
     }
   )
-  
+
   # Function to Render Heatmap Supplementary Visualisation 1
   cluster_supp1 = function(modeltype){
     output$cluster_supp1 = renderTable(modeltype)}
-  
+
   observeEvent(input$action_heatmap, cluster_supp1(heatmap_supp1_plot()))
-  
+
   # FlipBox: Heatmap Supplementary Visualisation 2
   output$active_heatmap <- renderUI({
     side <- if (input$fb_heatmap_supp2) " " else " "})
-  
+
   # Heatmap Supplementary Visualisation 2
   heatmap_supp2_plot <- eventReactive(
     input$action_heatmap, {
@@ -3111,17 +3218,17 @@ observeEvent(input$cda_assoc_var1, {
         plot(find_k(hclust(dist((heatmap_data),
                                 method = input$dist_method_heatmap),
                            method = input$hclust_heatmap)))
-      } 
+      }
       else if (input$data_transformation_heatmap == "Scale by Row") {
         plot(find_k(hclust(dist((heatmap_data),
                                 method = input$dist_method_heatmap),
                            method = input$hclust_heatmap)))
-      } 
+      }
       else if (input$data_transformation_heatmap == "Normalise") {
         plot(find_k(hclust(dist(normalize(heatmap_data),
                                 method = input$dist_method_heatmap),
                            method = input$hclust_heatmap)))
-      } 
+      }
       else if (input$data_transformation_heatmap == "Percentise") {
         plot(find_k(hclust(dist(percentize(heatmap_data),
                                 method = input$dist_method_heatmap),
@@ -3129,14 +3236,14 @@ observeEvent(input$cda_assoc_var1, {
       }
     }
   )
-  
+
   # Function to Render Heatmap Supplementary Visualisation 2
   cluster_supp2 = function(modeltype){
     output$cluster_supp2 = renderPlot(modeltype)}
-  
+
   observeEvent(input$action_heatmap, cluster_supp2(heatmap_supp2_plot()))
-  
-  
+
+
   
   ### Sankey Diagram  ----------------------------------------------------
   
@@ -3290,7 +3397,7 @@ observeEvent(input$cda_assoc_var1, {
                Prop = value,
                Category = L1) %>%
         mutate(Prop = round(Prop*100,2))
-        
+      
     })
   
   model_lcawlabels <- eventReactive(
@@ -3311,12 +3418,13 @@ observeEvent(input$cda_assoc_var1, {
                      text = paste0("Proportion: ", Prop,"%","\n",
                                    "Category: ", Category, "\n",
                                    "Level: ", Factor_Level))) + 
-        facet_wrap(~ Category) + 
+        facet_wrap(~ Category, nrow = 1) + 
         coord_flip() +
         labs(fill = "Factor Level") +
         scale_y_continuous("Proportion", expand = c(0, 0)) + 
         theme_minimal()+
-        scale_fill_manual(values = mycolours)
+        scale_fill_manual(values = mycolours)+
+        theme(legend.position="none")
     })
   
   output$lca_plotsummary_ <- renderPlotly({
@@ -3436,7 +3544,8 @@ observeEvent(input$cda_assoc_var1, {
              y = "Proportion") +
         coord_flip() +
         scale_y_continuous("Proportion", expand = c(0, 0)) + 
-        scale_fill_manual(values = mycolours)
+        scale_fill_manual(values = mycolours) +
+        theme(legend.position="none")
       
       ggplotly(p)
     }
@@ -3455,12 +3564,18 @@ observeEvent(input$cda_assoc_var1, {
   
   
   # Regression Analysis ----------------------------------------------------
+  
+  # Shared Model Construction Panel  ----------------------------------------------------
+
+  # Define reactiveValues object to store selected options for each tab
+
+  
   # DT Data Manipulation  ----------------------------------------------------
   
   # Combine Selected Variables
   dt_selected_variables <- reactive({
-    c(input$dt_target_,
-      input$dt_vars_)
+    c(input$mb_target_,
+      input$mb_vars_)
   })  
   
   dt_data <- reactive({
@@ -3472,7 +3587,7 @@ observeEvent(input$cda_assoc_var1, {
   dt_index <- eventReactive(
     input$dt_action_, {
       set.seed(1234)
-      caret::createDataPartition(dt_data()[[1]], p = input$dt_partition_, list = FALSE)      
+      caret::createDataPartition(dt_data()[[1]], p = input$mb_partition_, list = FALSE)      
     }
   )
   
@@ -3506,7 +3621,7 @@ observeEvent(input$cda_assoc_var1, {
   # DT Model  ----------------------------------------------------
   dtmodel <- eventReactive(
     input$dt_action_, {
-      if (input$dt_target_ == "Math") {
+      if (input$mb_target_ == "Math") {
         set.seed(1234)
         
         rpart(formula = Math ~.,
@@ -3515,7 +3630,7 @@ observeEvent(input$cda_assoc_var1, {
               control = rpart.control(minsplit = 5, cp = 0.001, maxdepth = 10)
         )}
       
-      else if (input$dt_target_ == "Reading") {
+      else if (input$mb_target_ == "Reading") {
         set.seed(1234)
         
         rpart(formula = Reading ~.,
@@ -3536,7 +3651,7 @@ observeEvent(input$cda_assoc_var1, {
   
   dtmodel_prune <- eventReactive(
     input$dt_tunemodel_, {
-      if (input$dt_target_ == "Math") {
+      if (input$mb_target_ == "Math") {
         if (input$dt_bestcp == TRUE) {
           set.seed(1234)
           
@@ -3546,81 +3661,81 @@ observeEvent(input$cda_assoc_var1, {
                 control = rpart.control(minsplit = input$dt_minsplit, 
                                         maxdepth = input$dt_maxdepth,
                                         cp = dt_bestcp()))
-                }
-                else {
-                  set.seed(1234)
-                  
-                  rpart(formula = Math ~.,
-                        data = dt_traindata(),
-                        method = "anova",
-                        control = rpart.control(minsplit = input$dt_minsplit, 
-                                                maxdepth = input$dt_maxdepth,
-                                                cp = input$dt_cp))
-                } }
-    
-    else if (input$dt_target_ == "Reading") {
-      if (input$dt_bestcp == TRUE) {
-        set.seed(1234)
-        
-        rpart(formula = Reading ~.,
-              data = dt_traindata(),
-              method = "anova",
-              control = rpart.control(minsplit = input$dt_minsplit, 
-                                      maxdepth = input$dt_maxdepth,
-                                      cp = dt_bestcp()))
-      }
-      else {
-        set.seed(1234)
-        
-        rpart(formula = Reading ~.,
-              data = dt_traindata(),
-              method = "anova",
-              control = rpart.control(minsplit = input$dt_minsplit, 
-                                      maxdepth = input$dt_maxdepth,
-                                      cp = input$dt_cp))
-      }
-    }
-    
-    else {
-      if (input$dt_bestcp == TRUE) {
-        set.seed(1234)
-        
-        rpart(formula = Science ~.,
-              data = dt_traindata(),
-              method = "anova",
-              control = rpart.control(minsplit = input$dt_minsplit, 
-                                      maxdepth = input$dt_maxdepth,
-                                      cp = dt_bestcp()))
-      }
-      else {
-        set.seed(1234)
-        
-        rpart(formula = Science ~.,
-              data = dt_traindata(),
-              method = "anova",
-              control = rpart.control(minsplit = input$dt_minsplit, 
-                                      maxdepth = input$dt_maxdepth,
-                                      cp = input$dt_cp))
+        }
+        else {
+          set.seed(1234)
+          
+          rpart(formula = Math ~.,
+                data = dt_traindata(),
+                method = "anova",
+                control = rpart.control(minsplit = input$dt_minsplit, 
+                                        maxdepth = input$dt_maxdepth,
+                                        cp = input$dt_cp))
+        } }
+      
+      else if (input$mb_target_ == "Reading") {
+        if (input$dt_bestcp == TRUE) {
+          set.seed(1234)
+          
+          rpart(formula = Reading ~.,
+                data = dt_traindata(),
+                method = "anova",
+                control = rpart.control(minsplit = input$dt_minsplit, 
+                                        maxdepth = input$dt_maxdepth,
+                                        cp = dt_bestcp()))
+        }
+        else {
+          set.seed(1234)
+          
+          rpart(formula = Reading ~.,
+                data = dt_traindata(),
+                method = "anova",
+                control = rpart.control(minsplit = input$dt_minsplit, 
+                                        maxdepth = input$dt_maxdepth,
+                                        cp = input$dt_cp))
         }
       }
-      })
-                                        
- 
+      
+      else {
+        if (input$dt_bestcp == TRUE) {
+          set.seed(1234)
+          
+          rpart(formula = Science ~.,
+                data = dt_traindata(),
+                method = "anova",
+                control = rpart.control(minsplit = input$dt_minsplit, 
+                                        maxdepth = input$dt_maxdepth,
+                                        cp = dt_bestcp()))
+        }
+        else {
+          set.seed(1234)
+          
+          rpart(formula = Science ~.,
+                data = dt_traindata(),
+                method = "anova",
+                control = rpart.control(minsplit = input$dt_minsplit, 
+                                        maxdepth = input$dt_maxdepth,
+                                        cp = input$dt_cp))
+        }
+      }
+    })
+  
+  
   
   dt_rpartplot <- eventReactive(
     input$dt_action_, {
-        visTree(dtmodel(), 
-                edgesFontSize = 12, 
-                nodesFontSize = 14,
-                legend = FALSE)
+      visTree(dtmodel(), 
+              edgesFontSize = 12, 
+              nodesFontSize = 14,
+              legend = FALSE)
     })
   
   dt_rpartplot_prune <- eventReactive(
     input$dt_tunemodel_, {
-        visTree(dtmodel_prune(), 
-                edgesFontSize = 12, 
-                nodesFontSize = 14,
-                legend = FALSE)
+      visTree(dtmodel_prune(), 
+              edgesFontSize = 12, 
+              nodesFontSize = 14,
+              legend = FALSE)
     })
   
   ### Function to plot regression tree
@@ -3906,7 +4021,7 @@ observeEvent(input$cda_assoc_var1, {
     datatable(dt_cptable(),
               options = list(dom = 't',
                              autoWidth = TRUE))
-    })
+  })
   
   
   
@@ -3923,7 +4038,7 @@ observeEvent(input$cda_assoc_var1, {
   ## DT Variable Importance
   dt_varimp_plot_prune <- reactive(
     if(input$dt_tunemodel_) {
-      vip::vip(dt_tunemodel_(), 
+      vip::vip(dtmodel_prune(), 
                num_features = input$dt_varimp_varcount, 
                geom = "col",
                aesthetics = list(color = "grey40"))
@@ -3943,8 +4058,8 @@ observeEvent(input$cda_assoc_var1, {
   
   # Combine Selected Variables
   rf_selected_variables <- reactive({
-    c(input$rf_target_,
-      input$rf_vars_)
+    c(input$mb_target_,
+      input$mb_vars_)
   })  
   
   rf_data <- reactive({
@@ -3956,7 +4071,7 @@ observeEvent(input$cda_assoc_var1, {
   rf_index <- eventReactive(
     input$rf_action_, {
       set.seed(1234)
-      caret::createDataPartition(rf_data()[[1]], p = input$rf_partition_, list = FALSE)      
+      caret::createDataPartition(rf_data()[[1]], p = input$mb_partition_, list = FALSE)      
     }
   )
   
@@ -3971,9 +4086,10 @@ observeEvent(input$cda_assoc_var1, {
     })
   
   # RF Sidebar Toggles  ----------------------------------------------------
-  ## Model Tuning Parameters 
   
-  # ### Display Selection depending on resampling method
+  ## Model Tuning Parameters 
+
+  ### Display Selection depending on resampling method
   observeEvent(input$rf_resamplingmethod_, {
     if (input$rf_resamplingmethod_ == "rf_cvkfold") {
       shinyjs::show("rf_cvkfold_group")
@@ -4030,7 +4146,7 @@ observeEvent(input$cda_assoc_var1, {
   
   rfmodel <- eventReactive(
     input$rf_action_, {
-      if (input$rf_target_ == "Math") {
+      if (input$mb_target_ == "Math") {
         set.seed(1234)
         
         train(
@@ -4049,7 +4165,7 @@ observeEvent(input$cda_assoc_var1, {
           else { rf_rcvkfold_resample() }
         )}
       
-      else if (input$rf_target_ == "Reading") {
+      else if (input$mb_target_ == "Reading") {
         set.seed(1234)
         
         train(
@@ -4220,8 +4336,8 @@ observeEvent(input$cda_assoc_var1, {
   
   # Combine Selected Variables
   gb_selected_variables <- reactive({
-    c(input$gb_target_,
-      input$gb_vars_)
+    c(input$mb_target_,
+      input$mb_vars_)
   })  
   
   gb_data <- reactive({
@@ -4233,7 +4349,7 @@ observeEvent(input$cda_assoc_var1, {
   gb_index <- eventReactive(
     input$gb_action_, {
       set.seed(1234)
-      caret::createDataPartition(gb_data()[[1]], p = input$gb_partition_, list = FALSE)      
+      caret::createDataPartition(gb_data()[[1]], p = input$mb_partition_, list = FALSE)      
     }
   )
   
@@ -4353,7 +4469,7 @@ observeEvent(input$cda_assoc_var1, {
   
   gbmodel <- eventReactive(
     input$gb_action_, {
-      if (input$gb_target_ == "Math") {
+      if (input$mb_target_ == "Math") {
         set.seed(1234)
         
         train(
@@ -4370,7 +4486,7 @@ observeEvent(input$cda_assoc_var1, {
           else { gb_rcvkfold_resample() }
         )}
       
-      else if (input$gb_target_ == "Reading") {
+      else if (input$mb_target_ == "Reading") {
         set.seed(1234)
         
         train(
