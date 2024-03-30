@@ -177,8 +177,7 @@ pplogo <- tags$a(
   href = "https://projectpisa.netlify.app/",
   tags$img(
     src="Logo2.PNG",
-    height = '50'))
-#width = '70'
+    height = '40'))
 
 
 #========================#
@@ -190,28 +189,32 @@ pplogo <- tags$a(
 ## Application title
 header <- dashboardHeader(
   tags$li(class = "dropdown",
-          tags$style(".main-header {max-height: 50px; font-size: 10px;}"),
-          tags$style(".main-header .logo {height: 50px; margin-top: 1em; margin-bottom: 0em; font-size: 10px;}"),
-          tags$style(".sidebar-toggle {height: 50px;margin-top: 1em; margin-bottom: 0em; font-size: 10px;}"),
+          tags$style(".main-header {max-height: 40px; font-size: 10px;}"),
+          tags$style(".main-header .logo {height: 40px; margin-top: 0.5em; margin-bottom: 0em; font-size: 10px;}"),
+          tags$style(".sidebar-toggle {height: 40px;margin-top: 0.5em; margin-bottom: 0em; font-size: 10px;}"),
           tags$style(".navbar {min-height:20px !important}")
   ),
   title = div(pplogo,
               style = "position: relative; margin:0px 0px 0px 0px; display:right-align;"),
-  titleWidth = 50)
+  titleWidth = 40)
 
 ## Dashboard Sidebar ----------------------------------------------------
 sidebar <- dashboardSidebar(
-  tags$style(".left-side, .main-sidebar {padding-top: 60px; padding-right: 0px; margin-left: 0px; margin-right: 0px; font-size: 10px;}"),
-  width = 80,
+  tags$style(".left-side, .main-sidebar {padding-top: 50px; padding-right: 0px; margin-left: 0px; margin-right: 0px; font-size: 10px;}"),
+  width = 40,
   minified = TRUE,
   sidebarMenu(
     id = "tabs",
     menuItem("Home", tabName = "tab_home", icon = icon("house")),
-    menuItem("Data Analysis", tabName = "tab_cda", 
-             icon = icon("magnifying-glass-chart"),
+    menuItem("Data Exploration", tabName = "tab_eda", 
+             icon = icon("binoculars"),
              startExpanded = FALSE,
              menuSubItem("Variable Overview", tabName = "tab_cdaoverview"),
-             menuSubItem("Sankey Diagram", tabName = "tab_parallelplot"),
+             menuSubItem("Sankey Diagram", tabName = "tab_parallelplot")
+    ),    
+    menuItem("Confirmatory Analysis", tabName = "tab_cda", 
+             icon = icon("calculator"),
+             startExpanded = FALSE,
              menuSubItem("Analysis of Scores", tabName = "tab_cdascores"),
              menuSubItem("Analysis of Predictors", tabName = "tab_cdapredictor")
     ),
@@ -237,10 +240,10 @@ sidebar <- dashboardSidebar(
       div(style = "padding = 0em; margin-left: 1em; margin-right: 0em; height: 100% ",
           fluidRow(
             box(
-              title = tags$p(span("Step 1: Model Construction"), style = "font-weight: bold; color: #FFFFFF"),
+              title = tags$p(span("Step 1: Construct Model"), style = "font-weight: bold; color: #FFFFFF"),
               status = "primary",
               solidHeader = TRUE,
-              width = 12,
+              width = 11,
               chooseSliderSkin("Flat"),
               pickerInput(
                 inputId = "mb_target_",
@@ -249,7 +252,7 @@ sidebar <- dashboardSidebar(
                 selected = "Math",
                 multiple = FALSE,
                 options = list(style = "myClass"), #list(`actions-box` = TRUE),
-                choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                choicesOpt = list(style = rep_len("font-size: 10px; background: #FFFFFF;", 3)),
                 inline = FALSE,
                 width = NULL),
               pickerInput(
@@ -281,7 +284,7 @@ sidebar <- dashboardSidebar(
                 selected = colnames(stu_mb[1:24]),
                 multiple = TRUE,
                 options = list(style = "myClass", `actions-box` = TRUE),
-                choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                choicesOpt = list(style = rep_len("font-size: 10px; background: #FFFFFF;", 22)),
                 inline = FALSE,
                 width = NULL),
               sliderInput(inputId = "mb_partition_",
@@ -396,7 +399,8 @@ body <- dashboardBody(
         
         
         .box {font-size: 10px;
-              color: #000000;}
+              color: #000000;
+              margin: 5px;}
         
         .dropdown-item:hover {
          color: #000000 ;
@@ -452,7 +456,7 @@ body <- dashboardBody(
             #### Dashboard Left Column  ----------------------------------------------------
             
             column(width = 5,
-                   div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                   div(style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                        fluidRow(
                          box(
                            title = "Welcome to Project PISA", #tags$p("", style = "color: #b3907A; font-weight: bold; font-size: 80%;"),
@@ -467,7 +471,7 @@ body <- dashboardBody(
                        )
                        
                    ),
-                   div(style = "padding = 0em; margin-left: 0em; margin-right: 0em; height: 100% ",
+                   div(style = "padding = 0em; margin-left: -2em; margin-right: 0em; height: 100% ",
                        fluidRow(
                          box(title = "Variable List", #tags$p("", style = "color: #b3907A; font-weight: bold; font-size: 80%;"),
                              status = "primary",
@@ -482,7 +486,7 @@ body <- dashboardBody(
             column(width = 7,
                    
                    #### Dashboard Survey Stats Value Boxes  ----------------------------------------------------
-                   div(style = "padding = 0em; margin-left: 0.5em; margin-top: 0em; height: 100%; ",
+                   div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100%; ",
                        fluidRow(
                          valueBoxOutput("home_studnum_", width = 6),
                          valueBoxOutput("home_schnum_", width = 6)
@@ -508,7 +512,7 @@ body <- dashboardBody(
     ### Data Analysis - Variable Overview Tab ----------------------------------------------------
     tabItem(tabName = "tab_cdaoverview",
             column(width = 12,
-                   div(style = "padding = 0em; margin-left: 0em; margin-right: 0em",
+                   div(style = "padding = 0em; margin-left: -2em; margin-right: 0em",
                        fluidRow(
                          tabBox(
                            title = tags$p("Performance & Variable Distribution", style = "color: #7C6D62; font-weight: bold; font-size: 12px;"),
@@ -647,7 +651,7 @@ body <- dashboardBody(
             #### CDA Tab's Side Toggles ----------------------------------------------------
             column(width = 2,
                    fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                          box(title = tags$p(span(icon("magnifying-glass"), "Analysis of Scores"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsible = TRUE,
@@ -665,7 +669,7 @@ body <- dashboardBody(
                      ),
                      
                      
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 1.5em; height: 100% ",
                          box(title = tags$p("Step 1: Subject Selection & Setting Test Score", style = "font-weight: bold;"),
                              status = "primary",
                              collapsed = FALSE,
@@ -694,7 +698,7 @@ body <- dashboardBody(
                          )
                      ),
                      div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                       style = "padding = 0em; margin-left: -2em; margin-top: 1.5em; height: 100% ",
                        box(title = tags$p("Step 2: Configurations", style = "font-weight: bold;"),
                            collapsed = TRUE,
                            collapsible = TRUE,
@@ -777,7 +781,7 @@ body <- dashboardBody(
                    )
                    ),
                    fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 1em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
                          box(title = tags$p("Test for Normality", style = "font-weight: bold;"),
                              status = "primary",
                              collapsed = FALSE,
@@ -800,7 +804,7 @@ body <- dashboardBody(
     tabItem(tabName = "tab_cdapredictor",
             column(width = 2,
                    fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                          box(title = tags$p(span(icon("magnifying-glass"), "Analysis of Predictors"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsible = TRUE,
@@ -815,7 +819,7 @@ body <- dashboardBody(
                          )
                      ),
                      
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 1.5em; height: 100% ",
                          box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
                              status = "primary",
                              collapsible = TRUE,
@@ -871,7 +875,7 @@ body <- dashboardBody(
                          )
                      ),
                      div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                       style = "padding = 0em; margin-left: -2em; margin-top: 1.5em; height: 100% ",
                        box(title = tags$p("Step 2: Configurations", style = "font-weight: bold;"),
                            collapsed = TRUE,
                            collapsible =TRUE,
@@ -968,7 +972,7 @@ body <- dashboardBody(
     tabItem(tabName = "tab_cdaassoc",
             column(width = 2,
                    fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                          box(title = tags$p(span(icon("users-viewfinder"), "Association Between Predictors"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsible = TRUE,
@@ -986,7 +990,7 @@ body <- dashboardBody(
                          )
                      ),
                      
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 1.5em; height: 100% ",
                          box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
                              status = "primary",
                              collapsible = TRUE,
@@ -1016,7 +1020,7 @@ body <- dashboardBody(
                          )
                      ),
                      div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                       style = "padding = 0em; margin-left: -2em; margin-top: 1.5em; height: 100% ",
                        box(title = tags$p("Step 2: Configurations", style = "font-weight: bold;"),
                            collapsed = TRUE,
                            collapsible =TRUE,
@@ -1080,7 +1084,7 @@ body <- dashboardBody(
                                     width = 12,
                                     div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                         plotOutput("cda_assoc_plot",
-                                                   height = "70vh",
+                                                   height = "80vh",
                                                    width = "90%"),
                                         align = "center")
                                 )
@@ -1089,224 +1093,12 @@ body <- dashboardBody(
             )
     ),    
     
-    # ### Cluster Heatmap  ----------------------------------------------------
-    # tabItem(tabName = "tab_heatmap",
-    #         column(width = 2,
-    #                fluidRow(
-    #                  div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
-    #                      box(title = tags$p(span(icon("users-viewfinder"), "Cluster Heatmap"), style = "font-weight: bold; color: #FFFFFF"),
-    #                          status = "info",
-    #                          collapsible = TRUE,
-    #                          width = 12,
-    #                          solidHeader =TRUE,
-    #                          div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-    #                              "A Cluster Heatmap is a heatmap with hierarchical clustering. The dendrograms on the side of the heatmap organises the rows and columns based on their similarities and differences, creating a hierachical tree structure. The clustering helps identify patterns and relationships within the data."
-    #                          )
-    #                      )
-    #                  ),
-    #                  div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100%",
-    #                      box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
-    #                          status = "primary",
-    #                          collapsible = TRUE,
-    #                          collapsed = FALSE,
-    #                          width = 12,
-    #                          div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-    #                              pickerInput(
-    #                                inputId = "scores_heatmap",
-    #                                label = "Scores",
-    #                                choices = c("Math", "Reading", "Science"),
-    #                                multiple = TRUE,
-    #                                options = list(style = "myClass", `actions-box` = TRUE),
-    #                                choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-    #                                inline = FALSE,
-    #                                width = NULL)
-    #                          ),
-    #                          div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-    #                              pickerInput(
-    #                                inputId = "vars_heatmap",
-    #                                label = "Variables",
-    #                                choices = list(
-    #                                  `School Environment` = list("School Type" = "SchoolType",
-    #                                                              "Loneliness" = "Loneliness",
-    #                                                              "Classroom Safety" = "ClassroomSafety",
-    #                                                              "Teacher Support" = "TeacherSupport"),
-    #                                  `Personal` = list("Gender" = "Gender",
-    #                                                    "Math Homework Time" = "Homework_Math",
-    #                                                    "Reading Homework Time" = "Homework_Reading",
-    #                                                    "Science Homework Time" = "Homework_Science",
-    #                                                    "Preference for Math" = "Preference_Math",
-    #                                                    "Preference for Reading" = "Preference_Reading",
-    #                                                    "Preference for Science" = "Preference_Science",
-    #                                                    "Exercise" = "Exercise"),
-    #                                  `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
-    #                                                         "Immigration" = "Immigration",
-    #                                                         "Home Language" = "HomeLanguage",
-    #                                                         "Sibling" = "Sibling",
-    #                                                         "Aircon" = "Aircon",
-    #                                                         "Helper" = "Helper",
-    #                                                         "Vehicle" = "Vehicle",
-    #                                                         "Books" = "Books",
-    #                                                         "Own Room" = "OwnRoom",
-    #                                                         "Family Commitment" = "FamilyCommitment")),
-    #                                multiple = TRUE,
-    #                                options = list(style = "myClass", `actions-box` = TRUE),
-    #                                choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
-    #                                inline = FALSE,
-    #                                width = NULL)
-    #                          ),
-    #                          div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
-    #                              actionButton(inputId = "action_heatmap_vars",
-    #                                           label = "Confirm Selection",
-    #                                           icon = icon("filter"),
-    #                                           style = 'padding: 4px; font-size: 10px'),
-    #                              align = "center")
-    #                      ),
-    #                      box(title = tags$p("Step 2: Data Sampling", style = "font-weight: bold;"),
-    #                          collapsible = TRUE,
-    #                          collapsed = TRUE,
-    #                          width = 12,
-    #                          status = "primary",
-    #                          div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-    #                              numericInput(inputId = "seed_heatmap", 
-    #                                           label = "Seed:", 
-    #                                           value = 123, 
-    #                                           step = 1),
-    #                              selectInput(inputId = "groupby_heatmap", 
-    #                                          label = "Group by:", 
-    #                                          choices = " "),
-    #                              sliderInput(inputId = "prop_heatmap", 
-    #                                          label = "Proportion:",
-    #                                          min = 0.1, 
-    #                                          max = 1.0, 
-    #                                          value = 0.1, 
-    #                                          step = 0.1),
-    #                              selectInput(inputId = "replace_heatmap", 
-    #                                          label = "Replace?",
-    #                                          choices = c("False", "True")
-    #                              )
-    #                          )
-    #                      ),
-    #                      box(title = tags$p("Step 3: Data Transformation", style = "font-weight: bold;"),
-    #                          collapsible = TRUE,
-    #                          collapsed = TRUE,
-    #                          width = 12,
-    #                          status = "primary",
-    #                          div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-    #                              radioButtons(inputId = "data_transformation_heatmap", 
-    #                                           label = " ",
-    #                                           choices = c("Scale by Column", 
-    #                                                       "Scale by Row",
-    #                                                       "Normalise", 
-    #                                                       "Percentise"),
-    #                                           selected = "Normalise")
-    #                          )
-    #                      ),
-    #                      box(title = tags$p("Step 4: Clustering Algorithm", style = "font-weight: bold;"),
-    #                          collapsible = TRUE,
-    #                          collapsed = TRUE,
-    #                          width = 12,
-    #                          status = "primary",
-    #                          div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-    #                              selectInput(inputId = "dist_method_heatmap", 
-    #                                          label = "Distance Metric:",
-    #                                          choices = c("euclidean", 
-    #                                                      "maximum", 
-    #                                                      "manhattan",
-    #                                                      "canberra", 
-    #                                                      "binary", 
-    #                                                      "minkowski")),
-    #                              selectInput(inputId = "hclust_heatmap", 
-    #                                          label = "Hierarchical Clustering Method:",
-    #                                          choices = c("complete", 
-    #                                                      "ward.D",
-    #                                                      "ward.D2", 
-    #                                                      "single", 
-    #                                                      "average", 
-    #                                                      "mcquitty", 
-    #                                                      "median", 
-    #                                                      "centroid")),
-    #                              selectInput(inputId = "seriation_heatmap", 
-    #                                          label = "Seriation:",
-    #                                          choices = c("none",
-    #                                                      "OLO", 
-    #                                                      "mean", 
-    #                                                      "GW")),
-    #                              radioButtons(inputId = "clusters_heatmap",
-    #                                           label = "No. of Clusters",
-    #                                           choices = c("Auto", 
-    #                                                       "Manual"),
-    #                                           selected = "Auto"),
-    #                              conditionalPanel(
-    #                                condition = "input.clusters_heatmap == 'Manual'",
-    #                                sliderInput(inputId = "numclusters_heatmap", 
-    #                                            label = "Manual Selection for No. of Clusters:",
-    #                                            min = 1, 
-    #                                            max = 15, 
-    #                                            value = 5,
-    #                                            step = 1)
-    #                              ),
-    #                              div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
-    #                                  actionButton(inputId = "action_heatmap",
-    #                                               label = "Run Analysis",
-    #                                               icon = icon("gear"),
-    #                                               style = 'padding: 4px; font-size: 10px'),
-    #                                  align = "center")
-    #                          )
-    #                      )
-    #                  )
-    #                )
-    #                ),
-    #                column(width = 10,
-    #                       div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100%",
-    #                           box(title = tags$p("Plot", style = "font-weight: bold;"), 
-    #                               collapsible = FALSE,
-    #                               status = "primary",
-    #                               width = 12,
-    #                               plotlyOutput("cluster_heatmap", height = "800px"),
-    #                               box(title = tags$p("Supplementary Information", style = "font-weight: bold"), 
-    #                                   collapsible = TRUE,
-    #                                   collapsed = TRUE,
-    #                                   width = 12,
-    #                                   fluidRow(
-    #                                     column(width = 4, 
-    #                                            uiOutput("active_heatmap_supp1"),
-    #                                            flipBox(id = "fb_heatmap_supp1",
-    #                                                    width = 12,
-    #                                                    front = wellPanel(
-    #                                                      style = "background: white",
-    #                                                      h5(strong("Best Clustering Method"), 
-    #                                                         align = "center"),
-    #                                                      h6("Click for More Information"),
-    #                                                      tableOutput("cluster_supp1")),
-    #                                                    back = wellPanel(
-    #                                                      p("The dend_expend() function in the dendextend package is used to determine the recommended clustering method to be used. The method with the highest optimum value is recommended.")))),
-    #                                     column(width = 8, 
-    #                                            uiOutput("active_heatmap_supp2"),
-    #                                            flipBox(id = "fb_heatmap_supp2",
-    #                                                    width = 12,
-    #                                                    front = wellPanel(
-    #                                                      style = "background: white",
-    #                                                      h5(strong("Optimal No. of Clusters"),
-    #                                                         align = "center"),
-    #                                                      h6("Click for More Information"),
-    #                                                      plotOutput("cluster_supp2")),
-    #                                                    back = wellPanel(
-    #                                                      p("The find_k() function in the dendextend package is used to determine the optimal number of clusters. Note that there could be discrepancy between the default number of clusters decided by the heatmaply() function used to plot the heatmap and the optimal number of clusters found by the find_k() function because different methods are used for determining the number of clusters. The heatmaply() function uses its internal algorithm, while the find_k function involves silhouette analysis.")
-    #                                                    )
-    #                                            )
-    #                                     )
-    #                                   )
-    #                               )
-    #                           )
-    #                       )
-    #                )
-    # ),
-    # 
+ 
     ### Parallel Plot  ----------------------------------------------------
     tabItem(tabName = "tab_parallelplot",
             column(width = 2,
                    fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                          box(title = tags$p(span(icon("users-viewfinder"), "Sankey Diagram"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsible = TRUE,
@@ -1318,7 +1110,7 @@ body <- dashboardBody(
                              )
                          )
                      ),
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 1.5em; height: 100% ",
                          box(title = tags$p("Variable Selection", style = "font-weight: bold;"),
                              status = "primary",
                              collapsible = TRUE,
@@ -1378,12 +1170,16 @@ body <- dashboardBody(
                    )
             ),
             column(width = 10,
-                   div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100%",
+                   div(style = "padding = 0em; margin-left: -1em; margin-top: 0em; height: 100%",
                        box(title = tags$p("Plot", style = "font-weight: bold;"), 
                            collapsible = FALSE,
                            status = "primary",
                            width = 12,
-                           plotlyOutput("sankey")
+                           div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                               plotlyOutput("sankey",
+                                            height = "80vh",
+                                            width = "90%"),
+                               align = "center")
                        )
                    )
             )
@@ -1393,8 +1189,8 @@ body <- dashboardBody(
     tabItem(tabName = "tab_lca",
             column(width = 2,
                    fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
-                         box(title = tags$p(span(icon("users-viewfinder"), "Latent Class Analysis Bar Plot"), style = "font-weight: bold; color: #FFFFFF"),
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
+                         box(title = tags$p(span(icon("users-viewfinder"), "Latent Class Analysis"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsible = TRUE,
                              collapsed = TRUE,
@@ -1405,7 +1201,7 @@ body <- dashboardBody(
                              )
                          )
                      ),
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 1.5em; height: 100% ",
                          box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
                              status = "primary",
                              collapsible = TRUE,
@@ -1504,6 +1300,13 @@ body <- dashboardBody(
                          tabBox(title = tags$p("Latent Class Analysis", style = "color: #7C6D62; font-weight: bold; font-size: 12px;"), 
                                 width = 12,
                                 height = "60vh",
+                                tabPanel(title = tags$p("Cluster Proportions", style = "font-weight: bold"),
+                                         div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
+                                             plotlyOutput("lca_propplot_",
+                                                          width = "90%",
+                                                          height = "50vh"),
+                                             align = "center")
+                                ),
                                 tabPanel(title = tags$p("Variable View", style = "font-weight: bold"),
                                          div(style = "padding = 0em; margin-top: 0.5em; font-size: 10px;",
                                              plotlyOutput("lca",
@@ -1530,7 +1333,7 @@ body <- dashboardBody(
                                       uiOutput("active_lca_supp1"),
                                       flipBox(id = "fb_lca_supp1",
                                               width = 12,
-                                              front = div(h6("Click for More Information", align = "center"),
+                                              front = div(#h6("Click for More Information", align = "center"),
                                                           valueBoxOutput("lca_supp1", width =12)),
                                               back = wellPanel(
                                                 p("Akaike Information Criterion (AIC) is a measure of the relative quality of a statistical model for a given set of data. It balances the goodness of fit of the model with the complexity of the model, penalising models that are overly complex. Lower AIC values indicate a better balance between model fit and complexity, suggesting a more optimal model for explaining the data.")))),
@@ -1538,7 +1341,7 @@ body <- dashboardBody(
                                       uiOutput("active_lca_supp2"),
                                       flipBox(id = "fb_lca_supp2",
                                               width = 12,
-                                              front = div(h6("Click for More Information", align = "center"),
+                                              front = div(#h6("Click for More Information", align = "center"),
                                                           valueBoxOutput("lca_supp2", width =12)),
                                               back = wellPanel(
                                                 p("Bayesian Information Criterion (BIC) is similar to AIC but places a stronger penalty on models with more parameters, making it more conservative in selecting models. Like AIC, lower BIC values indicate better model fit, but BIC tends to favor simpler models more strongly than AIC."))))),
@@ -1547,7 +1350,7 @@ body <- dashboardBody(
                                       uiOutput("active_lca_supp3"),
                                       flipBox(id = "fb_lca_supp3",
                                               width = 12,
-                                              front = div(h6("Click for More Information", align = "center"),
+                                              front = div(#h6("Click for More Information", align = "center"),
                                                           valueBoxOutput("lca_supp3", width =12)),
                                               back = wellPanel(
                                                 p("Likelihood Ratio/Deviance Statistic (Gsq) is a measure of the goodness of fit of the model. It compares the fit of the model to a model with perfect fit by assessing the difference in deviance between the two models. Lower values indicate better model fit, with values close to zero suggesting that the model fits the data well.")))),
@@ -1555,7 +1358,7 @@ body <- dashboardBody(
                                       uiOutput("active_lca_supp4"),
                                       flipBox(id = "fb_lca_supp4",
                                               width = 12,
-                                              front = div(h6("Click for More Information", align = "center"),
+                                              front = div(#h6("Click for More Information", align = "center"),
                                                           valueBoxOutput("lca_supp4", width =12)),
                                               back = wellPanel(
                                                 p("Entropy quantifies the uncertainty or randomness in the distribution of observations across different classes. A high entropy indicates greater uncertainty, while low entropy suggests more predictability or orderliness.Higher entropy values indicate less distinct class separation, while lower entropy values suggest clearer class distinctions."))))
@@ -1573,7 +1376,7 @@ body <- dashboardBody(
             #### Regression tree Toggle Column  ----------------------------------------------------
             column(width = 2,
                    fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                          box(title = tags$p(span(icon("tree"), "Regression Tree"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsible = TRUE,
@@ -1667,7 +1470,7 @@ body <- dashboardBody(
                      # ),
 
                      div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                       style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                        box(title = tags$p("Step 2: Model Initiation", style = "font-weight: bold;"),
                            collapsible = TRUE,
                            collapsed = TRUE,
@@ -1685,7 +1488,7 @@ body <- dashboardBody(
                      ),
                      # Box Sidebar for Model Tuning Parameters
                      hidden(div(id = "dt_modeltune_group",
-                                style = "padding = 0em; margin-right: -0.5em; margin-top: -1em",
+                                style = "padding = 0em; margin-left: -2em; margin-top: -1em",
                                 box(
                                   title = tags$p("Step 3: Tuning Parameters", style = "font-weight: bold;"),
                                   status = "primary",
@@ -1745,7 +1548,7 @@ body <- dashboardBody(
             column(width = 5,
                    fluidRow(
                      div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                       style = "padding = 0em; margin-left: -1em; margin-top: 0em; height: 100% ",
                        box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
                            closable = FALSE,
                            width = 12,
@@ -1769,7 +1572,7 @@ body <- dashboardBody(
                    )
                    ,
                    fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -1em; margin-top: 0em; height: 100% ",
                          #height = "100%",
                          box(title = tags$p("Complexity Parameter", style = "font-weight: bold;"),
                              closable = FALSE,
@@ -1802,14 +1605,14 @@ body <- dashboardBody(
             ),
             column(width = 5,
                    fluidRow(
-                     style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                      div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
                          valueBoxOutput("dt_R2_", width = 4),
                          valueBoxOutput("dt_RMSE_", width = 4),
                          valueBoxOutput("dt_MAE_", width = 4)
                      )
                    ),
-                   div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                   div(style = "padding = 0em; margin-top: 0em; margin-left: -2em;",
                        tabBox(
                          #closable = FALSE,
                          width = 12,
@@ -1855,7 +1658,7 @@ body <- dashboardBody(
             #### Random Forest Toggle Column  ----------------------------------------------------
             column(width = 2,
                    fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                          box(title = tags$p(span(icon("tree"), "Random Forest"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsible = TRUE,
@@ -1868,62 +1671,8 @@ body <- dashboardBody(
                          )
                      ),
                      
-                     # div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                     #     box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
-                     #         status = "primary",
-                     #         collapsible = TRUE,
-                     #         collapsed = FALSE,
-                     #         width = 12,
-                     #         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                     #             pickerInput(
-                     #               inputId = "mb_target_",
-                     #               label = "Subject",
-                     #               choices = c("Math", "Reading", "Science"), 
-                     #               selected = "Math",
-                     #               multiple = FALSE,
-                     #               options = list(style = "myClass"),
-                     #               choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                     #               inline = FALSE,
-                     #               width = NULL
-                     #             )),
-                     #         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                     #             pickerInput(
-                     #               inputId = "mb_vars_",
-                     #               label = "Variables",
-                     #               choices = list(
-                     #                 `School Environment` = list("School Type" = "SchoolType",
-                     #                                             "Loneliness" = "Loneliness",
-                     #                                             "Classroom Safety" = "ClassroomSafety",
-                     #                                             "Teacher Support" = "TeacherSupport"),
-                     #                 `Personal` = list("Gender" = "Gender",
-                     #                                   "Math Homework Time" = "Homework_Math",
-                     #                                   "Reading Homework Time" = "Homework_Reading",
-                     #                                   "Science Homework Time" = "Homework_Science",
-                     #                                   "Preference for Math" = "Preference_Math",
-                     #                                   "Preference for Reading" = "Preference_Reading",
-                     #                                   "Preference for Science" = "Preference_Science",
-                     #                                   "Exercise" = "Exercise"),
-                     #                 `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
-                     #                                        "Immigration" = "Immigration",
-                     #                                        "Home Language" = "HomeLanguage",
-                     #                                        "Sibling" = "Sibling",
-                     #                                        "Aircon" = "Aircon",
-                     #                                        "Helper" = "Helper",
-                     #                                        "Vehicle" = "Vehicle",
-                     #                                        "Books" = "Books",
-                     #                                        "Own Room" = "OwnRoom",
-                     #                                        "Family Commitment" = "FamilyCommitment")),
-                     #               selected = colnames(stu_mb[1:24]),
-                     #               multiple = TRUE,
-                     #               options = list(style = "myClass", `actions-box` = TRUE),
-                     #               choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
-                     #               inline = FALSE,
-                     #               width = NULL)
-                     #         )
-                     #     )
-                     # ),
                      div(
-                         style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                         style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                          box(id = "rf_modeltune_group", 
                              title = tags$p("Step 2: Tuning Parameters", style = "font-weight: bold;"),
                              collapsible = TRUE,
@@ -1973,7 +1722,7 @@ body <- dashboardBody(
                        )
                      ),
                      div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                       style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                        box(title = tags$p("Step 3: Resampling Options", style = "font-weight: bold;"),
                            collapsible = TRUE,
                            collapsed = TRUE,
@@ -2023,41 +1772,6 @@ body <- dashboardBody(
                            
                        )
                      )
-                     # div(
-                     #   style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                     #   box(title = tags$p("Step 4: Tuning Parameters", style = "font-weight: bold;"),
-                     #       collapsible = TRUE,
-                     #       collapsed = TRUE,
-                     #       width = 12,
-                     #       status = "primary",
-                     #       solidHeader = FALSE,  
-                     #       div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                     #           selectInput(inputId = "rf_splitrule_",
-                     #                       label = "Split Rule:",
-                     #                       choices = c("Variance" = "variance",
-                     #                                   "Extra Trees" = "extratrees",
-                     #                                   "Max Stat" = "maxstat"),
-                     #                       selected = "variance")),
-                     # 
-                     #       div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                     #           chooseSliderSkin("Flat"),
-                     #           sliderInput(inputId = "rf_minnodesize_",
-                     #                       label = "Minimum Node Size:",
-                     #                       min = 2,
-                     #                       max = 50,
-                     #                       value = 5)
-                     #       ),
-                     #       
-                     #       
-                     #       div(style = "padding = 0em; margin-top: 0em; font-size: 10px;",
-                     #           actionButton(inputId = "rf_action_",
-                     #                        label = "Run Analysis",
-                     #                        icon = icon("wrench"),
-                     #                        style = 'padding: 4px; font-size: 10px'),
-                     #           align = "center"
-                     #       )
-                     #   )
-                     # )
                    )
             ),
             
@@ -2065,7 +1779,7 @@ body <- dashboardBody(
             
             column(width = 10,
                    fluidRow(
-                     style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                      div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
                          valueBoxOutput("rf_display_R2_", width = 4),
                          valueBoxOutput("rf_display_RMSE_", width = 4),
@@ -2075,7 +1789,7 @@ body <- dashboardBody(
                    
                    fluidRow(column(width = 5,
                                    div(
-                                     style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                                     style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                                      box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
                                          closable = FALSE,
                                          width = 12,
@@ -2095,7 +1809,7 @@ body <- dashboardBody(
                    ),
                    
                    column(width = 7,
-                          div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
+                          div(style = "padding = 0em; margin-top: 0em; margin-left: -3em;",
                               box(title = tags$p("Variable Importance", style = "font-weight: bold;"),
                                   closable = FALSE,
                                   width = 12,
@@ -2131,7 +1845,7 @@ body <- dashboardBody(
             #### Gradient Boosting Toggle Column  ----------------------------------------------------
             column(width = 2,
                    fluidRow(
-                     div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                     div(style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                          box(title = tags$p(span(icon("tree"), "Gradient Boosting"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsed = TRUE,
@@ -2144,80 +1858,8 @@ body <- dashboardBody(
                          )
                      ),
                      
-                     # div(style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                     #     box(title = tags$p("Step 1: Variable Selection", style = "font-weight: bold;"),
-                     #         status = "primary",
-                     #         collapsible = TRUE,
-                     #         collapsed = FALSE,
-                     #         width = 12,
-                     #         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                     #             pickerInput(
-                     #               inputId = "mb_target_",
-                     #               label = "Subject",
-                     #               choices = c("Math", "Reading", "Science"), 
-                     #               selected = "Math",
-                     #               multiple = FALSE,
-                     #               options = list(style = "myClass"),
-                     #               choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
-                     #               inline = FALSE,
-                     #               width = NULL
-                     #             )),
-                     #         div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                     #             pickerInput(
-                     #               inputId = "mb_vars_",
-                     #               label = "Variables",
-                     #               choices = list(
-                     #                 `School Environment` = list("School Type" = "SchoolType",
-                     #                                             "Loneliness" = "Loneliness",
-                     #                                             "Classroom Safety" = "ClassroomSafety",
-                     #                                             "Teacher Support" = "TeacherSupport"),
-                     #                 `Personal` = list("Gender" = "Gender",
-                     #                                   "Math Homework Time" = "Homework_Math",
-                     #                                   "Reading Homework Time" = "Homework_Reading",
-                     #                                   "Science Homework Time" = "Homework_Science",
-                     #                                   "Preference for Math" = "Preference_Math",
-                     #                                   "Preference for Reading" = "Preference_Reading",
-                     #                                   "Preference for Science" = "Preference_Science",
-                     #                                   "Exercise" = "Exercise"),
-                     #                 `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
-                     #                                        "Immigration" = "Immigration",
-                     #                                        "Home Language" = "HomeLanguage",
-                     #                                        "Sibling" = "Sibling",
-                     #                                        "Aircon" = "Aircon",
-                     #                                        "Helper" = "Helper",
-                     #                                        "Vehicle" = "Vehicle",
-                     #                                        "Books" = "Books",
-                     #                                        "Own Room" = "OwnRoom",
-                     #                                        "Family Commitment" = "FamilyCommitment")),
-                     #               selected = colnames(stu_mb[1:24]),
-                     #               multiple = TRUE,
-                     #               options = list(style = "myClass", `actions-box` = TRUE),
-                     #               choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
-                     #               inline = FALSE,
-                     #               width = NULL
-                     #             ))
-                     #     )
-                     # ),
-                     # div(
-                     #   style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
-                     #   box(title = tags$p("Step 2: Data Splitting", style = "font-weight: bold;"),
-                     #       collapsible = TRUE,
-                     #       collapsed = TRUE,
-                     #       width = 12,
-                     #       status = "primary",
-                     #       solidHeader = FALSE,
-                     #       div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                     #           chooseSliderSkin("Flat"),
-                     #           sliderInput(inputId = "mb_partition_",
-                     #                       label = "Train-Test Partition:",
-                     #                       min = 0.05,
-                     #                       max = 0.95,
-                     #                       value = c(0.8))
-                     #       )
-                     #   )
-                     # ),
                      div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                       style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                        box(title = tags$p("Step 2: Resampling Options", style = "font-weight: bold;"),
                            collapsible = TRUE,
                            collapsed = TRUE,
@@ -2261,7 +1903,7 @@ body <- dashboardBody(
                        )
                      ),
                      div(
-                       style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                       style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                        box(title = tags$p("Step 3: Tuning Parameters", style = "font-weight: bold;"),
                            collapsible = TRUE,
                            collapsed = TRUE,
@@ -2298,7 +1940,7 @@ body <- dashboardBody(
                            )
                            ),
                            hidden(tags$div(id = "gb_bs_tune",
-                                           style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                                           style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
                                            div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                                sliderInput(inputId = "gb_bs_interactiondepth",
                                                            label = "Max. Tree Depth: ",
@@ -2342,7 +1984,7 @@ body <- dashboardBody(
             ),
             (column(width = 10,
                     fluidRow(
-                      style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                      style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                       div(style = "padding = 0em; margin-top: 0em; margin-left: 0em;",
                           valueBoxOutput("gb_display_R2_", width = 4),
                           valueBoxOutput("gb_display_RMSE_", width = 4),
@@ -2351,7 +1993,7 @@ body <- dashboardBody(
                     ),
                     fluidRow(
                       column(width = 5,
-                             div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                             div(style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                                  box(title = tags$p("Fit Assessment", style = "font-weight: bold;"),
                                      status = "info",
                                      collapsible = FALSE,
@@ -2371,7 +2013,7 @@ body <- dashboardBody(
                                  )
                              ),
                              hidden(div(id = "gb_besttuneplottab", 
-                                        style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                                        style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
                                         box(title = tags$p("Best Tune", style = "font-weight: bold;"),
                                             status = "info",
                                             collapsible = FALSE,
@@ -2382,7 +2024,7 @@ body <- dashboardBody(
                              )
                       ),
                       (column(width = 7,
-                              div(style = "padding = 0em; margin-left: 0em; margin-top: 0em; height: 100% ",
+                              div(style = "padding = 0em; margin-left: -3em; margin-top: 0em; height: 100% ",
                                   box(title = tags$p("Variable Importance", style = "font-weight: bold;"),
                                       status = "info",
                                       collapsible = FALSE,
@@ -2411,7 +2053,7 @@ body <- dashboardBody(
                                   )
                               ),
                               hidden(div(id = "gb_modelplottab",
-                                         style = "padding = 0em; margin-left: 0em; margin-top: 1.5em; height: 100% ",
+                                         style = "padding = 0em; margin-left: -3em; margin-top: 0em; height: 100% ",
                                          box(title = tags$p("Resampling Profile", style = "font-weight: bold;"),
                                              status = "info",
                                              collapsible = FALSE,
@@ -2476,18 +2118,18 @@ server <- function(input, output) {
   
   output$home_malestudnum_ <- renderValueBox({
     valueBox(
-      value = tags$p(paste0(sum(stu$Gender == "Male"), ", ", round((sum(stu$Gender == "Male")/nrow(stu))*100,0), "%"), style = "font-size: 60%;"),
-      subtitle = tags$p(paste0("Male Students"), style = "font-size: 80%;"), 
-      icon = tags$i(icon("child"), style="font-size: 60%"),
+      value = tags$p(paste0(sum(stu$Gender == "Male"), ", ", round((sum(stu$Gender == "Male")/nrow(stu))*100,0), "%"), style = "font-size: 40%;"),
+      subtitle = tags$p(paste0("Male Students"), style = "font-size: 60%;"), 
+      icon = tags$i(icon("child"), style="font-size: 40%"),
       color = "yellow"
     )
   })
   
   output$home_femalestudnum_ <- renderValueBox({
     valueBox(
-      value = tags$p(paste0(sum(stu$Gender == "Female"), ", ", round((sum(stu$Gender == "Female")/nrow(stu))*100,0), "%"), style = "font-size: 60%;"),
-      subtitle = tags$p(paste0("Female Students"), style = "font-size: 80%;"), 
-      icon = tags$i(icon("child-dress"), style="font-size: 60%"),
+      value = tags$p(paste0(sum(stu$Gender == "Female"), ", ", round((sum(stu$Gender == "Female")/nrow(stu))*100,0), "%"), style = "font-size: 40%;"),
+      subtitle = tags$p(paste0("Female Students"), style = "font-size: 60%;"), 
+      icon = tags$i(icon("child-dress"), style="font-size: 40%"),
       color = "yellow"
     )
   })
@@ -2503,18 +2145,18 @@ server <- function(input, output) {
   
   output$home_privateschnum_ <- renderValueBox({
     valueBox(
-      value = tags$p(paste0(sum(stu$SchoolType == "Private"), ", ", round((sum(stu$SchoolType == "Private")/nrow(stu))*100,0), "%"), style = "font-size: 60%;"),
-      subtitle = tags$p(paste0("Private School"), style = "font-size: 80%;"), 
-      icon = tags$i(icon("building-columns"), style="font-size: 60%"),
+      value = tags$p(paste0(sum(stu$SchoolType == "Private"), ", ", round((sum(stu$SchoolType == "Private")/nrow(stu))*100,0), "%"), style = "font-size: 40%;"),
+      subtitle = tags$p(paste0("Private School"), style = "font-size: 60%;"), 
+      icon = tags$i(icon("building-columns"), style="font-size: 40%"),
       color = "yellow"
     )
   })
   
   output$home_publicschnum_ <- renderValueBox({
     valueBox(
-      value = tags$p(paste0(sum(stu$SchoolType == "Public"), ", ", round((sum(stu$SchoolType == "Public")/nrow(stu))*100,0), "%"), style = "font-size: 60%;"),
-      subtitle = tags$p(paste0("Public School"), style = "font-size: 80%;"), 
-      icon = tags$i(icon("building-columns"), style="font-size: 60%"),
+      value = tags$p(paste0(sum(stu$SchoolType == "Public"), ", ", round((sum(stu$SchoolType == "Public")/nrow(stu))*100,0), "%"), style = "font-size: 40%;"),
+      subtitle = tags$p(paste0("Public School"), style = "font-size: 60%;"), 
+      icon = tags$i(icon("building-columns"), style="font-size: 40%"),
       color = "yellow"
     )
   })
@@ -2823,7 +2465,7 @@ server <- function(input, output) {
   output$cda_adtest_stat <- renderValueBox(
     valueBox(
       value = tags$p(round(cda_testscore_adtest()$statistic,3), style = "font-size: 60%;"), 
-      subtitle = tags$p("Anderson-Darling statistic", style = "font-style: italic; font-size: 100%"),
+      subtitle = tags$p("Anderson-Darling statistic", style = "font-style: italic; font-size: 80%"),
       icon = tags$i(icon("calculator"), style="font-size: 60%"),
       color = "yellow"
     )
@@ -2832,7 +2474,7 @@ server <- function(input, output) {
   output$cda_adtest_pvalue = renderValueBox(
     valueBox(
       value = tags$p(cda_testscore_adtest()$p.value, style = "font-size: 60%;"), 
-      subtitle = tags$p("p-Value of Anderson-Darling Statistic", style = "font-style: italic; font-size: 100%"),
+      subtitle = tags$p("p-Value of Anderson-Darling Statistic", style = "font-style: italic; font-size: 80%"),
       icon = tags$i(icon("calculator"), style="font-size: 60%"),
       color = "yellow"
     )
@@ -3030,24 +2672,8 @@ server <- function(input, output) {
   })
   
   
-  # ### Cluster Heatmap  ----------------------------------------------------
+  # Clustering  ----------------------------------------------------
 
-  # Combine Selected Variables and SchoolID
-  selected_variables_heatmap <- eventReactive(
-    input$action_heatmap_vars, {
-      c('SchoolID',
-        input$scores_heatmap,
-        input$vars_heatmap)
-    }
-  )
-
-  # Combine Selected Variables (excl. Scores) and SchoolID
-  selected_variables_heatmap_less <- eventReactive(
-    input$action_heatmap_vars, {
-      c('SchoolID',
-        input$vars_heatmap)
-    }
-  )
 
   # Update "group_by" Option with Selected Variables
   vars_names_heatmap <- c("SchoolID" = "School ID",
@@ -3079,172 +2705,6 @@ server <- function(input, output) {
   vars_names_lca <- vars_names_heatmap
   vars_names_sankey <- vars_names_heatmap
 
-  observeEvent(input$action_heatmap_vars, {
-    choices_original_heatmap <- selected_variables_heatmap_less()
-    choices_display_heatmap <- choices_original_heatmap
-
-    for (var in names(vars_names_heatmap)) {
-      index_heatmap <- which(choices_original_heatmap == var)
-      if (length(index_heatmap) > 0) {
-        choices_display_heatmap[index_heatmap] <- vars_names_heatmap[var]
-      }
-    }
-
-    updateSelectInput(
-      session = getDefaultReactiveDomain(),
-      inputId = "groupby_heatmap",
-      choices = setNames(choices_original_heatmap, choices_display_heatmap)
-    )
-  })
-
-  # Filter Dataset using Selected Variables
-  data_filtered_heatmap <- eventReactive(
-    input$action_heatmap_vars, {
-      data_filtered_heatmap <- stu_ca %>%
-        dplyr::select(all_of(selected_variables_heatmap()))})
-
-  # Data Sampling
-  data_sample_heatmap <- eventReactive(
-    input$action_heatmap, {
-      set.seed(input$seed_heatmap)
-      data_filtered_heatmap() %>%
-        dplyr::group_by_at(vars(input$groupby_heatmap)) %>%
-        slice_sample(prop = input$prop_heatmap,
-                     replace = (if (input$replace_heatmap == "False") {FALSE}
-                                else {TRUE})) %>%
-        dplyr::ungroup()
-    }
-  )
-
-  # Convert Sampled Dataset to Matrix
-  heatmap_data <- eventReactive(
-    input$action_heatmap, {
-      data.matrix(data_sample_heatmap())
-    }
-  )
-
-  # Generate Plot: Cluster Heatmap
-  heatmap_plot <- eventReactive(
-    input$action_heatmap, {
-      if (input$data_transformation_heatmap == "Scale by Column") {
-        heatmaply(heatmap_data(),
-                  scale = "column",
-                  dist_method = input$dist_method_heatmap,
-                  hclust_method = input$hclust_heatmap,
-                  k_row = (if (input$clusters_heatmap == "Auto") {NA}
-                           else {input$numclusters_heatmap}),
-                  seriate = input$seriation_heatmap)
-      }
-      else if (input$data_transformation_heatmap == "Scale by Row") {
-        heatmaply(heatmap_data(),
-                  scale = "row",
-                  dist_method = input$dist_method_heatmap,
-                  hclust_method = input$hclust_heatmap,
-                  k_row = (if (input$clusters_heatmap == "Auto") {NA}
-                           else {input$numclusters_heatmap}),
-                  seriate = input$seriation_heatmap)
-      }
-      else if (input$data_transformation_heatmap == "Normalise") {
-        heatmaply(normalize(heatmap_data()),
-                  scale = "none",
-                  dist_method = input$dist_method_heatmap,
-                  hclust_method = input$hclust_heatmap,
-                  k_row = (if (input$clusters_heatmap == "Auto") {NA}
-                           else {input$numclusters_heatmap}),
-                  seriate = input$seriation_heatmap)
-      }
-      else if (input$data_transformation_heatmap == "Percentise") {
-        heatmaply(percentize(heatmap_data()),
-                  scale = "none",
-                  dist_method = input$dist_method_heatmap,
-                  hclust_method = input$hclust_heatmap,
-                  k_row = (if (input$clusters_heatmap == "Auto") {NA}
-                           else {input$numclusters_heatmap}),
-                  seriate = input$seriation_heatmap)
-      }
-    }
-  )
-
-  # Function to Render Cluster Heatmap
-  cluster_heatmap = function(modeltype){
-    output$cluster_heatmap = renderPlotly(modeltype)}
-
-  observeEvent(input$action_heatmap, cluster_heatmap(heatmap_plot()))
-
-  # FlipBox: Heatmap Supplementary Visualisation 1
-  output$active_heatmap <- renderUI({
-    side <- if (input$fb_heatmap_supp1) " " else " "})
-
-  # Heatmap Supplementary Visualisation 1
-  heatmap_supp1_plot <- eventReactive(
-    input$action_heatmap, {
-      heatmap_data <- heatmap_data()
-      if (input$data_transformation_heatmap == "Scale by Column") {
-        dplyr::select(dend_expend(dist(heatmap_data),
-                                  scale = "column",
-                                  method = input$dist_method_heatmap)[[3]], 2:3)
-      }
-      else if (input$data_transformation_heatmap == "Scale by Row") {
-        dplyr::select(dend_expend(dist(heatmap_data),
-                                  scale = "row",
-                                  method = input$dist_method_heatmap)[[3]], 2:3)
-      }
-      else if (input$data_transformation_heatmap == "Normalise") {
-        dplyr::select(dend_expend(dist(normalize(heatmap_data)),
-                                  method = input$dist_method_heatmap)[[3]], 2:3)
-      }
-      else if (input$data_transformation_heatmap == "Percentise") {
-        dplyr::select(dend_expend(dist(percentize(heatmap_data)),
-                                  method = input$dist_method_heatmap)[[3]], 2:3)
-      }
-    }
-  )
-
-  # Function to Render Heatmap Supplementary Visualisation 1
-  cluster_supp1 = function(modeltype){
-    output$cluster_supp1 = renderTable(modeltype)}
-
-  observeEvent(input$action_heatmap, cluster_supp1(heatmap_supp1_plot()))
-
-  # FlipBox: Heatmap Supplementary Visualisation 2
-  output$active_heatmap <- renderUI({
-    side <- if (input$fb_heatmap_supp2) " " else " "})
-
-  # Heatmap Supplementary Visualisation 2
-  heatmap_supp2_plot <- eventReactive(
-    input$action_heatmap, {
-      heatmap_data <- heatmap_data()
-      if (input$data_transformation_heatmap == "Scale by Column") {
-        plot(find_k(hclust(dist((heatmap_data),
-                                method = input$dist_method_heatmap),
-                           method = input$hclust_heatmap)))
-      }
-      else if (input$data_transformation_heatmap == "Scale by Row") {
-        plot(find_k(hclust(dist((heatmap_data),
-                                method = input$dist_method_heatmap),
-                           method = input$hclust_heatmap)))
-      }
-      else if (input$data_transformation_heatmap == "Normalise") {
-        plot(find_k(hclust(dist(normalize(heatmap_data),
-                                method = input$dist_method_heatmap),
-                           method = input$hclust_heatmap)))
-      }
-      else if (input$data_transformation_heatmap == "Percentise") {
-        plot(find_k(hclust(dist(percentize(heatmap_data),
-                                method = input$dist_method_heatmap),
-                           method = input$hclust_heatmap)))
-      }
-    }
-  )
-
-  # Function to Render Heatmap Supplementary Visualisation 2
-  cluster_supp2 = function(modeltype){
-    output$cluster_supp2 = renderPlot(modeltype)}
-
-  observeEvent(input$action_heatmap, cluster_supp2(heatmap_supp2_plot()))
-
-
-  
   ### Sankey Diagram  ----------------------------------------------------
   
   # Combine Selected Variables and SchoolID
@@ -3327,7 +2787,9 @@ server <- function(input, output) {
                     target = links_sankey()$target,
                     value = links_sankey()$value)) %>%
         layout(
-          title = paste("Sankey Diagram for", paste(title_names_sankey(), collapse = ", "))
+          title = list(text = paste("Sankey Diagram for", paste(title_names_sankey(), collapse = ", ")),
+                       font = list(size = 12))
+          
           #paste("Sankey Diagram:", paste(colnames(freq_table_sankey()[1:5]), collapse = ", "))
         )
     })
@@ -3421,7 +2883,7 @@ server <- function(input, output) {
         facet_wrap(~ Category, nrow = 1) + 
         coord_flip() +
         labs(fill = "Factor Level") +
-        scale_y_continuous("Proportion", expand = c(0, 0)) + 
+        scale_y_continuous("Proportion", expand = c(0, 0)) +
         theme_minimal()+
         scale_fill_manual(values = mycolours)+
         theme(legend.position="none")
@@ -3429,15 +2891,10 @@ server <- function(input, output) {
   
   output$lca_plotsummary_ <- renderPlotly({
     ggplotly(lca_plotsummary(), tooltip = c("text", "x")) 
-    # %>%
-    #   layout(legend = list(orientation = 'h',
-    #                        xanchor = "center",
-    #                        x = 0.5,
-    #                        yanchor = "top",
-    #                        y = 1.15)) 
   })
   
   
+  ## LCA Statistics
   aic_lca <- eventReactive(
     input$action_lca, {
       return(model_lca()$aic)
@@ -3447,9 +2904,9 @@ server <- function(input, output) {
   aic_lca_display = function(){
     output$lca_supp1 = renderValueBox(
       valueBox(
-        value = tags$p(scales::comma(round(aic_lca(),2)), style = "font-size: 50%;"), 
-        subtitle = tags$p("AIC", style = "font-size: 150%;"), 
-        icon = tags$i(icon("calculator"), style = "font-size: 80%;"), 
+        value = tags$p(scales::comma(round(aic_lca(),2)), style = "font-size: 60%;"), 
+        subtitle = tags$p("AIC (Click for More Information)", style = "font-size: 80%;"), 
+        icon = tags$i(icon("calculator"), style = "font-size: 60%;"), 
         width = 12,
         color = "yellow"
       )
@@ -3468,9 +2925,9 @@ server <- function(input, output) {
   bic_lca_display = function(){
     output$lca_supp2 = renderValueBox(
       valueBox(
-        value = tags$p(scales::comma(round(bic_lca(),2)), style = "font-size: 50%;"), 
-        subtitle = tags$p("BIC", style = "font-size: 150%;"), 
-        icon = tags$i(icon("calculator"), style = "font-size: 80%;"), 
+        value = tags$p(scales::comma(round(bic_lca(),2)), style = "font-size: 60%;"), 
+        subtitle = tags$p("BIC (Click for More Information)", style = "font-size: 80%;"), 
+        icon = tags$i(icon("calculator"), style = "font-size: 60%;"), 
         width = 12,
         color = "yellow"
       )
@@ -3488,9 +2945,9 @@ server <- function(input, output) {
   gsq_lca_display = function(){
     output$lca_supp3 = renderValueBox(
       valueBox(
-        value = tags$p(scales::comma(round(gsq_lca(),2)), style = "font-size: 50%;"), 
-        subtitle = tags$p("Likelihood Ratio", style = "font-size: 150%;"), 
-        icon = tags$i(icon("calculator"), style = "font-size: 80%;"), 
+        value = tags$p(scales::comma(round(gsq_lca(),2)), style = "font-size: 60%;"), 
+        subtitle = tags$p("Likelihood Ratio (Click for More Information)", style = "font-size: 80%;"), 
+        icon = tags$i(icon("calculator"), style = "font-size: 60%;"), 
         width = 12,
         color = "yellow"
       )
@@ -3508,9 +2965,9 @@ server <- function(input, output) {
   ent_lca_display = function(){
     output$lca_supp4 = renderValueBox(
       valueBox(
-        value = tags$p(scales::comma(round(ent_lca(),2)), style = "font-size: 50%;"), 
-        subtitle = tags$p("Entropy", style = "font-size: 150%;"), 
-        icon = tags$i(icon("calculator"), style = "font-size: 80%;"), 
+        value = tags$p(scales::comma(round(ent_lca(),2)), style = "font-size: 60%;"), 
+        subtitle = tags$p("Entropy (Click for More Information)", style = "font-size: 80%;"), 
+        icon = tags$i(icon("calculator"), style = "font-size: 60%;"), 
         width = 12,
         color = "yellow"
       )
@@ -3519,7 +2976,8 @@ server <- function(input, output) {
   
   observeEvent(input$action_lca, ent_lca_display()) 
   
-  # Generate LCA Bar Plot
+  
+  ## Generate LCA Bar Plot - By variable
   lca_plot <- eventReactive(
     input$action_lca, {
       model_lca <- model_lca()
@@ -3551,6 +3009,13 @@ server <- function(input, output) {
     }
   )
   
+  lca_withmod <- eventReactive(
+    input$action_lca, {
+      data_filtered_lca() %>%
+        mutate(class = model_lca()$predclass) %>%
+        mutate(class = as.factor(class))
+  })
+
   # Function to Plot LCA Bar Plot
   cluster_lca = function(modeltype){
     output$lca = renderPlotly(modeltype)}
@@ -3561,6 +3026,35 @@ server <- function(input, output) {
     output$lca = renderPlotly(modeltype)}
   
   observeEvent(input$action_lca, cluster_lca(lca_plot()))
+  
+  ## Data Manipulation for cluster proportion
+  lca_proportion <- eventReactive(
+    input$action_lca, {
+      lca_withmod() %>%
+        group_by(class) %>%
+        summarise(counts = n()) %>%
+        mutate(class_pct = round(counts/ sum(counts), 2)) %>%
+        ungroup()
+    })
+  
+  ## Cluster Proportion
+  lca_propplot <- eventReactive(
+    input$action_lca, {
+      ggplot(lca_proportion(), 
+             aes(y = class, x = class_pct)) + 
+        geom_bar(aes(text = paste0("Proportion: ",round(class_pct, 2)*100,"%")), 
+                 stat = "identity",
+                 fill = "#C7C2D0") +
+        labs(x = "Proportion of Records in Cluster", y = "Cluster") +
+        scale_x_continuous(labels = scales::percent) +
+        theme_minimal() +
+        theme(legend.position="none")
+    })
+  
+  output$lca_propplot_ <- renderPlotly({
+    ggplotly(lca_propplot(), tooltip = c("text")) %>%
+      layout(autosize = TRUE)
+  })
   
   
   # Regression Analysis ----------------------------------------------------
