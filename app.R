@@ -170,9 +170,10 @@ stu_lca[-1] <- lapply(stu_lca[-1], factor)
 #~~~~~ Theme ~~~~~#
 #========================#
 
-mycolours <-  c("#C7C2D0","#b8c3c2","#e2d9c5", "#e1bbb0", "#fed8a6","#d8dcce", "#E3C2CB", "#98B0B6", "#e9d7c0", "#ABA58D", 
+mycolours <-  c("#C7C2D0","#b8c3c2","#e2d9c5", "#e1bbb0", "#fed8a6","#d8dcce", "#E3C2CB", "#bdccd1", "#e9d7c0", "#ABA58D", 
                 "#ABC8CE", "#EDCFC0", "#FEF3D2", "#E4D5E3", "#C3D3D6", "#FFD4D4","#C6B49D", "#D5DBE4","#D4CBB3", "#FFDECD",
-                "#D6D6D6", "#FCE5C0", "#C8C681")
+                "#D6D6D6", "#FCE5C0", "#C8C681", "#817A81", "#BD9774", "#a4Bfb4", "#f4ebe0", "#d1c1a9", "#f0e2ef", "#c6c09C", 
+                "#e8b298", "#efede4","#edcc8b", "#b1d1ce", "#c2aba3",  "#ddede4", "#d8e6cd")
 
 
 # Create dashboard theme with bootstrap/fresh ----------------------------------------------------
@@ -1259,7 +1260,7 @@ body <- dashboardBody(
                              width = 12,
                              solidHeader =TRUE,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 "A Latent Class Analysis (LCA) Bar Plot is used to show the distribution of categorical variables within each latent class. LCA is a statistical method used to identify unobserved (latent) classes within a population based on observed categorical variables. Each observation is probabilistically assigned to one of the latent classes. The bar plot helps to identify which categories are most prevalent or distinctive within each class."
+                                 "A Latent Class Analaysis (LCA) Bar Plot is used to show the distribution of categorical variables within each latent class. LCA is a statistical method used to identify unobserved (latent) classes within a population based on observed categorical variables. Each observation is probabilistically assigned to one of the latent classes. The bar plot helps to identify which categories are most prevalent or distinctive within each class."
                              )
                          )
                      ),
@@ -1306,7 +1307,7 @@ body <- dashboardBody(
                                                             "Own Room" = "OwnRoom",
                                                             "Family Commitment" = "FamilyCommitment")),
                                    multiple = TRUE,
-                                   options = list(style = "myClass", `actions-box` = TRUE),
+                                   options = list(style = "myClass", "max-options" = 10),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),                                 
                                    inline = FALSE,
                                    width = NULL)),
@@ -1396,7 +1397,7 @@ body <- dashboardBody(
                                       flipBox(id = "fb_lca_supp1",
                                               width = 12,
                                               front = div(#h6("Click for More Information", align = "center"),
-                                                          valueBoxOutput("lca_supp1", width =12)),
+                                                valueBoxOutput("lca_supp1", width =12)),
                                               back = wellPanel(
                                                 p("Akaike Information Criterion (AIC) is a measure of the relative quality of a statistical model for a given set of data. It balances the goodness of fit of the model with the complexity of the model, penalising models that are overly complex. Lower AIC values indicate a better balance between model fit and complexity, suggesting a more optimal model for explaining the data.")))),
                                column(width = 6, 
@@ -1404,7 +1405,7 @@ body <- dashboardBody(
                                       flipBox(id = "fb_lca_supp2",
                                               width = 12,
                                               front = div(#h6("Click for More Information", align = "center"),
-                                                          valueBoxOutput("lca_supp2", width =12)),
+                                                valueBoxOutput("lca_supp2", width =12)),
                                               back = wellPanel(
                                                 p("Bayesian Information Criterion (BIC) is similar to AIC but places a stronger penalty on models with more parameters, making it more conservative in selecting models. Like AIC, lower BIC values indicate better model fit, but BIC tends to favor simpler models more strongly than AIC."))))),
                              fluidRow(
@@ -1413,7 +1414,7 @@ body <- dashboardBody(
                                       flipBox(id = "fb_lca_supp3",
                                               width = 12,
                                               front = div(#h6("Click for More Information", align = "center"),
-                                                          valueBoxOutput("lca_supp3", width =12)),
+                                                valueBoxOutput("lca_supp3", width =12)),
                                               back = wellPanel(
                                                 p("Likelihood Ratio/Deviance Statistic (Gsq) is a measure of the goodness of fit of the model. It compares the fit of the model to a model with perfect fit by assessing the difference in deviance between the two models. Lower values indicate better model fit, with values close to zero suggesting that the model fits the data well.")))),
                                column(width = 6, 
@@ -1421,7 +1422,7 @@ body <- dashboardBody(
                                       flipBox(id = "fb_lca_supp4",
                                               width = 12,
                                               front = div(#h6("Click for More Information", align = "center"),
-                                                          valueBoxOutput("lca_supp4", width =12)),
+                                                valueBoxOutput("lca_supp4", width =12)),
                                               back = wellPanel(
                                                 p("Entropy quantifies the uncertainty or randomness in the distribution of observations across different classes. A high entropy indicates greater uncertainty, while low entropy suggests more predictability or orderliness.Higher entropy values indicate less distinct class separation, while lower entropy values suggest clearer class distinctions."))))
                                
@@ -2949,16 +2950,17 @@ server <- function(input, output) {
         facet_wrap(~ Category, nrow = 1) + 
         coord_flip() +
         labs(fill = "Factor Level") +
-        scale_y_continuous("Proportion", expand = c(0, 0)) +
+        scale_y_continuous("Proportion", expand = c(0, 0), breaks = c(0, 50, 100)) +
         theme_minimal()+
         scale_fill_manual(values = mycolours)+
-        theme(legend.position="none")
+        theme(legend.position="none",
+              strip.text.x = element_text(angle = 10, hjust = 1, size = 7),
+              axis.text.x = element_text(angle = 10, hjust = 1, size = 7))
     })
   
   output$lca_plotsummary_ <- renderPlotly({
     ggplotly(lca_plotsummary(), tooltip = c("text", "x")) 
   })
-  
   
   ## LCA Statistics
   aic_lca <- eventReactive(
