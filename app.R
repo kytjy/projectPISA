@@ -1134,7 +1134,7 @@ body <- dashboardBody(
             column(width = 2,
                    fluidRow(
                      div(style = "padding = 0em; margin-left: -2em; margin-top: 0em; height: 100% ",
-                         box(title = tags$p(span(icon("users-viewfinder"), "Sankey Diagram"), style = "font-weight: bold; color: #FFFFFF"),
+                         box(title = tags$p(span(icon("binoculars"), "Sankey Diagram"), style = "font-weight: bold; color: #FFFFFF"),
                              status = "info",
                              collapsible = TRUE,
                              collapsed = TRUE,
