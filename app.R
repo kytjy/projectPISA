@@ -82,7 +82,41 @@ median_math <- median(stu_ca_less$Math)
 median_reading <- median(stu_ca_less$Reading)
 median_science <- median(stu_ca_less$Science)
 
-stu_sankey <- stu_ca %>%
+stu_sankey <- stu_ca_less %>%
+  mutate(Sibling = recode(Sibling,
+                          `0` = "No",
+                          `1` = "Yes",
+                          `2` = "Yes",
+                          `≥3` = "Yes")) %>%
+  mutate(Vehicle = recode(Vehicle,
+                          `0` = "No",
+                          `1` = "Yes",
+                          `2` = "Yes",
+                          `≥3` = "Yes")) %>%
+  mutate(Exercise = recode(Exercise,
+                           `0` = "No",
+                           `1` = "Yes",
+                           `2` = "Yes",
+                           `3` = "Yes",
+                           `4` = "Yes",
+                           `5` = "Yes",
+                           `6` = "Yes",
+                           `7` = "Yes",
+                           `8` = "Yes",
+                           `9` = "Yes",
+                           `10` = "Yes")) %>%
+  mutate(FamilyCommitment = recode(FamilyCommitment,
+                                   `0` = "No",
+                                   `1` = "Yes",
+                                   `2` = "Yes",
+                                   `3` = "Yes",
+                                   `4` = "Yes",
+                                   `5` = "Yes",
+                                   `6` = "Yes",
+                                   `7` = "Yes",
+                                   `8` = "Yes",
+                                   `9` = "Yes",
+                                   `10` = "Yes")) %>%
   mutate(Math = ifelse(Math >= median_math, "Median and Above", "Below Median")) %>%
   mutate(Reading = ifelse(Reading >= median_reading, "Median and Above", "Below Median")) %>%
   mutate(Science = ifelse(Science >= median_science, "Median and Above", "Below Median"))
@@ -1122,39 +1156,67 @@ body <- dashboardBody(
                                    choices = c("Math", "Reading", "Science"),
                                    multiple = FALSE,
                                    options = list(style = "myClass"),
-                                   choicesOpt = list(style = rep_len("font-size: 10px;", 3)),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
                                    width = NULL)
                              ),
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
                                  pickerInput(
-                                   inputId = "vars_sankey",
-                                   label = "Variables (Choose 4)",
-                                   choices = list(
-                                     `School Environment` = list("School Type" = "SchoolType",
-                                                                 "Loneliness" = "Loneliness",
-                                                                 "Classroom Safety" = "ClassroomSafety",
-                                                                 "Teacher Support" = "TeacherSupport"),
-                                     `Personal` = list("Gender" = "Gender",
-                                                       "Math Homework Time" = "Homework_Math",
-                                                       "Reading Homework Time" = "Homework_Reading",
-                                                       "Science Homework Time" = "Homework_Science",
-                                                       "Preference for Math" = "Preference_Math",
-                                                       "Preference for Reading" = "Preference_Reading",
-                                                       "Preference for Science" = "Preference_Science",
-                                                       "Exercise" = "Exercise"),
-                                     `Socioeconomic` = list("Parents' Education" = "ParentsEducation",
-                                                            "Immigration" = "Immigration",
-                                                            "Home Language" = "HomeLanguage",
-                                                            "Sibling" = "Sibling",
-                                                            "Aircon" = "Aircon",
-                                                            "Helper" = "Helper",
-                                                            "Vehicle" = "Vehicle",
-                                                            "Books" = "Books",
-                                                            "Own Room" = "OwnRoom",
-                                                            "Family Commitment" = "FamilyCommitment")),
-                                   multiple = TRUE,
-                                   options = list(style = "myClass", "max-options" = 4),
+                                   inputId = "vars_sankey1",
+                                   label = "Variable 1",
+                                   choices = list("Math Homework Time" = "Homework_Math",
+                                                  "Reading Homework Time" = "Homework_Reading",
+                                                  "Science Homework Time" = "Homework_Science"),
+                                   multiple = FALSE,
+                                   options = list(style = "myClass"),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                                   inline = FALSE,
+                                   width = NULL)
+                             ),
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "vars_sankey2",
+                                   label = "Variable 2",
+                                   choices = list("Gender" = "Gender",
+                                                  "School Type" = "SchoolType",
+                                                  "Teacher Support" = "TeacherSupport",
+                                                  "Parents' Education" = "ParentsEducation",
+                                                  "Immigration" = "Immigration",
+                                                  "Home Language" = "HomeLanguage"),
+                                   multiple = FALSE,
+                                   options = list(style = "myClass"),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                                   inline = FALSE,
+                                   width = NULL)
+                             ),
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "vars_sankey3",
+                                   label = "Variable 3",
+                                   choices = list("Own Room" = "OwnRoom",
+                                                  "Family Commitment" = "FamilyCommitment",
+                                                  "Exercise" = "Exercise",
+                                                  "Sibling" = "Sibling",
+                                                  "Aircon" = "Aircon",
+                                                  "Helper" = "Helper",
+                                                  "Vehicle" = "Vehicle"),
+                                   multiple = FALSE,
+                                   options = list(style = "myClass"),
+                                   choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
+                                   inline = FALSE,
+                                   width = NULL)
+                             ),
+                             div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
+                                 pickerInput(
+                                   inputId = "vars_sankey4",
+                                   label = "Variable 4",
+                                   choices = list("Preference for Math" = "Preference_Math",
+                                                  "Preference for Reading" = "Preference_Reading",
+                                                  "Preference for Science" = "Preference_Science",
+                                                  "Loneliness" = "Loneliness",
+                                                  "Classroom Safety" = "ClassroomSafety"),
+                                   multiple = FALSE,
+                                   options = list(style = "myClass"),
                                    choicesOpt = list(style = rep_len("font-size: 10px;", 22)),
                                    inline = FALSE,
                                    width = NULL)
@@ -1197,7 +1259,7 @@ body <- dashboardBody(
                              width = 12,
                              solidHeader =TRUE,
                              div(style = "padding = 0em; margin-top: -0.5em; font-size: 10px;",
-                                 "A Latent Class Analaysis (LCA) Bar Plot is used to show the distribution of categorical variables within each latent class. LCA is a statistical method used to identify unobserved (latent) classes within a population based on observed categorical variables. Each observation is probabilistically assigned to one of the latent classes. The bar plot helps to identify which categories are most prevalent or distinctive within each class."
+                                 "A Latent Class Analysis (LCA) Bar Plot is used to show the distribution of categorical variables within each latent class. LCA is a statistical method used to identify unobserved (latent) classes within a population based on observed categorical variables. Each observation is probabilistically assigned to one of the latent classes. The bar plot helps to identify which categories are most prevalent or distinctive within each class."
                              )
                          )
                      ),
@@ -2711,14 +2773,18 @@ server <- function(input, output) {
   selected_variables_sankey <- eventReactive(
     input$action_sankey_vars, {
       c(input$scores_sankey,
-        input$vars_sankey)
+        input$vars_sankey1,
+        input$vars_sankey2,
+        input$vars_sankey3,
+        input$vars_sankey4
+      )
     }
   )
   
   # Filter Dataset using Selected Variables
   data_filtered_sankey <- eventReactive(
     input$action_sankey_vars, {
-      data_filtered_sankey <- stu_sankey %>% 
+      data_filtered_sankey <- stu_sankey %>%
         dplyr::select(all_of(selected_variables_sankey()))
     }
   )
@@ -2726,8 +2792,8 @@ server <- function(input, output) {
   # Sankey Table of Proportions
   freq_table_sankey <- eventReactive(
     input$action_sankey_vars, {
-      data_filtered_sankey() %>% 
-        dplyr::group_by_at(vars(selected_variables_sankey())) %>% 
+      data_filtered_sankey() %>%
+        dplyr::group_by_at(vars(selected_variables_sankey())) %>%
         summarise(n = n())
     })
   
@@ -2789,8 +2855,6 @@ server <- function(input, output) {
         layout(
           title = list(text = paste("Sankey Diagram for", paste(title_names_sankey(), collapse = ", ")),
                        font = list(size = 12))
-          
-          #paste("Sankey Diagram:", paste(colnames(freq_table_sankey()[1:5]), collapse = ", "))
         )
     })
   
@@ -2798,7 +2862,9 @@ server <- function(input, output) {
   cluster_sankey = function(modeltype){
     output$sankey = renderPlotly(modeltype)}
   
-  observeEvent(input$action_sankey_vars, cluster_sankey(sankey_plot()))
+  observeEvent(input$action_sankey_vars, {
+    cluster_sankey(sankey_plot())
+  })
   
   
   
